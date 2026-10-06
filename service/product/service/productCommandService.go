@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/repository"
@@ -237,6 +238,34 @@ func (s *productCommandService) AdjustProductStock(ctx context.Context, productI
 	s.cache.DeleteCachedProduct(ctx, productID)
 	logSuccess("Successfully adjusted product stock", zap.Int("product_id", productID), zap.Int("delta", delta))
 	return product, nil
+}
+
+// CleanupStockAdjustments purges product_stock_adjustments rows older than the
+// retention window. The product context owns the table, so order no longer
+// deletes from it directly — it calls this via gRPC.
+func (s *productCommandService) CleanupStockAdjustments(ctx context.Context, retentionDays int) (int64, error) {
+	const method = "CleanupStockAdjustments"
+
+	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
+		attribute.Int("retention_days", retentionDays))
+
+	defer func() {
+		end(status)
+	}()
+
+	if retentionDays <= 0 {
+		retentionDays = 7
+	}
+	cutoff := time.Now().AddDate(0, 0, -retentionDays)
+
+	deleted, err := s.productRepository.CleanupStockAdjustments(ctx, cutoff)
+	if err != nil {
+		status = "error"
+		return errorhandler.HandleError[int64](s.logger, err, method, span)
+	}
+
+	logSuccess("Successfully cleaned up product stock adjustments", zap.Int64("deleted", deleted))
+	return deleted, nil
 }
 
 func (s *productCommandService) Trash(ctx context.Context, productID int) (interface{}, error) {

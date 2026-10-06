@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_detail"
-	pbmerchant_social_link "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_social_link"
+	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_detail"
+	pbmerchant_social_link "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_social_link"
 )
 
 type MerchantDetailQueryHandler interface {

@@ -14,4 +14,3 @@ var (
 	ErrDeleteByUserID     = errors.ErrInternal.WithMessage("Failed to delete refresh token by user ID")
 	ErrParseDate          = errors.ErrBadRequest.WithMessage("Failed to parse expiration date")
 )
-

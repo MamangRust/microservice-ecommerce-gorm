@@ -1,9 +1,9 @@
 package auth_test
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"testing"
 
 	"github.com/MamangRust/microservice-ecommerce-auth/repository"
@@ -28,6 +28,7 @@ import (
 	role_handler "github.com/MamangRust/microservice-ecommerce-grpc-role/handler"
 	role_repo "github.com/MamangRust/microservice-ecommerce-grpc-role/repository"
 	role_service "github.com/MamangRust/microservice-ecommerce-grpc-role/service"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	user_cache "github.com/MamangRust/microservice-ecommerce-grpc-user/cache"
 	user_handler "github.com/MamangRust/microservice-ecommerce-grpc-user/handler"
 	user_repo "github.com/MamangRust/microservice-ecommerce-grpc-user/repository"
@@ -55,9 +56,6 @@ func (s *AuthServiceTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.redisClient = redis.NewClient(opts)
 
-
-
-
 	logger.ResetInstance()
 	lp := sdklog.NewLoggerProvider()
 	log, _ := logger.NewLogger("test", lp)
@@ -82,14 +80,20 @@ func (s *AuthServiceTestSuite) SetupSuite() {
 	roleServer := grpc.NewServer()
 	pbrole.RegisterRoleQueryServiceServer(roleServer, roleGapi.RoleQuery)
 	pbrole.RegisterRoleCommandServiceServer(roleServer, roleGapi.RoleCommand)
+	pbuserrole.RegisterUserRoleQueryServiceServer(roleServer, roleGapi.UserRoleQuery)
+	pbuserrole.RegisterUserRoleCommandServiceServer(roleServer, roleGapi.UserRoleCommand)
 	roleLis, _ := net.Listen("tcp", "localhost:0")
 	go roleServer.Serve(roleLis)
 	roleConn, _ := grpc.NewClient(roleLis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	// 2. Setup User Service & gRPC Server
 	userMencache := user_cache.NewMencache(cacheStore)
-	roleQueryClientForUser := pbrole.NewRoleQueryServiceClient(roleConn)
-	userRepos := user_repo.NewRepositories(gormDB, roleQueryClientForUser)
+	userRepos := user_repo.NewRepositories(&user_repo.Deps{
+		Db:                    gormDB,
+		RoleQueryClient:       pbrole.NewRoleQueryServiceClient(roleConn),
+		UserRoleQueryClient:   pbuserrole.NewUserRoleQueryServiceClient(roleConn),
+		UserRoleCommandClient: pbuserrole.NewUserRoleCommandServiceClient(roleConn),
+	})
 	userSvc := user_service.NewService(&user_service.Deps{
 		Repositories:  userRepos,
 		Logger:        log,
@@ -111,10 +115,13 @@ func (s *AuthServiceTestSuite) SetupSuite() {
 	// 3. Setup Auth Service with gRPC clients
 	userQueryClient := pbuser.NewUserQueryServiceClient(userConn)
 	userCommandClient := pbuser.NewUserCommandServiceClient(userConn)
-	roleQueryClient := pbrole.NewRoleQueryServiceClient(roleConn)
-	roleCommandClient := pbrole.NewRoleCommandServiceClient(roleConn)
-
-	repos := repository.NewRepositories(gormDB, userQueryClient, userCommandClient, roleQueryClient, roleCommandClient)
+	repos := repository.NewRepositories(&repository.Deps{
+		Db:              gormDB,
+		User:            userQueryClient,
+		UserCommand:     userCommandClient,
+		Role:            pbrole.NewRoleQueryServiceClient(roleConn),
+		UserRoleCommand: pbuserrole.NewUserRoleCommandServiceClient(roleConn),
+	})
 
 	tokenManager, _ := auth.NewManager("mysecret")
 	s.service = service.NewService(&service.Deps{

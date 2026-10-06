@@ -23,8 +23,8 @@ func (r *reviewCommandRepository) Create(ctx context.Context, request *requests.
 		UserID:    int32(request.UserID),
 		ProductID: int32(request.ProductID),
 
-		Comment:   request.Comment,
-		Rating:    int32(request.Rating),
+		Comment: request.Comment,
+		Rating:  int32(request.Rating),
 	}
 	if err := r.db.WithContext(ctx).Create(review).Error; err != nil {
 		return nil, review_errors.ErrCreateReview.WithInternal(err)

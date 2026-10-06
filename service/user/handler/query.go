@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

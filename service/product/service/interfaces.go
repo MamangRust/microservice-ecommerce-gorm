@@ -22,6 +22,7 @@ type ProductCommandService interface {
 	Update(ctx context.Context, req *requests.UpdateProductRequest) (*models.Product, error)
 	UpdateProductCountStock(ctx context.Context, productID int, stock int) (*models.Product, error)
 	AdjustProductStock(ctx context.Context, productID int, delta int, operationID string) (*models.Product, error)
+	CleanupStockAdjustments(ctx context.Context, retentionDays int) (int64, error)
 	Trash(ctx context.Context, productID int) (interface{}, error)
 	Restore(ctx context.Context, productID int) (interface{}, error)
 	DeletePermanent(ctx context.Context, productID int) (bool, error)

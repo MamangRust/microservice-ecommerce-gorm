@@ -43,8 +43,12 @@ func (s *categoryQueryService) FindAll(ctx context.Context, req *requests.FindAl
 	page := req.Page
 	pageSize := req.PageSize
 	search := req.Search
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
 		attribute.Int("page", page), attribute.Int("pageSize", pageSize), attribute.String("search", search))
@@ -78,8 +82,12 @@ func (s *categoryQueryService) FindActive(ctx context.Context, req *requests.Fin
 	page := req.Page
 	pageSize := req.PageSize
 	search := req.Search
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
 		attribute.Int("page", page), attribute.Int("pageSize", pageSize), attribute.String("search", search))
@@ -113,8 +121,12 @@ func (s *categoryQueryService) FindTrashed(ctx context.Context, req *requests.Fi
 	page := req.Page
 	pageSize := req.PageSize
 	search := req.Search
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
 		attribute.Int("page", page), attribute.Int("pageSize", pageSize), attribute.String("search", search))

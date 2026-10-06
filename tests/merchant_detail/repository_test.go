@@ -1,8 +1,8 @@
 package merchant_detail_test
 
 import (
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"context"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
 	"testing"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_detail/repository"

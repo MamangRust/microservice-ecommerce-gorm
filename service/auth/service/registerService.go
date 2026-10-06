@@ -100,7 +100,7 @@ func (s *registerService) Register(ctx context.Context, request *requests.Regist
 	request.VerifiedCode = random
 	request.IsVerified = false
 
-	newUser, err := s.user.CreateUser(ctx, request)
+	newUser, err := s.user.Create(ctx, request)
 	if err != nil {
 		status = "error"
 		return sharederrorhandler.HandleError[*repository.AuthUser](s.logger, err, method, span)

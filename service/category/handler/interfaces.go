@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"context"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 )

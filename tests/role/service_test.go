@@ -33,7 +33,6 @@ func (s *RoleServiceTestSuite) SetupSuite() {
 	gormDB, err := s.ts.GormDB()
 	s.Require().NoError(err)
 
-
 	opts, err := redis.ParseURL(s.ts.RedisURL)
 	s.Require().NoError(err)
 	redisClient := redis.NewClient(opts)

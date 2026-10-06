@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_document"
 	"context"
 	"fmt"
+	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_document"
 	"testing"
 	"time"
 

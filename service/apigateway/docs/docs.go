@@ -1548,14 +1548,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/merchant/monthly-pricing": {
+        "/api/category-stats/by-id/month-price": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly pricing statistics for categories by merchant",
+                "description": "Monthly prices for a category",
                 "consumes": [
                     "application/json"
                 ],
@@ -1565,31 +1565,32 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get monthly pricing stats by merchant",
+                "summary": "Monthly prices by category",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
+                        "description": "Category ID",
+                        "name": "category_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly pricing stats by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryMonthPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1597,14 +1598,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/merchant/monthly-total-pricing": {
+        "/api/category-stats/by-id/monthly-total-prices": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly total revenue for categories by merchant",
+                "description": "Monthly total prices for a category",
                 "consumes": [
                     "application/json"
                 ],
@@ -1614,37 +1615,39 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get monthly total pricing by merchant",
+                "summary": "Monthly total prices by category",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
+                        "description": "Category ID",
+                        "name": "category_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly total pricing by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryMonthlyTotalPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1652,14 +1655,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/merchant/yearly-pricing": {
+        "/api/category-stats/by-id/year-price": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly pricing statistics for categories by merchant",
+                "description": "Yearly prices for a category",
                 "consumes": [
                     "application/json"
                 ],
@@ -1669,31 +1672,32 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get yearly pricing stats by merchant",
+                "summary": "Yearly prices by category",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
+                        "description": "Category ID",
+                        "name": "category_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly pricing stats by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryYearPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1701,14 +1705,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/merchant/yearly-total-pricing": {
+        "/api/category-stats/by-id/yearly-total-prices": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly total revenue for categories by merchant",
+                "description": "Yearly total prices for a category",
                 "consumes": [
                     "application/json"
                 ],
@@ -1718,13 +1722,64 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get yearly total pricing by merchant",
+                "summary": "Yearly total prices by category",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponseCategoryYearlyTotalPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/category-stats/by-merchant/month-price": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Monthly prices per category for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category Stats"
+                ],
+                "summary": "Monthly prices by merchant",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -1736,61 +1791,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly total pricing by merchant",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponseCategoryYearlyTotalPrice"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/category-stats/monthly-pricing": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve monthly pricing statistics for categories",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category Stats"
-                ],
-                "summary": "Get monthly pricing stats",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Month",
-                        "name": "month",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly pricing stats",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryMonthPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1798,14 +1805,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/monthly-total-pricing": {
+        "/api/category-stats/by-merchant/monthly-total-prices": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly total revenue for all categories",
+                "description": "Monthly total prices for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -1815,79 +1822,182 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get monthly total pricing for all categories",
+                "summary": "Monthly total prices by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly total pricing",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponseCategoryMonthlyTotalPrice"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/category-stats/mycategory/monthly-pricing": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve monthly pricing statistics for a specific category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category Stats"
-                ],
-                "summary": "Get monthly pricing stats by category ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Category ID",
-                        "name": "category_id",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly pricing stats by category ID",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponseCategoryMonthlyTotalPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/category-stats/by-merchant/year-price": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Yearly prices per category for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category Stats"
+                ],
+                "summary": "Yearly prices by merchant",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponseCategoryYearPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/category-stats/by-merchant/yearly-total-prices": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Yearly total prices for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category Stats"
+                ],
+                "summary": "Yearly total prices by merchant",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponseCategoryYearlyTotalPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/category-stats/month-price": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Monthly prices per category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category Stats"
+                ],
+                "summary": "Monthly prices",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryMonthPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1895,14 +2005,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/mycategory/monthly-total-pricing": {
+        "/api/category-stats/monthly-total-prices": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly total revenue for a specific category",
+                "description": "Monthly total prices across all categories",
                 "consumes": [
                     "application/json"
                 ],
@@ -1912,37 +2022,32 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get monthly total pricing by category ID",
+                "summary": "Monthly total prices",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "category_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly total pricing by category ID",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryMonthlyTotalPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1950,14 +2055,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/mycategory/yearly-pricing": {
+        "/api/category-stats/year-price": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly pricing statistics for a specific category",
+                "description": "Yearly prices per category",
                 "consumes": [
                     "application/json"
                 ],
@@ -1967,31 +2072,25 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get yearly pricing stats by category ID",
+                "summary": "Yearly prices",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "category_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly pricing stats by category ID",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryYearPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -1999,14 +2098,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/category-stats/mycategory/yearly-total-pricing": {
+        "/api/category-stats/yearly-total-prices": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly total revenue for a specific category",
+                "description": "Yearly total prices across all categories",
                 "consumes": [
                     "application/json"
                 ],
@@ -2016,115 +2115,25 @@ const docTemplate = `{
                 "tags": [
                     "Category Stats"
                 ],
-                "summary": "Get yearly total pricing by category ID",
+                "summary": "Yearly total prices",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "category_id",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly total pricing by category ID",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseCategoryYearlyTotalPrice"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/category-stats/yearly-pricing": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve yearly pricing statistics for categories",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category Stats"
-                ],
-                "summary": "Get yearly pricing stats",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Yearly pricing stats",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponseCategoryYearPrice"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/category-stats/yearly-total-pricing": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve yearly total revenue for all categories",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category Stats"
-                ],
-                "summary": "Get yearly total pricing for all categories",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Yearly total pricing",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponseCategoryYearlyTotalPrice"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6647,14 +6656,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/merchant/monthly-revenue": {
+        "/api/order-stats/by-merchant/monthly-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly revenue statistics for a specific merchant",
+                "description": "Monthly order aggregates for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -6664,13 +6673,14 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get monthly revenue stats by merchant",
+                "summary": "Monthly revenue by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -6682,13 +6692,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly revenue stats by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderMonthly"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6696,14 +6706,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/merchant/monthly-total-revenue": {
+        "/api/order-stats/by-merchant/monthly-total-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly total revenue for a specific merchant",
+                "description": "Monthly total order revenue for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -6713,19 +6723,21 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get monthly total revenue by merchant",
+                "summary": "Monthly total revenue by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -6737,13 +6749,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly total revenue by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderMonthlyTotalRevenue"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6751,14 +6763,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/merchant/yearly-revenue": {
+        "/api/order-stats/by-merchant/yearly-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly revenue statistics for a specific merchant",
+                "description": "Yearly order aggregates for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -6768,13 +6780,14 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get yearly revenue stats by merchant",
+                "summary": "Yearly revenue by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -6786,13 +6799,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly revenue stats by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderYearly"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6800,14 +6813,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/merchant/yearly-total-revenue": {
+        "/api/order-stats/by-merchant/yearly-total-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly total revenue for a specific merchant",
+                "description": "Yearly total order revenue for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -6817,13 +6830,14 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get yearly total revenue by merchant",
+                "summary": "Yearly total revenue by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -6835,13 +6849,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly total revenue by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderYearlyTotalRevenue"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6849,14 +6863,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/monthly-revenue": {
+        "/api/order-stats/monthly-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly revenue statistics",
+                "description": "Monthly order aggregates (count, revenue, items sold)",
                 "consumes": [
                     "application/json"
                 ],
@@ -6866,24 +6880,25 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get monthly revenue stats",
+                "summary": "Monthly revenue",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly revenue stats",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderMonthly"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6891,14 +6906,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/monthly-total-revenue": {
+        "/api/order-stats/monthly-total-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly total revenue and order stats",
+                "description": "Monthly total order revenue",
                 "consumes": [
                     "application/json"
                 ],
@@ -6908,30 +6923,32 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get monthly total revenue",
+                "summary": "Monthly total revenue",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly total revenue",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderMonthlyTotalRevenue"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6939,14 +6956,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/yearly-revenue": {
+        "/api/order-stats/yearly-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly revenue statistics",
+                "description": "Yearly order aggregates (count, revenue, items sold)",
                 "consumes": [
                     "application/json"
                 ],
@@ -6956,24 +6973,25 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get yearly revenue stats",
+                "summary": "Yearly revenue",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly revenue stats",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderYearly"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -6981,14 +6999,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order/yearly-total-revenue": {
+        "/api/order-stats/yearly-total-revenue": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly total revenue and order stats",
+                "description": "Yearly total order revenue",
                 "consumes": [
                     "application/json"
                 ],
@@ -6998,24 +7016,25 @@ const docTemplate = `{
                 "tags": [
                     "Order Stats"
                 ],
-                "summary": "Get yearly total revenue",
+                "summary": "Yearly total revenue",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly total revenue",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponseOrderYearlyTotalRevenue"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11334,14 +11353,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/merchant/monthly-failed": {
+        "/api/transaction-stats/by-merchant/month-method-failed": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly failed transaction amount for a specific merchant",
+                "description": "Monthly payment-method breakdown of failed transactions for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -11351,19 +11370,21 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get monthly failed transaction amount by merchant",
+                "summary": "Monthly failed transactions by merchant and payment method",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -11375,13 +11396,127 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly failed transaction amount by merchant",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/by-merchant/month-method-success": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Monthly payment-method breakdown of successful transactions for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Monthly successful transactions by merchant and payment method",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Month (1-12)",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/by-merchant/month-status-failed": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Monthly amount of failed transactions for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Monthly failed transactions by merchant",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Month (1-12)",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionMonthFailed"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11389,14 +11524,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/merchant/monthly-method-failed": {
+        "/api/transaction-stats/by-merchant/month-status-success": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly failed transaction method statistics for a specific merchant",
+                "description": "Monthly amount of successful transactions for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -11406,19 +11541,21 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get monthly failed transaction method stats by merchant",
+                "summary": "Monthly successful transactions by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -11430,123 +11567,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly failed transaction method stats by merchant",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/merchant/monthly-method-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve monthly successful transaction method statistics for a specific merchant",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get monthly successful transaction method stats by merchant",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Month",
-                        "name": "month",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly successful transaction method stats by merchant",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/merchant/monthly-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve monthly successful transaction amount for a specific merchant",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get monthly successful transaction amount by merchant",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Month",
-                        "name": "month",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly successful transaction amount by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionMonthSuccess"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11554,14 +11581,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/merchant/yearly-failed": {
+        "/api/transaction-stats/by-merchant/year-method-failed": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly failed transaction amount for a specific merchant",
+                "description": "Yearly payment-method breakdown of failed transactions for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -11571,13 +11598,14 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get yearly failed transaction amount by merchant",
+                "summary": "Yearly failed transactions by merchant and payment method",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -11589,13 +11617,113 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly failed transaction amount by merchant",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/by-merchant/year-method-success": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Yearly payment-method breakdown of successful transactions for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Yearly successful transactions by merchant and payment method",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/by-merchant/year-status-failed": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Yearly amount of failed transactions for a merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Yearly failed transactions by merchant",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Merchant ID",
+                        "name": "merchant_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionYearFailed"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11603,14 +11731,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/merchant/yearly-method-failed": {
+        "/api/transaction-stats/by-merchant/year-status-success": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly failed transaction method statistics for a specific merchant",
+                "description": "Yearly amount of successful transactions for a merchant",
                 "consumes": [
                     "application/json"
                 ],
@@ -11620,13 +11748,14 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get yearly failed transaction method stats by merchant",
+                "summary": "Yearly successful transactions by merchant",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -11638,111 +11767,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly failed transaction method stats by merchant",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/merchant/yearly-method-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve yearly successful transaction method statistics for a specific merchant",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get yearly successful transaction method stats by merchant",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Yearly successful transaction method stats by merchant",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/merchant/yearly-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve yearly successful transaction amount for a specific merchant",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get yearly successful transaction amount by merchant",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Merchant ID",
-                        "name": "merchant_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Yearly successful transaction amount by merchant",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionYearSuccess"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11750,14 +11781,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/monthly-failed": {
+        "/api/transaction-stats/month-method-failed": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly failed transaction amount and count",
+                "description": "Monthly payment-method breakdown of failed transactions",
                 "consumes": [
                     "application/json"
                 ],
@@ -11767,30 +11798,132 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get monthly failed transaction amount",
+                "summary": "Monthly failed transactions by payment method",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly failed transaction amount",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/month-method-success": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Monthly payment-method breakdown of successful transactions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Monthly successful transactions by payment method",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Month (1-12)",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/month-status-failed": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Monthly amount of failed transactions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Monthly failed transactions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Month (1-12)",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionMonthFailed"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11798,14 +11931,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/monthly-method-failed": {
+        "/api/transaction-stats/month-status-success": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve monthly failed transaction method statistics",
+                "description": "Monthly amount of successful transactions",
                 "consumes": [
                     "application/json"
                 ],
@@ -11815,126 +11948,32 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get monthly failed transaction method stats",
+                "summary": "Monthly successful transactions",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Month",
+                        "description": "Month (1-12)",
                         "name": "month",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Monthly failed transaction method stats",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/monthly-method-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve monthly successful transaction method statistics",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get monthly successful transaction method stats",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Month",
-                        "name": "month",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly successful transaction method stats",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionMonthMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/monthly-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve monthly successful transaction amount and count",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get monthly successful transaction amount",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Month",
-                        "name": "month",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly successful transaction amount",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionMonthSuccess"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11942,14 +11981,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/yearly-failed": {
+        "/api/transaction-stats/year-method-failed": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly failed transaction amount and count",
+                "description": "Yearly payment-method breakdown of failed transactions",
                 "consumes": [
                     "application/json"
                 ],
@@ -11959,24 +11998,111 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get yearly failed transaction amount",
+                "summary": "Yearly failed transactions by payment method",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly failed transaction amount",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/year-method-success": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Yearly payment-method breakdown of successful transactions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Yearly successful transactions by payment method",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-stats/year-status-failed": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Yearly amount of failed transactions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transaction Stats"
+                ],
+                "summary": "Yearly failed transactions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionYearFailed"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }
@@ -11984,14 +12110,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/transaction-stats/yearly-method-failed": {
+        "/api/transaction-stats/year-status-success": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve yearly failed transaction method statistics",
+                "description": "Yearly amount of successful transactions",
                 "consumes": [
                     "application/json"
                 ],
@@ -12001,108 +12127,25 @@ const docTemplate = `{
                 "tags": [
                     "Transaction Stats"
                 ],
-                "summary": "Get yearly failed transaction method stats",
+                "summary": "Yearly successful transactions",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Year",
                         "name": "year",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Yearly failed transaction method stats",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/yearly-method-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve yearly successful transaction method statistics",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get yearly successful transaction method stats",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Yearly successful transaction method stats",
-                        "schema": {
-                            "$ref": "#/definitions/response.ApiResponsesTransactionYearMethod"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/transaction-stats/yearly-success": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieve yearly successful transaction amount and count",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Transaction Stats"
-                ],
-                "summary": "Get yearly successful transaction amount",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Year",
-                        "name": "year",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Yearly successful transaction amount",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ApiResponsesTransactionYearSuccess"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorResponse"
                         }

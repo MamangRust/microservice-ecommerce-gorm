@@ -22,12 +22,12 @@ const (
 
 type reviewDetailCacheResponseDB struct {
 	Data  []*repository.ReviewDetailResult `json:"data"`
-	Total *int                      `json:"total_records"`
+	Total *int                             `json:"total_records"`
 }
 
 type reviewDetailActiveCacheResponseDB struct {
 	Data  []*repository.ReviewDetailResult `json:"data"`
-	Total *int                            `json:"total_records"`
+	Total *int                             `json:"total_records"`
 }
 
 type reviewDetailTrashedCacheResponseDB struct {

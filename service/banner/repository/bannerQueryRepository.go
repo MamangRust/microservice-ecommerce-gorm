@@ -35,7 +35,7 @@ func (r *bannerQueryRepository) FindAll(ctx context.Context, req *requests.FindA
 			AND (? = '' OR b.name ILIKE ?)
 		ORDER BY b.banner_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, banner_errors.ErrFindAllBanners.WithInternal(err)
 	}
@@ -62,7 +62,7 @@ func (r *bannerQueryRepository) FindActive(ctx context.Context, req *requests.Fi
 			AND (? = '' OR b.name ILIKE ?)
 		ORDER BY b.banner_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, banner_errors.ErrFindActiveBanners.WithInternal(err)
 	}
@@ -88,7 +88,7 @@ func (r *bannerQueryRepository) FindTrashed(ctx context.Context, req *requests.F
 			AND (? = '' OR b.name ILIKE ?)
 		ORDER BY b.banner_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, banner_errors.ErrFindTrashedBanners.WithInternal(err)
 	}

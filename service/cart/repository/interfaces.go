@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 
+	productadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/product"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 
@@ -45,23 +47,8 @@ type CartCommandRepository interface {
 	DeleteAllPermanently(ctx context.Context, req *requests.DeleteAllCartRequest) (bool, error)
 }
 
-type ProductQueryRepository interface {
-	FindById(ctx context.Context, product_id int) (*ProductResult, error)
-}
-
-type UserQueryRepository interface {
-	FindById(ctx context.Context, user_id int) (*UserResult, error)
-}
-
-type ProductResult struct {
-	ProductID     int32
-	Name          string
-	Price         int32
-	CountInStock  int32
-	ImageProduct  *string
-	Weight        *int32
-}
-
-type UserResult struct {
-	UserID int32
-}
+// ProductQueryRepository and UserQueryRepository are the shared gRPC query
+// contracts, provided by the product and user adapters so this service never
+// holds a raw gRPC client.
+type ProductQueryRepository = productadapter.QueryRepository
+type UserQueryRepository = useradapter.QueryRepository

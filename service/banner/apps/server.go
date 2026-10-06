@@ -1,11 +1,11 @@
 package apps
 
 import (
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
 	"github.com/MamangRust/microservice-ecommerce-grpc-banner/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-banner/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-banner/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-banner/service"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"google.golang.org/grpc"

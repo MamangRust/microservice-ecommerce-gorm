@@ -107,3 +107,13 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+
+require github.com/MamangRust/microservice-ecommerce-grpc-pb v0.0.0
+
+
+replace (
+	github.com/MamangRust/microservice-ecommerce-grpc-pb => ../../pb
+	github.com/MamangRust/microservice-ecommerce-pkg => ../../pkg
+	github.com/MamangRust/microservice-ecommerce-shared => ../../shared
+)

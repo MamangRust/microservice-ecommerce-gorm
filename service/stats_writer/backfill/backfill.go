@@ -1,10 +1,7 @@
 // Package backfill implements the stats-writer `backfill` command: it reads
-// historical OLTP rows from the per-service PostgreSQL databases (orders,
-// order_items joined with products/categories, transactions) and materializes
-// them into ClickHouse through the same batch repository used for live events.
-//
-// This is the bootstrap path for the stats pipeline — it lets the ClickHouse
-// tables reflect pre-existing data without replaying every domain event.
+// historical OLTP rows from the owning services (orders, order_items, products,
+// categories, transactions) through their gRPC adapters and materializes them
+// into ClickHouse through the same batch repository used for live events.
 package backfill
 
 import (
@@ -12,14 +9,58 @@ import (
 	"fmt"
 	"time"
 
+	categoryadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/category"
+	orderadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order"
+	orderitemadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order_item"
+	productadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/product"
+	transactionadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/transaction"
 	"github.com/MamangRust/microservice-ecommerce-grpc-stats-writer/repository"
-	"github.com/MamangRust/microservice-ecommerce-pkg/database"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/events"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
+
+// backfillPageSize is the chunk the backfill walks each source in. It matches the
+// online services' PageSize and keeps memory bounded for large tables.
+const backfillPageSize = 1000
+
+// Backfiller reads OLTP events and pushes them into ClickHouse. Each source is
+// reached through its owning service's adapter, so the backfill shares the exact
+// same read path (and the same cross-context ownership rules) as the live
+// pipeline.
+type Backfiller struct {
+	log          logger.LoggerInterface
+	repo         repository.Repository
+	orders       orderadapter.BulkRepository
+	orderItems   orderitemadapter.BulkRepository
+	products     productadapter.BulkRepository
+	categories   categoryadapter.BulkRepository
+	transactions transactionadapter.BulkRepository
+}
+
+// New builds a Backfiller from the ClickHouse repository and one BulkRepository
+// per stats source. The sources are read through the owning services rather than
+// touching PostgreSQL directly.
+func New(
+	log logger.LoggerInterface,
+	repo repository.Repository,
+	orders orderadapter.BulkRepository,
+	orderItems orderitemadapter.BulkRepository,
+	products productadapter.BulkRepository,
+	categories categoryadapter.BulkRepository,
+	transactions transactionadapter.BulkRepository,
+) *Backfiller {
+	return &Backfiller{
+		log:          log,
+		repo:         repo,
+		orders:       orders,
+		orderItems:   orderItems,
+		products:     products,
+		categories:   categories,
+		transactions: transactions,
+	}
+}
 
 // backfillEventID derives a deterministic UUID per entity so re-running the
 // backfill replaces the same ReplacingMergeTree key (with a newer version)
@@ -28,68 +69,11 @@ func backfillEventID(kind string, id int32) string {
 	return uuid.NewSHA1(uuid.NameSpaceDNS, []byte(fmt.Sprintf("backfill:%s:%d", kind, id))).String()
 }
 
-// Backfiller reads OLTP rows and pushes them into ClickHouse.
-type Backfiller struct {
-	log      logger.LoggerInterface
-	repo     repository.Repository
-	order    *gorm.DB
-	item     *gorm.DB
-	product  *gorm.DB
-	category *gorm.DB
-	tx       *gorm.DB
-}
-
-// New opens one GORM connection per service database that owns a stats source and
-// returns a ready Backfiller. Call Close to release them.
-func New(log logger.LoggerInterface, repo repository.Repository) (*Backfiller, error) {
-	open := func(prefix string) (*gorm.DB, error) {
-		conn, err := database.NewGormClientWithPrefix(log, prefix)
-		if err != nil {
-			return nil, fmt.Errorf("connect %s: %w", prefix, err)
-		}
-		return conn, nil
+func eventTimeOf(t *time.Time) string {
+	if t == nil {
+		return ""
 	}
-
-	order, err := open("DB_ORDER")
-	if err != nil {
-		return nil, err
-	}
-	item, err := open("DB_ORDER_ITEM")
-	if err != nil {
-		return nil, err
-	}
-	product, err := open("DB_PRODUCT")
-	if err != nil {
-		return nil, err
-	}
-	category, err := open("DB_CATEGORY")
-	if err != nil {
-		return nil, err
-	}
-	tx, err := open("DB_TRANSACTION")
-	if err != nil {
-		return nil, err
-	}
-
-	return &Backfiller{
-		log:      log,
-		repo:     repo,
-		order:    order,
-		item:     item,
-		product:  product,
-		category: category,
-		tx:       tx,
-	}, nil
-}
-
-func (b *Backfiller) Close() {
-	for _, conn := range []*gorm.DB{b.order, b.item, b.product, b.category, b.tx} {
-		if conn != nil {
-			if sqlDB, err := conn.DB(); err == nil {
-				sqlDB.Close()
-			}
-		}
-	}
+	return t.UTC().Format(time.RFC3339)
 }
 
 // Run streams all stats sources into ClickHouse. The event version is the
@@ -120,148 +104,133 @@ func (b *Backfiller) Run(ctx context.Context) error {
 	return nil
 }
 
-type orderRow struct {
-	OrderID    int32
-	UserID     int32
-	MerchantID int32
-	TotalPrice int32
-	CreatedAt  time.Time
-}
-
-type itemRow struct {
-	OrderItemID int32
-	OrderID     int32
-	ProductID   int32
-	Quantity    int32
-	Price       int32
-	CreatedAt   time.Time
-}
-
-type txRow struct {
-	TransactionID int32
-	OrderID       int32
-	MerchantID    int32
-	PaymentMethod string
-	Amount        int32
-	Status        string
-	CreatedAt     time.Time
-}
-
-type orderMerchantRow struct {
-	OrderID    int32
-	MerchantID int32
-}
-
-type productCategoryRow struct {
-	ProductID  int32
-	CategoryID int32
-}
-
-type categoryNameRow struct {
-	CategoryID int32
-	Name       string
-}
-
 func (b *Backfiller) backfillOrders(ctx context.Context, version uint64, counts map[string]int) error {
-	var rows []orderRow
-	if err := b.order.WithContext(ctx).Raw(`SELECT order_id, user_id, merchant_id, total_price, created_at FROM orders WHERE deleted_at IS NULL`).Scan(&rows).Error; err != nil {
-		return fmt.Errorf("query orders: %w", err)
-	}
-
-	for _, r := range rows {
-		event := events.OrderEvent{
-			OrderID:    r.OrderID,
-			UserID:     r.UserID,
-			MerchantID: r.MerchantID,
-			TotalPrice: r.TotalPrice,
-			Status:     "created",
-			EventTime:  r.CreatedAt.UTC().Format(time.RFC3339),
+	for page := 1; ; page++ {
+		orders, _, err := b.orders.FindAll(ctx, page, backfillPageSize)
+		if err != nil {
+			return fmt.Errorf("query orders: %w", err)
 		}
-		if err := b.repo.InsertOrderEvent(ctx, backfillEventID("order", r.OrderID), version, event); err != nil {
-			return fmt.Errorf("insert order %d: %w", r.OrderID, err)
+		for _, o := range orders {
+			event := events.OrderEvent{
+				OrderID:    o.OrderID,
+				UserID:     o.UserID,
+				MerchantID: o.MerchantID,
+				TotalPrice: o.TotalPrice,
+				Status:     "created",
+				EventTime:  eventTimeOf(o.CreatedAt),
+			}
+			if err := b.repo.InsertOrderEvent(ctx, backfillEventID("order", o.OrderID), version, event); err != nil {
+				return fmt.Errorf("insert order %d: %w", o.OrderID, err)
+			}
+			counts["order"]++
 		}
-		counts["order"]++
+		if len(orders) < backfillPageSize {
+			break
+		}
 	}
 	return nil
 }
 
+// backfillOrderItems denormalizes the catalog onto each order item: it walks
+// orders (to recover the owning merchant) and products/categories (to recover
+// the category id and name), then materializes every order item.
 func (b *Backfiller) backfillOrderItems(ctx context.Context, version uint64, counts map[string]int) error {
-	// Load order -> merchant_id from the order service DB.
-	var orderMerchantRows []orderMerchantRow
-	if err := b.order.WithContext(ctx).Raw(`SELECT order_id, merchant_id FROM orders WHERE deleted_at IS NULL`).Scan(&orderMerchantRows).Error; err != nil {
-		return fmt.Errorf("query order merchant map: %w", err)
-	}
 	orderMerchant := map[int32]int32{}
-	for _, r := range orderMerchantRows {
-		orderMerchant[r.OrderID] = r.MerchantID
+	for page := 1; ; page++ {
+		orders, _, err := b.orders.FindAll(ctx, page, backfillPageSize)
+		if err != nil {
+			return fmt.Errorf("query orders for merchant map: %w", err)
+		}
+		for _, o := range orders {
+			orderMerchant[o.OrderID] = o.MerchantID
+		}
+		if len(orders) < backfillPageSize {
+			break
+		}
 	}
 
-	// Load product -> category_id from the product service DB.
-	var productCategoryRows []productCategoryRow
-	if err := b.product.WithContext(ctx).Raw(`SELECT product_id, category_id FROM products WHERE deleted_at IS NULL`).Scan(&productCategoryRows).Error; err != nil {
-		return fmt.Errorf("query product category map: %w", err)
-	}
 	productCategory := map[int32]int32{}
-	for _, r := range productCategoryRows {
-		productCategory[r.ProductID] = r.CategoryID
+	for page := 1; ; page++ {
+		products, _, err := b.products.FindAll(ctx, page, backfillPageSize)
+		if err != nil {
+			return fmt.Errorf("query products for category map: %w", err)
+		}
+		for _, p := range products {
+			productCategory[p.ProductID] = p.CategoryID
+		}
+		if len(products) < backfillPageSize {
+			break
+		}
 	}
 
-	// Load category_id -> name from the category service DB.
-	var categoryNameRows []categoryNameRow
-	if err := b.category.WithContext(ctx).Raw(`SELECT category_id, name FROM categories WHERE deleted_at IS NULL`).Scan(&categoryNameRows).Error; err != nil {
-		return fmt.Errorf("query category name map: %w", err)
-	}
 	categoryName := map[int32]string{}
-	for _, r := range categoryNameRows {
-		categoryName[r.CategoryID] = r.Name
+	for page := 1; ; page++ {
+		categories, _, err := b.categories.FindAll(ctx, page, backfillPageSize)
+		if err != nil {
+			return fmt.Errorf("query categories for name map: %w", err)
+		}
+		for _, c := range categories {
+			categoryName[c.CategoryID] = c.Name
+		}
+		if len(categories) < backfillPageSize {
+			break
+		}
 	}
 
-	var itemRows []itemRow
-	if err := b.item.WithContext(ctx).Raw(`SELECT order_item_id, order_id, product_id, quantity, price, created_at FROM order_items WHERE deleted_at IS NULL`).Scan(&itemRows).Error; err != nil {
-		return fmt.Errorf("query order items: %w", err)
-	}
-
-	for _, r := range itemRows {
-		catID := productCategory[r.ProductID]
-		event := events.OrderItemEvent{
-			OrderItemID:  r.OrderItemID,
-			OrderID:      r.OrderID,
-			MerchantID:   orderMerchant[r.OrderID],
-			ProductID:    r.ProductID,
-			CategoryID:   catID,
-			CategoryName: categoryName[catID],
-			Quantity:     r.Quantity,
-			Price:        r.Price,
-			EventTime:    r.CreatedAt.UTC().Format(time.RFC3339),
+	for page := 1; ; page++ {
+		items, _, err := b.orderItems.FindAll(ctx, page, backfillPageSize)
+		if err != nil {
+			return fmt.Errorf("query order items: %w", err)
 		}
-		if err := b.repo.InsertOrderItemEvent(ctx, backfillEventID("order_item", r.OrderItemID), version, event); err != nil {
-			return fmt.Errorf("insert order item %d: %w", r.OrderItemID, err)
+		for _, it := range items {
+			catID := productCategory[it.ProductID]
+			event := events.OrderItemEvent{
+				OrderItemID:  it.OrderItemID,
+				OrderID:      it.OrderID,
+				MerchantID:   orderMerchant[it.OrderID],
+				ProductID:    it.ProductID,
+				CategoryID:   catID,
+				CategoryName: categoryName[catID],
+				Quantity:     it.Quantity,
+				Price:        it.Price,
+				EventTime:    eventTimeOf(it.CreatedAt),
+			}
+			if err := b.repo.InsertOrderItemEvent(ctx, backfillEventID("order_item", it.OrderItemID), version, event); err != nil {
+				return fmt.Errorf("insert order item %d: %w", it.OrderItemID, err)
+			}
+			counts["order_item"]++
 		}
-		counts["order_item"]++
+		if len(items) < backfillPageSize {
+			break
+		}
 	}
 	return nil
 }
 
 func (b *Backfiller) backfillTransactions(ctx context.Context, version uint64, counts map[string]int) error {
-	var rows []txRow
-	if err := b.tx.WithContext(ctx).Raw(`SELECT transaction_id, order_id, merchant_id, payment_method, amount, payment_status, created_at FROM transactions WHERE deleted_at IS NULL`).Scan(&rows).Error; err != nil {
-		return fmt.Errorf("query transactions: %w", err)
-	}
-
-	for _, r := range rows {
-		event := events.TransactionEvent{
-			TransactionID: r.TransactionID,
-			OrderID:       r.OrderID,
-			MerchantID:    r.MerchantID,
-			PaymentMethod: r.PaymentMethod,
-			Amount:        r.Amount,
-			Status:        r.Status,
-			EventTime:     r.CreatedAt.UTC().Format(time.RFC3339),
+	for page := 1; ; page++ {
+		txs, _, err := b.transactions.FindAll(ctx, page, backfillPageSize)
+		if err != nil {
+			return fmt.Errorf("query transactions: %w", err)
 		}
-		if err := b.repo.InsertTransactionEvent(ctx, backfillEventID("transaction", r.TransactionID), version, event); err != nil {
-			return fmt.Errorf("insert transaction %d: %w", r.TransactionID, err)
+		for _, t := range txs {
+			event := events.TransactionEvent{
+				TransactionID: t.TransactionID,
+				OrderID:       t.OrderID,
+				MerchantID:    t.MerchantID,
+				PaymentMethod: t.PaymentMethod,
+				Amount:        t.Amount,
+				Status:        t.Status,
+				EventTime:     eventTimeOf(t.CreatedAt),
+			}
+			if err := b.repo.InsertTransactionEvent(ctx, backfillEventID("transaction", t.TransactionID), version, event); err != nil {
+				return fmt.Errorf("insert transaction %d: %w", t.TransactionID, err)
+			}
+			counts["transaction"]++
 		}
-		counts["transaction"]++
+		if len(txs) < backfillPageSize {
+			break
+		}
 	}
 	return nil
 }

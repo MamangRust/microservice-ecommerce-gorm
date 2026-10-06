@@ -1,11 +1,11 @@
 package apps
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order-item/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order-item/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order-item/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order-item/service"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"google.golang.org/grpc"

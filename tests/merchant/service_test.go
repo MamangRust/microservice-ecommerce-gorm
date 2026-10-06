@@ -1,8 +1,8 @@
 package merchant_test
 
 import (
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"testing"
 
 	merchant_cache "github.com/MamangRust/microservice-ecommerce-grpc-merchant/cache"

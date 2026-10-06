@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	product_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/product"
-		pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
@@ -14,19 +14,17 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-
-
 type productCommandHandlerApi struct {
-	client       pbproduct.ProductCommandServiceClient
+	client       pb_product.ProductCommandServiceClient
 	logger       logger.LoggerInterface
 	mapper       apimapper.ProductCommandResponseMapper
 	cache        product_cache.ProductCommandCache
 	upload_image upload_image.ImageUploads
 	errors       errors.ApiHandler
 }
- 
+
 type productCommandHandleDeps struct {
-	client       pbproduct.ProductCommandServiceClient
+	client       pb_product.ProductCommandServiceClient
 	router       *echo.Echo
 	logger       logger.LoggerInterface
 	mapper       apimapper.ProductCommandResponseMapper
@@ -34,8 +32,6 @@ type productCommandHandleDeps struct {
 	upload_image upload_image.ImageUploads
 	apiHandler   errors.ApiHandler
 }
-
-
 
 func NewProductCommandHandleApi(params *productCommandHandleDeps) *productCommandHandlerApi {
 	handler := &productCommandHandlerApi{
@@ -46,8 +42,6 @@ func NewProductCommandHandleApi(params *productCommandHandleDeps) *productComman
 		upload_image: params.upload_image,
 		errors:       params.apiHandler,
 	}
-
-
 
 	routerProduct := params.router.Group("/api/product-command")
 	routerProduct.POST("/create", handler.Create)
@@ -96,14 +90,14 @@ func (h *productCommandHandlerApi) Create(c echo.Context) error {
 	imagePath := ""
 	file, err := c.FormFile("image")
 	if err == nil {
-		path, err := h.upload_image.ProcessImageUpload(c, "uploads/products", file, false)
+		path, err := h.upload_image.ProcessImageUpload(c.Response(), "uploads/products", file, false)
 		if err == nil {
 			imagePath = path
 		}
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.Create(ctx, &pbproduct.CreateProductRequest{
+	res, err := h.client.Create(ctx, &pb_product.CreateProductRequest{
 		MerchantId:   int32(merchantID),
 		CategoryId:   int32(categoryID),
 		Name:         name,
@@ -122,7 +116,6 @@ func (h *productCommandHandlerApi) Create(c echo.Context) error {
 		}
 		return errors.ParseGrpcError(err)
 	}
-
 
 	h.cache.DeleteCachedProduct(ctx, 0)
 
@@ -152,7 +145,9 @@ func (h *productCommandHandlerApi) Create(c echo.Context) error {
 // @Router /api/product-command/update/{id} [post]
 func (h *productCommandHandlerApi) Update(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	merchantID, _ := strconv.Atoi(c.FormValue("merchant_id"))
 	categoryID, _ := strconv.Atoi(c.FormValue("category_id"))
@@ -168,16 +163,16 @@ func (h *productCommandHandlerApi) Update(c echo.Context) error {
 	imagePath := ""
 	file, err := c.FormFile("image")
 	if err == nil {
-		path, err := h.upload_image.ProcessImageUpload(c, "uploads/products", file, false)
+		path, err := h.upload_image.ProcessImageUpload(c.Response(), "uploads/products", file, false)
 		if err == nil {
 			imagePath = path
 		} else {
-             // Handle error properly or continue if image is optional but here we might want to fail if it's provided but invalid
+			// Handle error properly or continue if image is optional but here we might want to fail if it's provided but invalid
 		}
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.Update(ctx, &pbproduct.UpdateProductRequest{
+	res, err := h.client.Update(ctx, &pb_product.UpdateProductRequest{
 		ProductId:    int32(id),
 		MerchantId:   int32(merchantID),
 		CategoryId:   int32(categoryID),
@@ -198,7 +193,6 @@ func (h *productCommandHandlerApi) Update(c echo.Context) error {
 		return errors.ParseGrpcError(err)
 	}
 
-
 	h.cache.DeleteCachedProduct(ctx, id)
 
 	return c.JSON(http.StatusOK, h.mapper.ToApiResponseProduct(res))
@@ -217,14 +211,15 @@ func (h *productCommandHandlerApi) Update(c echo.Context) error {
 // @Router /api/product-command/trashed/{id} [post]
 func (h *productCommandHandlerApi) Trashed(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.TrashedProduct(ctx, &pbproduct.FindByIdProductRequest{Id: int32(id)})
+	res, err := h.client.TrashedProduct(ctx, &pb_product.FindByIdProductRequest{Id: int32(id)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
-
 
 	h.cache.DeleteCachedProduct(ctx, id)
 
@@ -244,14 +239,15 @@ func (h *productCommandHandlerApi) Trashed(c echo.Context) error {
 // @Router /api/product-command/restore/{id} [post]
 func (h *productCommandHandlerApi) Restore(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.RestoreProduct(ctx, &pbproduct.FindByIdProductRequest{Id: int32(id)})
+	res, err := h.client.RestoreProduct(ctx, &pb_product.FindByIdProductRequest{Id: int32(id)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
-
 
 	h.cache.DeleteCachedProduct(ctx, id)
 
@@ -271,14 +267,15 @@ func (h *productCommandHandlerApi) Restore(c echo.Context) error {
 // @Router /api/product-command/permanent/{id} [delete]
 func (h *productCommandHandlerApi) DeletePermanent(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.DeleteProductPermanent(ctx, &pbproduct.FindByIdProductRequest{Id: int32(id)})
+	res, err := h.client.DeleteProductPermanent(ctx, &pb_product.FindByIdProductRequest{Id: int32(id)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
-
 
 	h.cache.DeleteCachedProduct(ctx, id)
 
@@ -301,7 +298,6 @@ func (h *productCommandHandlerApi) RestoreAll(c echo.Context) error {
 		return errors.ParseGrpcError(err)
 	}
 
-
 	h.cache.DeleteCachedProduct(ctx, 0)
 
 	return c.JSON(http.StatusOK, h.mapper.ToApiResponseProductAll(res))
@@ -323,10 +319,7 @@ func (h *productCommandHandlerApi) DeleteAllPermanent(c echo.Context) error {
 		return errors.ParseGrpcError(err)
 	}
 
-
 	h.cache.DeleteCachedProduct(ctx, 0)
 
 	return c.JSON(http.StatusOK, h.mapper.ToApiResponseProductAll(res))
 }
-
-

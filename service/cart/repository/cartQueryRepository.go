@@ -43,7 +43,7 @@ func (r *cartQueryRepository) FindCarts(ctx context.Context, req *requests.FindA
 		WHERE c.user_id = ? AND c.deleted_at IS NULL
 		  AND (? = '' OR c.name ILIKE ?)
 		ORDER BY c.created_at DESC
-	`, req.UserID, req.Search, "%" + req.Search + "%").Scan(&results).Error
+	`, req.UserID, req.Search, "%"+req.Search+"%").Scan(&results).Error
 	if err != nil {
 		return nil, cart_errors.ErrFindAllCarts.WithInternal(err)
 	}

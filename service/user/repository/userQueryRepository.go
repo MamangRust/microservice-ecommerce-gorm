@@ -32,7 +32,7 @@ func (r *userQueryRepository) FindAll(ctx context.Context, req *requests.FindAll
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, user_errors.ErrFindAllUsers.WithInternal(err)
 	}
@@ -77,7 +77,7 @@ func (r *userQueryRepository) FindActive(ctx context.Context, req *requests.Find
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, user_errors.ErrFindActiveUsers.WithInternal(err)
 	}
@@ -98,7 +98,7 @@ func (r *userQueryRepository) FindTrashed(ctx context.Context, req *requests.Fin
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, user_errors.ErrFindTrashedUsers.WithInternal(err)
 	}

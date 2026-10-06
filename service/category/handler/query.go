@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
 	"context"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/service"
@@ -26,12 +26,18 @@ func (h *categoryQueryHandler) FindAll(ctx context.Context, request *pbcategory.
 	page := int(request.GetPage())
 	pageSize := int(request.GetPageSize())
 	search := request.GetSearch()
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	reqService := requests.FindAllCategory{Page: page, PageSize: pageSize, Search: search}
 	categories, totalRecords, err := h.service.FindAll(ctx, &reqService)
-	if err != nil { return nil, category_errors.ErrGrpcFindAllCategory }
+	if err != nil {
+		return nil, category_errors.ErrGrpcFindAllCategory
+	}
 
 	paginationMeta := &pbcommon.PaginationMeta{
 		CurrentPage: int32(page), PageSize: int32(pageSize),
@@ -46,9 +52,13 @@ func (h *categoryQueryHandler) FindAll(ctx context.Context, request *pbcategory.
 
 func (h *categoryQueryHandler) FindById(ctx context.Context, request *pbcategory.FindByIdCategoryRequest) (*pbcategory.ApiResponseCategory, error) {
 	id := int(request.GetId())
-	if id == 0 { return nil, category_errors.ErrGrpcCategoryInvalidId }
+	if id == 0 {
+		return nil, category_errors.ErrGrpcCategoryInvalidId
+	}
 	category, err := h.service.FindByID(ctx, id)
-	if err != nil { return nil, category_errors.ErrGrpcCategoryNotFound }
+	if err != nil {
+		return nil, category_errors.ErrGrpcCategoryNotFound
+	}
 	return &pbcategory.ApiResponseCategory{Status: "success", Message: "Successfully fetched category", Data: (&Handler{}).mapToCategoryResponseFromModel(category)}, nil
 }
 
@@ -56,12 +66,18 @@ func (h *categoryQueryHandler) FindByActive(ctx context.Context, request *pbcate
 	page := int(request.GetPage())
 	pageSize := int(request.GetPageSize())
 	search := request.GetSearch()
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	reqService := requests.FindAllCategory{Page: page, PageSize: pageSize, Search: search}
 	categories, totalRecords, err := h.service.FindActive(ctx, &reqService)
-	if err != nil { return nil, category_errors.ErrGrpcFindAllCategory }
+	if err != nil {
+		return nil, category_errors.ErrGrpcFindAllCategory
+	}
 
 	paginationMeta := &pbcommon.PaginationMeta{
 		CurrentPage: int32(page), PageSize: int32(pageSize),
@@ -78,12 +94,18 @@ func (h *categoryQueryHandler) FindByTrashed(ctx context.Context, request *pbcat
 	page := int(request.GetPage())
 	pageSize := int(request.GetPageSize())
 	search := request.GetSearch()
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	reqService := requests.FindAllCategory{Page: page, PageSize: pageSize, Search: search}
 	categories, totalRecords, err := h.service.FindTrashed(ctx, &reqService)
-	if err != nil { return nil, category_errors.ErrGrpcFindAllCategory }
+	if err != nil {
+		return nil, category_errors.ErrGrpcFindAllCategory
+	}
 
 	paginationMeta := &pbcommon.PaginationMeta{
 		CurrentPage: int32(page), PageSize: int32(pageSize),

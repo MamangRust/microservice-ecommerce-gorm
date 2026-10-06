@@ -2,20 +2,21 @@ package tests
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"reflect"
 	"time"
 
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
-		pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/suite"
 	sdklog "go.opentelemetry.io/otel/sdk/log"
@@ -88,6 +89,12 @@ func (s *BaseTestSuite) RedisClient() *goredis.Client {
 
 func (s *BaseTestSuite) GormDB() (*gorm.DB, error) {
 	return s.ts.GormDB()
+}
+
+func (s *BaseTestSuite) RawDB() *sql.DB {
+	db, err := s.ts.RawDB()
+	s.Require().NoError(err)
+	return db
 }
 
 func (s *BaseTestSuite) RegisterServer(server *grpc.Server) string {

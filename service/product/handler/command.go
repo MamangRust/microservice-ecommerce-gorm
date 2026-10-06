@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
 	"context"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
@@ -203,5 +203,18 @@ func (h *productCommandHandler) AdjustProductStock(ctx context.Context, request 
 		Status:  "success",
 		Message: "Successfully adjusted product stock",
 		Data:    mapToProtoProductResponse(product),
+	}, nil
+}
+
+func (h *productCommandHandler) CleanupProductStockAdjustments(ctx context.Context, request *pbproduct.CleanupProductStockAdjustmentsRequest) (*pbproduct.CleanupProductStockAdjustmentsResponse, error) {
+	deleted, err := h.productService.CleanupStockAdjustments(ctx, int(request.GetRetentionDays()))
+	if err != nil {
+		return nil, errors.ToGrpcError(err)
+	}
+
+	return &pbproduct.CleanupProductStockAdjustmentsResponse{
+		Status:  "success",
+		Message: "Successfully cleaned up product stock adjustments",
+		Deleted: deleted,
 	}, nil
 }

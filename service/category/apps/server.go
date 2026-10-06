@@ -1,11 +1,11 @@
 package apps
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/service"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"google.golang.org/grpc"

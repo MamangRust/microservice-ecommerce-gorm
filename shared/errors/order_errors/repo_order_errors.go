@@ -33,5 +33,3 @@ var (
 
 	ErrOrderNotFound = errors.ErrNotFound.WithMessage("order not found")
 )
-
-

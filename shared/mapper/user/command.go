@@ -1,7 +1,7 @@
 package userapimapper
 
 import (
-		pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

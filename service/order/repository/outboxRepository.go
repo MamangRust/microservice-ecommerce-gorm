@@ -58,7 +58,9 @@ func (r *outboxRepository) Claim(ctx context.Context, limit int, leaseUntil time
 func (r *outboxRepository) MarkDelivered(ctx context.Context, outboxID int64) (*models.OutboxEvent, error) {
 	var event models.OutboxEvent
 	err := r.db.WithContext(ctx).Where("outbox_id = ? AND status = ?", outboxID, "pending").First(&event).Error
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	event.Status = "delivered"
 	now := time.Now()
 	event.UpdatedAt = &now
@@ -69,7 +71,9 @@ func (r *outboxRepository) MarkDelivered(ctx context.Context, outboxID int64) (*
 func (r *outboxRepository) MarkFailed(ctx context.Context, outboxID int64, nextAttemptAt time.Time) (*models.OutboxEvent, error) {
 	var event models.OutboxEvent
 	err := r.db.WithContext(ctx).Where("outbox_id = ? AND status = ?", outboxID, "pending").First(&event).Error
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	event.Attempts++
 	event.NextAttemptAt = nextAttemptAt
 	now := time.Now()
@@ -81,7 +85,9 @@ func (r *outboxRepository) MarkFailed(ctx context.Context, outboxID int64, nextA
 func (r *outboxRepository) MarkDead(ctx context.Context, outboxID int64) (*models.OutboxEvent, error) {
 	var event models.OutboxEvent
 	err := r.db.WithContext(ctx).Where("outbox_id = ? AND status = ?", outboxID, "pending").First(&event).Error
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	event.Status = "dead"
 	now := time.Now()
 	event.UpdatedAt = &now

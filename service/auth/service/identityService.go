@@ -181,7 +181,7 @@ func (s *identityService) GetMe(ctx context.Context, userId int) (*repository.Au
 		return cachedUser, nil
 	}
 
-	user, err := s.user.FindById(ctx, userId)
+	user, err := s.user.FindByID(ctx, userId)
 	if err != nil {
 		status = "error"
 		return sharederrorhandler.HandleError[*repository.AuthUser](

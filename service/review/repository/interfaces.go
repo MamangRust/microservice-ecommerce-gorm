@@ -3,30 +3,28 @@ package repository
 import (
 	"context"
 
+	productadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/product"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
-	"github.com/MamangRust/microservice-ecommerce-grpc-review/dto"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 
-type UserQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*dto.GetUserByIDRow, error)
-}
-
-type ProductQueryRepository interface {
-	FindByID(ctx context.Context, product_id int) (*dto.GetProductByIDRow, error)
-}
+// UserQueryRepository and ProductQueryRepository are the shared gRPC query
+// contracts, provided by the user and product adapters.
+type UserQueryRepository = useradapter.QueryRepository
+type ProductQueryRepository = productadapter.QueryRepository
 
 type ReviewResult struct {
-	ReviewID    int32
-	UserID      int32
-	ProductID   int32
-	Name        string
-	Comment     string
-	Rating      int32
-	CreatedAt   *string
-	UpdatedAt   *string
-	DeletedAt   *string
-	TotalCount  int64
+	ReviewID      int32
+	UserID        int32
+	ProductID     int32
+	Name          string
+	Comment       string
+	Rating        int32
+	CreatedAt     *string
+	UpdatedAt     *string
+	DeletedAt     *string
+	TotalCount    int64
 	ReviewDetails interface{}
 }
 

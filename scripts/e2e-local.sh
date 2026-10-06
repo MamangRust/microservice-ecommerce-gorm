@@ -1,8 +1,10 @@
 #!/bin/bash
 # e2e-local.sh — One-shot: start infra, launch Go services, seed, run hurl e2e tests.
 #
-# This is a microservice architecture: per-service PostgreSQL databases for isolation.
-# Go services run on the host; infrastructure runs in Docker.
+# This is a microservice architecture: one PostgreSQL instance per bounded context
+# (identity, merchant, catalog, sales, experience, email), each carrying a single
+# ec_<ctx> database and fronted by its own PgBouncer. Go services run on the host;
+# infrastructure runs in Docker.
 #
 # Usage:
 #   ./scripts/e2e-local.sh              # full run
@@ -58,8 +60,11 @@ fi
 info "[1/6] Starting infrastructure ..."
 docker compose -f "$COMPOSE_FILE" up -d
 
-info "Waiting for Postgres health checks ..."
-for svc in auth-db role-db user-db email-db category-db merchant-db merchant_award-db merchant_business-db merchant_detail-db merchant_policy-db order-db order_item-db product-db transaction-db cart-db review-db review_detail-db slider-db shipping_address-db banner-db; do
+info "Waiting for the six bounded-context Postgres instances ..."
+# 1 database = 1 bounded context (deployments/kubernetes/database/):
+# postgres_identity … postgres_email, each carrying ec_<ctx>.
+for ctx in identity merchant catalog sales experience email; do
+  svc="postgres_$ctx"
   timeout=60
   while ! docker compose -f "$COMPOSE_FILE" exec -T "$svc" pg_isready -U DRAGON -q 2>/dev/null; do
     timeout=$((timeout - 1)); [ "$timeout" -le 0 ] && { fail "$svc not ready"; exit 1; }
@@ -94,7 +99,7 @@ ok "ClickHouse ready"
 
 if [ "$INFRA_ONLY" = true ]; then
   ok "Infrastructure is up. Exiting (--infra-only)."
-  echo "Postgres: localhost:5432 (ECOMMERCE) + per-service: 5543-5562"
+  echo "Postgres: 6 contexts (ec_identity…ec_email) via PgBouncer localhost:6432-6437"
   echo "Redis: localhost:6379  Kafka: localhost:9092  ClickHouse: localhost:8123/9000"
   exit 0
 fi
@@ -102,30 +107,27 @@ fi
 # ─── [2/6] Reset databases + migrate + seed ─────────────────────────────
 info "[2/6] Resetting databases, running migrations, and seeding ..."
 
-# Per-service DB maps (must match docker-compose.infra.yml ports)
-declare -A DB_CONTAINER=( [auth]=postgres_auth [role]=postgres_role [user]=postgres_user [email]=postgres_email [category]=postgres_category [merchant]=postgres_merchant [merchant_award]=postgres_merchant_award [merchant_business]=postgres_merchant_business [merchant_detail]=postgres_merchant_detail [merchant_policy]=postgres_merchant_policy [order]=postgres_order [order_item]=postgres_order-item [product]=postgres_product [transaction]=postgres_transaction [cart]=postgres_cart [review]=postgres_review [review_detail]=postgres_review_detail [slider]=postgres_slider [shipping_address]=postgres_shipping_address [banner]=postgres_banner )
-declare -A DB_NAME=( [auth]=auth_db [role]=role_db [user]=user_db [email]=email_db [category]=category_db [merchant]=merchant_db [merchant_award]=merchant_award_db [merchant_business]=merchant_business_db [merchant_detail]=merchant_detail_db [merchant_policy]=merchant_policy_db [order]=order_db [order_item]=order_item_db [product]=product_db [transaction]=transaction_db [cart]=cart_db [review]=review_db [review_detail]=review_detail_db [slider]=slider_db [shipping_address]=shipping_address_db [banner]=banner_db )
-declare -A DB_PORT=( [auth]=5543 [role]=5544 [user]=5545 [email]=5546 [category]=5547 [merchant]=5548 [merchant_award]=5549 [merchant_business]=5550 [merchant_detail]=5551 [merchant_policy]=5552 [order]=5553 [order_item]=5554 [product]=5555 [transaction]=5556 [cart]=5557 [review]=5558 [review_detail]=5559 [slider]=5560 [shipping_address]=5561 [banner]=5562 )
+# 1 database = 1 bounded context (deployments/kubernetes/database/): the six
+# instances carry ec_identity, ec_merchant, ec_catalog, ec_sales,
+# ec_experience, ec_email. Host ports 6432-6437 are the PgBouncer poolers that
+# the root .env points DB_<CONTEXT>_* at.
+CONTEXTS=(identity merchant catalog sales experience email)
 
-ALL_SERVICES=(auth role user email category merchant merchant_award merchant_business merchant_detail merchant_policy order order_item product transaction cart review review_detail slider shipping_address banner)
-
-# Drop schema + recreate for clean state
-for svc in "${ALL_SERVICES[@]}"; do
-  docker exec "${DB_CONTAINER[$svc]}" psql -U DRAGON -d "${DB_NAME[$svc]}" \
-    -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" >/dev/null 2>&1 || warn "drop schema failed for $svc"
+# Drop schema + recreate on every context instance for a clean state.
+for ctx in "${CONTEXTS[@]}"; do
+  docker exec "ecommerce-postgres-$ctx" psql -U DRAGON -d "ec_$ctx" \
+    -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" >/dev/null 2>&1 \
+    || warn "drop schema failed for ec_$ctx"
 done
 
-# Run migrations per service
-for svc in "${ALL_SERVICES[@]}"; do
-  info "  migrating $svc ..."
-  DB_HOST=localhost DB_PORT="${DB_PORT[$svc]}" DB_NAME="${DB_NAME[$svc]}" \
-    go run service/migrate/cmd/main.go -dir "service/$svc/database/migration" up \
-    > /tmp/hurl_migrate_$svc.log 2>&1 || { fail "migrate failed for $svc"; cat /tmp/hurl_migrate_$svc.log; exit 1; }
-done
+# Migrate all six contexts in dependency order (reads DB_<CONTEXT>_* from .env).
+info "  migrating all six contexts ..."
+go run service/migrate/cmd/main.go up > /tmp/hurl_migrate.log 2>&1 \
+  || { fail "migrate failed"; cat /tmp/hurl_migrate.log; exit 1; }
 ok "All migrations complete"
 
-# Seed roles
-docker exec postgres_role psql -U DRAGON -d role_db -c \
+# Seed roles — the roles table lives in the identity context (ec_identity).
+docker exec ecommerce-postgres-identity psql -U DRAGON -d ec_identity -c \
   "INSERT INTO roles (role_name) VALUES ('ROLE_ADMIN'), ('ROLE_USER') ON CONFLICT DO NOTHING;" >/dev/null 2>&1 || true
 ok "Roles seeded"
 
@@ -179,16 +181,17 @@ ok "All services healthy"
 # ─── [7/6] Run hurl e2e tests ──────────────────────────────────────────
 info "[7/6] Running hurl e2e tests ..."
 
-# Discover a seeded role-less user for rules_strict.hurl
+# Discover a seeded role-less user for rules_strict.hurl.
+# users, roles and user_roles all live in the identity context (ec_identity).
 USER_EMAIL=""
-if docker exec postgres_user psql -U DRAGON -d user_db -t -A -c \
+if docker exec ecommerce-postgres-identity psql -U DRAGON -d ec_identity -t -A -c \
   "SELECT email FROM users WHERE firstname='User1' AND email LIKE 'user_%' ORDER BY user_id LIMIT 1;" \
   > /tmp/hurl_seed_user.txt 2>/dev/null; then
   USER_EMAIL=$(tr -d ' \r' < /tmp/hurl_seed_user.txt)
-  USER_ID=$(docker exec postgres_user psql -U DRAGON -d user_db -t -A -c \
+  USER_ID=$(docker exec ecommerce-postgres-identity psql -U DRAGON -d ec_identity -t -A -c \
     "SELECT user_id FROM users WHERE email = '$USER_EMAIL' LIMIT 1;" | tr -d ' \r')
   if [ -n "$USER_ID" ]; then
-    docker exec postgres_role psql -U DRAGON -d role_db -c \
+    docker exec ecommerce-postgres-identity psql -U DRAGON -d ec_identity -c \
       "DELETE FROM user_roles WHERE user_id = $USER_ID;" >/dev/null 2>&1 || true
   fi
 fi

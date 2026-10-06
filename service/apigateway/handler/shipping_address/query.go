@@ -1,11 +1,11 @@
 package shippingaddresshandler
 
 import (
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
 	"net/http"
 	"strconv"
 
 	shippingaddress_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/shipping_address"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
@@ -15,14 +15,14 @@ import (
 )
 
 type shippingAddressQueryHandleApi struct {
-	client pbshipping_address.ShippingQueryServiceClient
+	client pb_shipping_address.ShippingQueryServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.ShippingAddressQueryResponseMapper
 	cache  shippingaddress_cache.ShippingAddressQueryCache
 }
 
 type shippingAddressQueryHandleDeps struct {
-	client pbshipping_address.ShippingQueryServiceClient
+	client pb_shipping_address.ShippingQueryServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.ShippingAddressQueryResponseMapper
@@ -79,7 +79,7 @@ func (h *shippingAddressQueryHandleApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbshipping_address.FindAllShippingRequest{
+	grpcReq := &pb_shipping_address.FindAllShippingRequest{
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 		Search:   search,
@@ -118,7 +118,7 @@ func (h *shippingAddressQueryHandleApi) FindById(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbshipping_address.FindByIdShippingRequest{Id: int32(id)}
+	grpcReq := &pb_shipping_address.FindByIdShippingRequest{Id: int32(id)}
 	res, err := h.client.FindById(ctx, grpcReq)
 	if err != nil {
 		return h.handleGrpcError(err, "FindById")
@@ -152,7 +152,7 @@ func (h *shippingAddressQueryHandleApi) FindByOrder(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbshipping_address.FindByIdShippingRequest{Id: int32(id)}
+	grpcReq := &pb_shipping_address.FindByIdShippingRequest{Id: int32(id)}
 	res, err := h.client.FindByOrder(ctx, grpcReq)
 	if err != nil {
 		return h.handleGrpcError(err, "FindByOrder")
@@ -198,7 +198,7 @@ func (h *shippingAddressQueryHandleApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbshipping_address.FindAllShippingRequest{
+	grpcReq := &pb_shipping_address.FindAllShippingRequest{
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 		Search:   search,
@@ -249,7 +249,7 @@ func (h *shippingAddressQueryHandleApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbshipping_address.FindAllShippingRequest{
+	grpcReq := &pb_shipping_address.FindAllShippingRequest{
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 		Search:   search,

@@ -4,12 +4,11 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedImageNotFound = errors.ErrNotFound.WithMessage("image not found")
 	ErrFailedRemoveImage   = errors.ErrInternal.WithMessage("failed to remove image")
 
-	ErrFailedFindReviewDetail = errors.ErrNotFound.WithMessage("review detail not found")
+	ErrFailedFindReviewDetail         = errors.ErrNotFound.WithMessage("review detail not found")
 	ErrFailedFindAllReviewDetails     = errors.ErrInternal.WithMessage("failed to find all review details")
 	ErrFailedFindActiveReviewDetails  = errors.ErrInternal.WithMessage("failed to find active review details")
 	ErrFailedFindTrashedReviewDetails = errors.ErrInternal.WithMessage("failed to find trashed review details")

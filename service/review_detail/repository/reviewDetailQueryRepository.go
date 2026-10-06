@@ -28,7 +28,7 @@ func (r *reviewDetailQueryRepository) FindAll(ctx context.Context, req *requests
 			AND (? = '' OR rd.type ILIKE ? OR rd.caption ILIKE ?)
 		ORDER BY rd.review_detail_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, review_detail_errors.ErrFindAllReviewDetails.WithInternal(err)
 	}
@@ -47,7 +47,7 @@ func (r *reviewDetailQueryRepository) FindActive(ctx context.Context, req *reque
 			AND (? = '' OR rd.type ILIKE ? OR rd.caption ILIKE ?)
 		ORDER BY rd.review_detail_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, review_detail_errors.ErrFindActiveReviewDetails.WithInternal(err)
 	}
@@ -66,7 +66,7 @@ func (r *reviewDetailQueryRepository) FindTrashed(ctx context.Context, req *requ
 			AND (? = '' OR rd.type ILIKE ? OR rd.caption ILIKE ?)
 		ORDER BY rd.review_detail_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, review_detail_errors.ErrFindTrashedReviewDetails.WithInternal(err)
 	}

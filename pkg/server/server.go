@@ -23,15 +23,15 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"gorm.io/gorm"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
+	"gorm.io/gorm"
 )
 
 type GRPCServer struct {
-	Logger logger.LoggerInterface
+	Logger           logger.LoggerInterface
 	GormDB           *gorm.DB
 	Ctx              context.Context
 	Cancel           context.CancelFunc

@@ -37,4 +37,3 @@ var (
 
 	ErrTransactionNotFound = errors.ErrNotFound.WithMessage("transaction not found")
 )
-

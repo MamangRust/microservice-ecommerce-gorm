@@ -168,7 +168,7 @@ func (s *passwordResetService) ResetPassword(ctx context.Context, req *requests.
 		return sharederrorhandler.HandleError[bool](s.logger, err, method, span, zap.String("reset_token", req.ResetToken))
 	}
 
-	_, err := s.user.UpdateUserPassword(ctx, userID, req.Password)
+	_, err := s.user.UpdatePassword(ctx, userID, req.Password)
 	if err != nil {
 		status = "error"
 		return sharederrorhandler.HandleError[bool](s.logger, err, method, span, zap.Int("user.id", userID))
@@ -197,7 +197,7 @@ func (s *passwordResetService) VerifyCode(ctx context.Context, code string) (boo
 		return sharederrorhandler.HandleError[bool](s.logger, err, method, span, zap.String("code", code))
 	}
 
-	_, err = s.user.UpdateUserIsVerified(ctx, int(res.UserID), true)
+	_, err = s.user.UpdateIsVerified(ctx, int(res.UserID), true)
 	if err != nil {
 		status = "error"
 		return sharederrorhandler.HandleError[bool](s.logger, err, method, span, zap.Int("user.id", int(res.UserID)))

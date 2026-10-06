@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	"context"
 	"fmt"
 	"net/http"
@@ -9,19 +8,20 @@ import (
 	"time"
 
 	apicache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache"
+	pb_user_role "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
 
-// RoleValidatorGRPC validates a user's roles via the role service gRPC
+// RoleValidatorGRPC validates a user's roles via the user-role gRPC service
 // (FindByUserId) and stores the role names in the Echo context.
 //
 // Ini menggantikan RoleValidator berbasis Kafka (request-response ke topic
 // "request-role"/"response-role") yang tidak berfungsi di stack lokal sehingga
 // semua route admin memakai middleware ini timeout 408. Dengan gRPC langsung,
 // role diverifikasi secara sinkron dan RequireRoles dapat memutuskan 403.
-func RoleValidatorGRPC(client pbrole.RoleQueryServiceClient, logger logger.LoggerInterface, cache apicache.RoleCache) echo.MiddlewareFunc {
+func RoleValidatorGRPC(client pb_user_role.UserRoleQueryServiceClient, logger logger.LoggerInterface, cache apicache.RoleCache) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userIDVal := c.Get("user_id")
@@ -43,7 +43,7 @@ func RoleValidatorGRPC(client pbrole.RoleQueryServiceClient, logger logger.Logge
 				return next(c)
 			}
 
-			res, err := client.FindByUserId(ctx, &pbrole.FindByIdUserRoleRequest{UserId: int32(userID)})
+			res, err := client.FindByUserId(ctx, &pb_user_role.FindByIdUserRoleRequest{UserId: int32(userID)})
 			if err != nil {
 				logger.Error("Role validation via gRPC failed",
 					zap.Int("user_id", userID), zap.Error(err))

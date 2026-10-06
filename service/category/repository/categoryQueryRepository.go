@@ -31,7 +31,7 @@ func (r *categoryQueryRepository) FindAll(ctx context.Context, req *requests.Fin
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, category_errors.ErrFindAllCategory.WithInternal(err)
 	}
@@ -52,7 +52,7 @@ func (r *categoryQueryRepository) FindActive(ctx context.Context, req *requests.
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, category_errors.ErrFindByActiveCategory.WithInternal(err)
 	}
@@ -73,7 +73,7 @@ func (r *categoryQueryRepository) FindTrashed(ctx context.Context, req *requests
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, category_errors.ErrFindByTrashedCategory.WithInternal(err)
 	}

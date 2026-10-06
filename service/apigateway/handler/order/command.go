@@ -5,25 +5,25 @@ import (
 	"strconv"
 
 	order_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/order"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/order"
-		pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type orderCommandHandlerApi struct {
-	client pborder.OrderCommandServiceClient
+	client pb_order.OrderCommandServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.OrderCommandResponseMapper
 	cache  order_cache.OrderCommandCache
 }
 
 type orderCommandHandleDeps struct {
-	client pborder.OrderCommandServiceClient
+	client pb_order.OrderCommandServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.OrderCommandResponseMapper
@@ -72,21 +72,21 @@ func (h *orderCommandHandlerApi) Create(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	items := make([]*pborder.CreateOrderItemRequest, 0)
+	items := make([]*pb_order.CreateOrderItemRequest, 0)
 	for _, item := range body.Items {
-		items = append(items, &pborder.CreateOrderItemRequest{
+		items = append(items, &pb_order.CreateOrderItemRequest{
 			ProductId: int32(item.ProductID),
 			Quantity:  int32(item.Quantity),
 			Price:     int32(item.Price),
 		})
 	}
 
-	res, err := h.client.Create(ctx, &pborder.CreateOrderRequest{
+	res, err := h.client.Create(ctx, &pb_order.CreateOrderRequest{
 		MerchantId: int32(body.MerchantID),
 		UserId:     int32(body.UserID),
 		TotalPrice: int32(body.TotalPrice),
 		Items:      items,
-		Shipping: &pbshipping_address.CreateShippingAddressRequest{
+		Shipping: &pb_shipping_address.CreateShippingAddressRequest{
 			Alamat:         body.ShippingAddress.Alamat,
 			Provinsi:       body.ShippingAddress.Provinsi,
 			Kota:           body.ShippingAddress.Kota,
@@ -138,9 +138,9 @@ func (h *orderCommandHandlerApi) Update(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	items := make([]*pborder.UpdateOrderItemRequest, 0)
+	items := make([]*pb_order.UpdateOrderItemRequest, 0)
 	for _, item := range body.Items {
-		items = append(items, &pborder.UpdateOrderItemRequest{
+		items = append(items, &pb_order.UpdateOrderItemRequest{
 			OrderItemId: int32(item.OrderItemID),
 			ProductId:   int32(item.ProductID),
 			Quantity:    int32(item.Quantity),
@@ -148,14 +148,14 @@ func (h *orderCommandHandlerApi) Update(c echo.Context) error {
 		})
 	}
 
-	updateRequest := &pborder.UpdateOrderRequest{
+	updateRequest := &pb_order.UpdateOrderRequest{
 		OrderId:    int32(id),
 		UserId:     int32(body.UserID),
 		TotalPrice: int32(body.TotalPrice),
 		Items:      items,
 	}
 	if shipping := body.ShippingAddress; shipping != nil {
-		updateRequest.Shipping = &pbshipping_address.UpdateShippingAddressRequest{
+		updateRequest.Shipping = &pb_shipping_address.UpdateShippingAddressRequest{
 			ShippingId:     int32(pointerValue(shipping.ShippingID)),
 			Alamat:         shipping.Alamat,
 			Provinsi:       shipping.Provinsi,
@@ -195,7 +195,7 @@ func (h *orderCommandHandlerApi) Trash(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.TrashedOrder(ctx, &pborder.FindByIdOrderRequest{Id: int32(id)})
+	res, err := h.client.TrashedOrder(ctx, &pb_order.FindByIdOrderRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -223,7 +223,7 @@ func (h *orderCommandHandlerApi) Restore(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.RestoreOrder(ctx, &pborder.FindByIdOrderRequest{Id: int32(id)})
+	res, err := h.client.RestoreOrder(ctx, &pb_order.FindByIdOrderRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -251,7 +251,7 @@ func (h *orderCommandHandlerApi) DeletePermanent(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.DeleteOrderPermanent(ctx, &pborder.FindByIdOrderRequest{Id: int32(id)})
+	res, err := h.client.DeleteOrderPermanent(ctx, &pb_order.FindByIdOrderRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}

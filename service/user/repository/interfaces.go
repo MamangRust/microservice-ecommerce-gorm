@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	userroleadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user_role"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
@@ -56,4 +57,13 @@ type RoleDTO struct {
 type RoleRepository interface {
 	FindByID(ctx context.Context, role_id int) (*RoleDTO, error)
 	FindByName(ctx context.Context, name string) (*RoleDTO, error)
+}
+
+// UserRoleRepository is the user service's view of the role service's hosted
+// user-role assignments. The role service piggybacks the user-role gRPC server
+// (userRoleRepository/userRoleService/userRoleHandler), so the user service
+// reaches it through the shared userroleadapter.
+type UserRoleRepository interface {
+	userroleadapter.QueryRepository
+	userroleadapter.CommandRepository
 }

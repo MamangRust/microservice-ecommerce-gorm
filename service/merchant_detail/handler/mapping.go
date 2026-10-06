@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_detail"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_detail"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_detail/repository"
@@ -29,8 +29,6 @@ func createPaginationMeta(page, pageSize, totalRecords int) *pbcommon.Pagination
 		TotalRecords: int32(totalRecords),
 	}
 }
-
-
 
 func mapToProtoMerchantDetailResponseFromResult(v *repository.MerchantDetailResult) *pbmerchant_detail.MerchantDetailResponse {
 	if v == nil {

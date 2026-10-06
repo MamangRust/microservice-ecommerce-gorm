@@ -2,16 +2,15 @@ package producthandler
 
 import (
 	product_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/product"
-		pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
+	"github.com/MamangRust/microservice-ecommerce-shared/cache"
+	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/product"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
-	"github.com/MamangRust/microservice-ecommerce-shared/cache"
-	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
-
 
 type DepsProduct struct {
 	Client     *grpc.ClientConn
@@ -22,13 +21,11 @@ type DepsProduct struct {
 	ApiHandler errors.ApiHandler
 }
 
-
-
 func RegisterProductHandler(deps *DepsProduct) {
 	mapper := apimapper.NewProductResponseMapper()
 	cache := product_cache.NewProductMencache(deps.CacheStore)
 
-	queryClient := pbproduct.NewProductQueryServiceClient(deps.Client)
+	queryClient := pb_product.NewProductQueryServiceClient(deps.Client)
 
 	NewProductQueryHandleApi(&productQueryHandleDeps{
 		client:     queryClient,
@@ -39,9 +36,8 @@ func RegisterProductHandler(deps *DepsProduct) {
 		apiHandler: deps.ApiHandler,
 	})
 
-
 	NewProductCommandHandleApi(&productCommandHandleDeps{
-		client:       pbproduct.NewProductCommandServiceClient(deps.Client),
+		client:       pb_product.NewProductCommandServiceClient(deps.Client),
 		router:       deps.E,
 		logger:       deps.Logger,
 		mapper:       mapper.CommandMapper(),

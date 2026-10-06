@@ -4,7 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/dto"
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
+	orderadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order"
+	orderitemadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order_item"
+	shippingaddressadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/shipping_address"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"gorm.io/gorm"
 )
@@ -22,34 +26,25 @@ type TransactionResult struct {
 	TotalCount    int64
 }
 
-type UserQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*dto.GetUserByIDRow, error)
-}
+// UserQueryRepository is the shared user query contract, provided by the user
+// gRPC adapter.
+type UserQueryRepository = useradapter.QueryRepository
 
-type MerchantQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*dto.GetMerchantByIDRow, error)
-}
+// MerchantQueryRepository is the shared merchant query contract, provided by the
+// merchant gRPC adapter so this service never holds a raw gRPC client.
+type MerchantQueryRepository = merchantadapter.QueryRepository
 
-type OrderItemRepository interface {
-	FindOrderItemByOrder(
-		ctx context.Context,
-		order_id int,
-	) ([]*dto.GetOrderItemsByOrderRow, error)
-}
+// OrderItemRepository is the shared order-item query contract, provided by the
+// order-item gRPC adapter.
+type OrderItemRepository = orderitemadapter.QueryRepository
 
-type OrderQueryRepository interface {
-	FindByID(
-		ctx context.Context,
-		order_id int,
-	) (*dto.GetOrderByIDRow, error)
-}
+// OrderQueryRepository is the shared order query contract, provided by the
+// order gRPC adapter.
+type OrderQueryRepository = orderadapter.QueryRepository
 
-type ShippingAddressQueryRepository interface {
-	FindByID(
-		ctx context.Context,
-		shipping_id int,
-	) (*dto.GetShippingAddressByOrderIDRow, error)
-}
+// ShippingAddressQueryRepository is the shared shipping-address query contract,
+// provided by the shipping-address gRPC adapter.
+type ShippingAddressQueryRepository = shippingaddressadapter.QueryRepository
 
 type TransactionQueryRepository interface {
 	FindAll(

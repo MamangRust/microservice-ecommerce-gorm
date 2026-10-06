@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedCreateShippingAddress = errors.ErrInternal.WithMessage("Failed to create shipping address")
 	ErrFailedUpdateShippingAddress = errors.ErrInternal.WithMessage("Failed to update shipping address")

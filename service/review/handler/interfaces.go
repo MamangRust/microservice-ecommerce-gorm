@@ -1,9 +1,8 @@
 package handler
 
 import (
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
 )
-
 
 type ReviewHandleGrpc interface {
 	pbreview.ReviewQueryServiceServer

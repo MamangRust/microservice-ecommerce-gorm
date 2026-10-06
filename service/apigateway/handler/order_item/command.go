@@ -5,23 +5,23 @@ import (
 	"strconv"
 
 	orderitem_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/order_item"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/order_item"
-		pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type orderItemCommandHandlerApi struct {
-	client pborder_item.OrderItemCommandServiceClient
+	client pb_order_item.OrderItemCommandServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.OrderItemCommandResponseMapper
 	cache  orderitem_cache.OrderItemCommandCache
 }
 
 type orderItemCommandHandleDeps struct {
-	client pborder_item.OrderItemCommandServiceClient
+	client pb_order_item.OrderItemCommandServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.OrderItemCommandResponseMapper
@@ -64,7 +64,7 @@ func (h *orderItemCommandHandlerApi) Trash(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.TrashOrderItem(ctx, &pborder_item.FindByIdOrderItemRequest{Id: int32(id)})
+	res, err := h.client.TrashOrderItem(ctx, &pb_order_item.FindByIdOrderItemRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "Trash")
 	}
@@ -93,7 +93,7 @@ func (h *orderItemCommandHandlerApi) Restore(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.RestoreOrderItem(ctx, &pborder_item.FindByIdOrderItemRequest{Id: int32(id)})
+	res, err := h.client.RestoreOrderItem(ctx, &pb_order_item.FindByIdOrderItemRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "Restore")
 	}
@@ -121,7 +121,7 @@ func (h *orderItemCommandHandlerApi) DeletePermanent(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.DeleteOrderItemPermanent(ctx, &pborder_item.FindByIdOrderItemRequest{Id: int32(id)})
+	res, err := h.client.DeleteOrderItemPermanent(ctx, &pb_order_item.FindByIdOrderItemRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "Delete")
 	}

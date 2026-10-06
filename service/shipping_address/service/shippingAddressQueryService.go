@@ -42,8 +42,12 @@ func (s *shippingAddressQueryService) FindAll(ctx context.Context, req *requests
 	page := req.Page
 	pageSize := req.PageSize
 	search := req.Search
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
 		attribute.Int("page", page), attribute.Int("pageSize", pageSize), attribute.String("search", search))
@@ -120,8 +124,12 @@ func (s *shippingAddressQueryService) FindActive(ctx context.Context, req *reque
 	page := req.Page
 	pageSize := req.PageSize
 	search := req.Search
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
 		attribute.Int("page", page), attribute.Int("pageSize", pageSize), attribute.String("search", search))
@@ -156,8 +164,12 @@ func (s *shippingAddressQueryService) FindTrashed(ctx context.Context, req *requ
 	page := req.Page
 	pageSize := req.PageSize
 	search := req.Search
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 
 	ctx, span, end, status, logSuccess := s.observability.StartTracingAndLogging(ctx, method,
 		attribute.Int("page", page), attribute.Int("pageSize", pageSize), attribute.String("search", search))

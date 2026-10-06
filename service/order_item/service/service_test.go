@@ -44,8 +44,8 @@ func (s *stubOrderItemCmdRepo) DeletePermanent(_ context.Context, _ int) (bool, 
 func (s *stubOrderItemCmdRepo) DeleteOrderItemByOrderPermanent(_ context.Context, _ int) (bool, error) {
 	return true, nil
 }
-func (s *stubOrderItemCmdRepo) RestoreAll(_ context.Context) (bool, error)  { return true, nil }
-func (s *stubOrderItemCmdRepo) DeleteAll(_ context.Context) (bool, error)   { return true, nil }
+func (s *stubOrderItemCmdRepo) RestoreAll(_ context.Context) (bool, error) { return true, nil }
+func (s *stubOrderItemCmdRepo) DeleteAll(_ context.Context) (bool, error)  { return true, nil }
 func (s *stubOrderItemCmdRepo) CalculateTotalPrice(_ context.Context, _ int) (int, error) {
 	return 25000, nil
 }
@@ -73,8 +73,8 @@ func (s *stubOrderItemQueryRepo) FindOrderItemByOrder(_ context.Context, orderID
 }
 
 type stubOrderItemQueryCache struct {
-	data   []*repository.OrderItemResult
-	total  int
+	data  []*repository.OrderItemResult
+	total int
 }
 
 func (s *stubOrderItemQueryCache) GetCachedOrderItemsAll(_ context.Context, _ *requests.FindAllOrderItems) ([]*repository.OrderItemResult, *int, bool) {

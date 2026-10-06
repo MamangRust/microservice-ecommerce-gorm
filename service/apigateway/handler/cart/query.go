@@ -5,23 +5,23 @@ import (
 	"strconv"
 
 	cart_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/cart"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/cart"
-		pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
 	"github.com/labstack/echo/v4"
 )
 
 type cartQueryHandlerApi struct {
-	client pbcart.CartQueryServiceClient
+	client pb_cart.CartQueryServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.CartQueryResponseMapper
 	cache  cart_cache.CartQueryCache
 }
 
 type cartQueryHandleDeps struct {
-	client pbcart.CartQueryServiceClient
+	client pb_cart.CartQueryServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.CartQueryResponseMapper
@@ -78,7 +78,7 @@ func (h *cartQueryHandlerApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindAll(ctx, &pbcart.FindAllCartRequest{
+	res, err := h.client.FindAll(ctx, &pb_cart.FindAllCartRequest{
 		UserId:   int32(userID),
 		Page:     int32(page),
 		PageSize: int32(pageSize),

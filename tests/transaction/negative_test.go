@@ -1,8 +1,8 @@
 package transaction_test
 
 import (
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
 	"context"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 	"net/http"
 	"net/http/httptest"
 

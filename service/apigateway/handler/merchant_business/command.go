@@ -5,18 +5,18 @@ import (
 	"strconv"
 
 	merchantbusiness_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/merchant_business"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
-	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_business"
 	merchantapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant"
-		pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
+	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_business"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type merchantBusinessCommandHandlerApi struct {
-	client         pbmerchant_business.MerchantBusinessCommandServiceClient
+	client         pb_merchant_business.MerchantBusinessCommandServiceClient
 	logger         logger.LoggerInterface
 	mapper         apimapper.MerchantBusinessCommandResponseMapper
 	merchantMapper merchantapimapper.MerchantCommandResponseMapper
@@ -24,7 +24,7 @@ type merchantBusinessCommandHandlerApi struct {
 }
 
 type merchantBusinessCommandHandleDeps struct {
-	client         pbmerchant_business.MerchantBusinessCommandServiceClient
+	client         pb_merchant_business.MerchantBusinessCommandServiceClient
 	router         *echo.Echo
 	logger         logger.LoggerInterface
 	mapper         apimapper.MerchantBusinessCommandResponseMapper
@@ -67,11 +67,15 @@ func NewMerchantBusinessCommandHandleApi(params *merchantBusinessCommandHandleDe
 // @Router /api/merchant-business-command/create [post]
 func (h *merchantBusinessCommandHandlerApi) Create(c echo.Context) error {
 	var body requests.CreateMerchantBusinessInformationRequest
-	if err := c.Bind(&body); err != nil { return echo.NewHTTPError(http.StatusBadRequest, "Invalid request") }
-	if err := body.Validate(); err != nil { return echo.NewHTTPError(http.StatusBadRequest, err.Error()) }
+	if err := c.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
+	}
+	if err := body.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.Create(ctx, &pbmerchant_business.CreateMerchantBusinessRequest{
+	res, err := h.client.Create(ctx, &pb_merchant_business.CreateMerchantBusinessRequest{
 		MerchantId:        int32(body.MerchantID),
 		BusinessType:      body.BusinessType,
 		TaxId:             body.TaxID,
@@ -101,15 +105,21 @@ func (h *merchantBusinessCommandHandlerApi) Create(c echo.Context) error {
 // @Router /api/merchant-business-command/update/{id} [post]
 func (h *merchantBusinessCommandHandlerApi) Update(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	var body requests.UpdateMerchantBusinessInformationRequest
-	if err := c.Bind(&body); err != nil { return echo.NewHTTPError(http.StatusBadRequest, "Invalid request") }
+	if err := c.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request")
+	}
 	body.MerchantBusinessInfoID = &id
-	if err := body.Validate(); err != nil { return echo.NewHTTPError(http.StatusBadRequest, err.Error()) }
+	if err := body.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.Update(ctx, &pbmerchant_business.UpdateMerchantBusinessRequest{
+	res, err := h.client.Update(ctx, &pb_merchant_business.UpdateMerchantBusinessRequest{
 		MerchantBusinessInfoId: int32(id),
 		BusinessType:           body.BusinessType,
 		TaxId:                  body.TaxID,
@@ -139,10 +149,12 @@ func (h *merchantBusinessCommandHandlerApi) Update(c echo.Context) error {
 // @Router /api/merchant-business-command/trashed/{id} [post]
 func (h *merchantBusinessCommandHandlerApi) Trash(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.TrashedMerchantBusiness(ctx, &pbmerchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
+	res, err := h.client.TrashedMerchantBusiness(ctx, &pb_merchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -165,10 +177,12 @@ func (h *merchantBusinessCommandHandlerApi) Trash(c echo.Context) error {
 // @Router /api/merchant-business-command/restore/{id} [post]
 func (h *merchantBusinessCommandHandlerApi) Restore(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.RestoreMerchantBusiness(ctx, &pbmerchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
+	res, err := h.client.RestoreMerchantBusiness(ctx, &pb_merchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -191,10 +205,12 @@ func (h *merchantBusinessCommandHandlerApi) Restore(c echo.Context) error {
 // @Router /api/merchant-business-command/permanent/{id} [delete]
 func (h *merchantBusinessCommandHandlerApi) DeletePermanent(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.DeleteMerchantBusinessPermanent(ctx, &pbmerchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
+	res, err := h.client.DeleteMerchantBusinessPermanent(ctx, &pb_merchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -241,4 +257,3 @@ func (h *merchantBusinessCommandHandlerApi) DeleteAllPermanent(c echo.Context) e
 
 	return c.JSON(http.StatusOK, h.merchantMapper.ToApiResponseMerchantAll(res))
 }
-

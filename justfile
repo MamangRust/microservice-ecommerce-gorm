@@ -37,11 +37,7 @@ migrate-down:
 
 # Generate Proto
 generate-proto:
-    @if [ -z "{{PROTOBUF_INCLUDE}}" ] || [ ! -f "{{PROTOBUF_INCLUDE}}/google/protobuf/wrappers.proto" ]; then \
-        echo "Missing protobuf well-known types. Set PROTOBUF_INCLUDE to a directory containing google/protobuf/wrappers.proto." >&2; \
-        exit 1; \
-    fi
-    protoc --proto_path=proto --proto_path="{{PROTOBUF_INCLUDE}}" --go_out=shared/pb --go_opt=module=github.com/MamangRust/microservice-ecommerce-shared/pb --go_opt=Mgoogle/protobuf/wrappers.proto=google.golang.org/protobuf/types/known/wrapperspb --go_opt=Mgoogle/protobuf/empty.proto=google.golang.org/protobuf/types/known/emptypb --go-grpc_out=shared/pb --go-grpc_opt=module=github.com/MamangRust/microservice-ecommerce-shared/pb --go-grpc_opt=Mgoogle/protobuf/wrappers.proto=google.golang.org/protobuf/types/known/wrapperspb --go-grpc_opt=Mgoogle/protobuf/empty.proto=google.golang.org/protobuf/types/known/emptypb $(find proto -name "*.proto" -print)
+    cd proto && find . -name "*.proto" -not -path "./google/*" -exec protoc --proto_path=. --go_out=../pb --go_opt=module=github.com/MamangRust/microservice-ecommerce-grpc-pb --go-grpc_out=../pb --go-grpc_opt=module=github.com/MamangRust/microservice-ecommerce-grpc-pb {} +
 
 # Generate Swagger
 generate-swagger:
@@ -75,9 +71,9 @@ infra-up:
 infra-down:
     docker compose -f deployments/local/docker-compose.infra.yml down
 
-# Run migrations against local PostgreSQL
+# Run migrations against all six bounded-context PostgreSQL databases
 db-migrate:
-    go run service/migrate/cmd/main.go -dir service/migrate/migrations up
+    go run service/migrate/cmd/main.go up
 
 # Seed local PostgreSQL with sample data
 db-seeder:
@@ -126,13 +122,13 @@ load-test base_url = "http://localhost:5000" requests = "100" concurrency = "10"
 endpoint-test base_url = "http://localhost:5000":
     @bash deployments/local/scripts/endpoint-test.sh "{{base_url}}"
 
-# Backup PostgreSQL to deployments/local/backups (optional retention days)
+# Backup all six context PostgreSQL databases to deployments/local/backups (optional retention days)
 backup retention = "7":
     @bash deployments/local/scripts/backup.sh "{{retention}}"
 
-# Restore PostgreSQL from a backup file (destructive; use --yes to skip prompt)
-restore file:
-    @bash deployments/local/scripts/restore.sh "{{file}}"
+# Restore all context PostgreSQL databases from a backup snapshot dir (destructive; use --yes to skip prompt)
+restore dir:
+    @bash deployments/local/scripts/restore.sh "{{dir}}"
 
 # Show migration status
 migrate-status:

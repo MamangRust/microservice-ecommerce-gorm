@@ -12,6 +12,8 @@ import (
 
 	apicache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache"
 	rolehandler "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/role"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	role_cache "github.com/MamangRust/microservice-ecommerce-grpc-role/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/repository"
@@ -21,7 +23,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	app_errors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	tests "github.com/MamangRust/microservice-ecommerce-test"
 
 	"github.com/labstack/echo/v4"
@@ -79,6 +80,8 @@ func (s *RoleApiTestSuite) SetupSuite() {
 	server := grpc.NewServer()
 	pbrole.RegisterRoleCommandServiceServer(server, roleHandlerGrpc.RoleCommand)
 	pbrole.RegisterRoleQueryServiceServer(server, roleHandlerGrpc.RoleQuery)
+	pbuserrole.RegisterUserRoleQueryServiceServer(server, roleHandlerGrpc.UserRoleQuery)
+	pbuserrole.RegisterUserRoleCommandServiceServer(server, roleHandlerGrpc.UserRoleCommand)
 	s.grpcServer = server
 
 	lis, err := net.Listen("tcp", "localhost:0")

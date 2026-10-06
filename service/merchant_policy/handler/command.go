@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"context"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_policy/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

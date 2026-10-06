@@ -7,19 +7,20 @@ import (
 	mencache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache"
 	role_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/role"
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/middlewares"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pb_user_role "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"github.com/MamangRust/microservice-ecommerce-pkg/kafka"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/role"
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type roleCommandHandlerApi struct {
 	kafka      *kafka.Kafka
-	role       pbrole.RoleCommandServiceClient
+	role       pb_role.RoleCommandServiceClient
 	logger     logger.LoggerInterface
 	mapper     apimapper.RoleCommandResponseMapper
 	cache      role_cache.RoleCommandCache
@@ -27,15 +28,15 @@ type roleCommandHandlerApi struct {
 }
 
 type roleCommandHandleDeps struct {
-	client      pbrole.RoleCommandServiceClient
-	queryClient pbrole.RoleQueryServiceClient
-	router      *echo.Echo
-	logger      logger.LoggerInterface
-	mapper      apimapper.RoleCommandResponseMapper
-	kafka       *kafka.Kafka
-	cache_role  mencache.RoleCache
-	cache       role_cache.RoleCommandCache
-	apiHandler  errors.ApiHandler
+	client         pb_role.RoleCommandServiceClient
+	userRoleClient pb_user_role.UserRoleQueryServiceClient
+	router         *echo.Echo
+	logger         logger.LoggerInterface
+	mapper         apimapper.RoleCommandResponseMapper
+	kafka          *kafka.Kafka
+	cache_role     mencache.RoleCache
+	cache          role_cache.RoleCommandCache
+	apiHandler     errors.ApiHandler
 }
 
 func NewRoleCommandHandleApi(params *roleCommandHandleDeps) *roleCommandHandlerApi {
@@ -48,7 +49,7 @@ func NewRoleCommandHandleApi(params *roleCommandHandleDeps) *roleCommandHandlerA
 		kafka:      params.kafka,
 	}
 
-	roleMiddleware := middlewares.RoleValidatorGRPC(params.queryClient, params.logger, params.cache_role)
+	roleMiddleware := middlewares.RoleValidatorGRPC(params.userRoleClient, params.logger, params.cache_role)
 	routerRole := params.router.Group("/api/role-command")
 	requireAdmin := middlewares.RequireRoles("Admin", "ROLE_ADMIN", "Admin_Admin_14")
 
@@ -82,7 +83,7 @@ func (h *roleCommandHandlerApi) Create(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.role.CreateRole(ctx, &pbrole.CreateRoleRequest{Name: body.Name})
+	res, err := h.role.CreateRole(ctx, &pb_role.CreateRoleRequest{Name: body.Name})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
@@ -115,7 +116,7 @@ func (h *roleCommandHandlerApi) Update(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.role.UpdateRole(ctx, &pbrole.UpdateRoleRequest{Id: int32(roleID), Name: body.Name})
+	res, err := h.role.UpdateRole(ctx, &pb_role.UpdateRoleRequest{Id: int32(roleID), Name: body.Name})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
@@ -143,7 +144,7 @@ func (h *roleCommandHandlerApi) Trash(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.role.TrashedRole(ctx, &pbrole.FindByIdRoleRequest{RoleId: int32(roleID)})
+	res, err := h.role.TrashedRole(ctx, &pb_role.FindByIdRoleRequest{RoleId: int32(roleID)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
@@ -171,7 +172,7 @@ func (h *roleCommandHandlerApi) Restore(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.role.RestoreRole(ctx, &pbrole.FindByIdRoleRequest{RoleId: int32(roleID)})
+	res, err := h.role.RestoreRole(ctx, &pb_role.FindByIdRoleRequest{RoleId: int32(roleID)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
@@ -199,7 +200,7 @@ func (h *roleCommandHandlerApi) DeletePermanent(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.role.DeleteRolePermanent(ctx, &pbrole.FindByIdRoleRequest{RoleId: int32(roleID)})
+	res, err := h.role.DeleteRolePermanent(ctx, &pb_role.FindByIdRoleRequest{RoleId: int32(roleID)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}

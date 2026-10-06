@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"context"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
@@ -42,7 +42,9 @@ func (h *categoryCommandHandler) Create(ctx context.Context, request *pbcategory
 
 func (h *categoryCommandHandler) Update(ctx context.Context, request *pbcategory.UpdateCategoryRequest) (*pbcategory.ApiResponseCategory, error) {
 	id := int(request.GetCategoryId())
-	if id == 0 { return nil, category_errors.ErrGrpcCategoryInvalidId }
+	if id == 0 {
+		return nil, category_errors.ErrGrpcCategoryInvalidId
+	}
 	slug := request.GetSlugCategory()
 	req := &requests.UpdateCategoryRequest{
 		CategoryID:    &id,
@@ -63,36 +65,52 @@ func (h *categoryCommandHandler) Update(ctx context.Context, request *pbcategory
 
 func (h *categoryCommandHandler) TrashedCategory(ctx context.Context, request *pbcategory.FindByIdCategoryRequest) (*pbcategory.ApiResponseCategoryDeleteAt, error) {
 	id := int(request.GetId())
-	if id == 0 { return nil, category_errors.ErrGrpcCategoryInvalidId }
+	if id == 0 {
+		return nil, category_errors.ErrGrpcCategoryInvalidId
+	}
 	category, err := h.service.Trash(ctx, id)
-	if err != nil { return nil, category_errors.ErrGrpcCategoryNotFound }
+	if err != nil {
+		return nil, category_errors.ErrGrpcCategoryNotFound
+	}
 	return &pbcategory.ApiResponseCategoryDeleteAt{Status: "success", Message: "Successfully trashed category", Data: (&Handler{}).mapToDeleteAtResponseFromModel(category)}, nil
 }
 
 func (h *categoryCommandHandler) RestoreCategory(ctx context.Context, request *pbcategory.FindByIdCategoryRequest) (*pbcategory.ApiResponseCategoryDeleteAt, error) {
 	id := int(request.GetId())
-	if id == 0 { return nil, category_errors.ErrGrpcCategoryInvalidId }
+	if id == 0 {
+		return nil, category_errors.ErrGrpcCategoryInvalidId
+	}
 	category, err := h.service.Restore(ctx, id)
-	if err != nil { return nil, category_errors.ErrGrpcCategoryNotFound }
+	if err != nil {
+		return nil, category_errors.ErrGrpcCategoryNotFound
+	}
 	return &pbcategory.ApiResponseCategoryDeleteAt{Status: "success", Message: "Successfully restored category", Data: (&Handler{}).mapToDeleteAtResponseFromModel(category)}, nil
 }
 
 func (h *categoryCommandHandler) DeleteCategoryPermanent(ctx context.Context, request *pbcategory.FindByIdCategoryRequest) (*pbcategory.ApiResponseCategoryDelete, error) {
 	id := int(request.GetId())
-	if id == 0 { return nil, category_errors.ErrGrpcCategoryInvalidId }
+	if id == 0 {
+		return nil, category_errors.ErrGrpcCategoryInvalidId
+	}
 	_, err := h.service.DeletePermanent(ctx, id)
-	if err != nil { return nil, errors.ToGrpcError(err) }
+	if err != nil {
+		return nil, errors.ToGrpcError(err)
+	}
 	return &pbcategory.ApiResponseCategoryDelete{Status: "success", Message: "Successfully deleted category permanently"}, nil
 }
 
 func (h *categoryCommandHandler) RestoreAllCategory(ctx context.Context, _ *emptypb.Empty) (*pbcategory.ApiResponseCategoryAll, error) {
 	_, err := h.service.RestoreAll(ctx)
-	if err != nil { return nil, category_errors.ErrGrpcCategoryNotFound }
+	if err != nil {
+		return nil, category_errors.ErrGrpcCategoryNotFound
+	}
 	return &pbcategory.ApiResponseCategoryAll{Status: "success", Message: "Successfully restored all categories"}, nil
 }
 
 func (h *categoryCommandHandler) DeleteAllCategoryPermanent(ctx context.Context, _ *emptypb.Empty) (*pbcategory.ApiResponseCategoryAll, error) {
 	_, err := h.service.DeleteAll(ctx)
-	if err != nil { return nil, errors.ToGrpcError(err) }
+	if err != nil {
+		return nil, errors.ToGrpcError(err)
+	}
 	return &pbcategory.ApiResponseCategoryAll{Status: "success", Message: "Successfully deleted all categories permanently"}, nil
 }

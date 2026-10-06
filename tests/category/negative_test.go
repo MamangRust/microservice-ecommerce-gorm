@@ -1,8 +1,8 @@
 package category_test
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"context"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 	"net/http"
 	"net/http/httptest"
 

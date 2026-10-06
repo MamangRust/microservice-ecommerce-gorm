@@ -1,7 +1,7 @@
 package bannerapimapper
 
 import (
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 
@@ -12,7 +12,9 @@ func NewBannerCommandResponseMapper() BannerCommandResponseMapper {
 }
 
 func (m *bannerCommandResponseMapper) ToResponseBanner(banner *pbbanner.BannerResponse) *response.BannerResponse {
-	if banner == nil { return nil }
+	if banner == nil {
+		return nil
+	}
 	return &response.BannerResponse{
 		ID:        banner.BannerId,
 		Name:      banner.Name,
@@ -43,7 +45,9 @@ func (m *bannerCommandResponseMapper) ToApiResponseBanner(pbResponse *pbbanner.A
 }
 
 func (m *bannerCommandResponseMapper) ToResponseBannerDeleteAt(banner *pbbanner.BannerResponseDeleteAt) *response.BannerResponseDeleteAt {
-	if banner == nil { return nil }
+	if banner == nil {
+		return nil
+	}
 	var deletedAt string
 	if banner.DeletedAt != nil {
 		deletedAt = banner.DeletedAt.Value

@@ -1,7 +1,7 @@
 package roleapimapper
 
 import (
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -47,7 +47,9 @@ func (s *roleQueryResponseMapper) ToApiResponsePaginationRoleDeleteAt(pbResponse
 }
 
 func (s *roleQueryResponseMapper) mapResponseRole(role *pbrole.RoleResponse) *response.RoleResponse {
-	if role == nil { return nil }
+	if role == nil {
+		return nil
+	}
 	return &response.RoleResponse{
 		ID:        int(role.Id),
 		Name:      role.Name,
@@ -65,7 +67,9 @@ func (s *roleQueryResponseMapper) mapResponsesRole(roles []*pbrole.RoleResponse)
 }
 
 func (s *roleQueryResponseMapper) mapResponseRoleDeleteAt(role *pbrole.RoleResponseDeleteAt) *response.RoleResponseDeleteAt {
-	if role == nil { return nil }
+	if role == nil {
+		return nil
+	}
 	var deletedAt string
 	if role.DeletedAt != nil {
 		deletedAt = role.DeletedAt.Value

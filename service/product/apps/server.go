@@ -1,15 +1,19 @@
 package apps
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
 	"fmt"
+	"time"
+
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/service"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
@@ -22,8 +26,6 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	gormDB := srv.GormDB
 
 	categoryAddr := viper.GetString("GRPC_CATEGORY_ADDR")
 
@@ -41,7 +43,18 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	}
 	merchantQueryClient := pbmerchant.NewMerchantQueryServiceClient(merchantConn)
 
-	repos := repository.NewRepositories(gormDB, categoryQueryClient, merchantQueryClient)
+	repos := repository.NewRepositories(srv.GormDB,
+		categoryQueryClient,
+		merchantQueryClient,
+		repository.GuardOptions{
+			Category: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("category", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+			Merchant: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("merchant", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+		},
+	)
 	obs, _ := observability.NewObservability("product-server", srv.Logger)
 	c := cache.NewMencache(srv.CacheStore)
 

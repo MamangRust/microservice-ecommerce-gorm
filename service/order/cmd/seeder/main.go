@@ -20,7 +20,7 @@ func main() {
 		l.Fatal("Failed to load .env", zap.Error(err))
 	}
 
-	gormDB, err := database.NewGormClientWithPrefix(l, "DB_ORDER")
+	gormDB, err := database.NewGormClientWithPrefix(l, database.SalesCluster)
 	if err != nil {
 		l.Fatal("Failed to connect", zap.Error(err))
 	}

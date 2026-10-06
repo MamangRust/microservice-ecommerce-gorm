@@ -1,7 +1,7 @@
 package productapimapper
 
 import (
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

@@ -1,16 +1,17 @@
 package user_test
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	"context"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"testing"
 
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	gapi "github.com/MamangRust/microservice-ecommerce-grpc-user/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/hash"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
-		pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	tests "github.com/MamangRust/microservice-ecommerce-test"
 
 	user_cache "github.com/MamangRust/microservice-ecommerce-grpc-user/cache"
@@ -34,9 +35,12 @@ func (s *UserGapiTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	s.SetupRoleService()
-	roleClient := pbrole.NewRoleQueryServiceClient(s.Conns["role"])
-
-	repos := repository.NewRepositories(gormDB, roleClient)
+	repos := repository.NewRepositories(&repository.Deps{
+		Db:                    gormDB,
+		RoleQueryClient:       pbrole.NewRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleQueryClient:   pbuserrole.NewUserRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleCommandClient: pbuserrole.NewUserRoleCommandServiceClient(s.Conns["role"]),
+	})
 
 	logger.ResetInstance()
 	lp := sdklog.NewLoggerProvider()

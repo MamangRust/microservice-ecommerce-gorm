@@ -1,26 +1,28 @@
 package apps
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"fmt"
+	"time"
+
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/handler"
 	transactionKafka "github.com/MamangRust/microservice-ecommerce-grpc-transaction/kafka"
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/service"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
 	"github.com/MamangRust/microservice-ecommerce-pkg/kafka"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-
-	pkgresilience "github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -35,7 +37,7 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 
 	// F6: dependency guard (per-call deadline + circuit breaker + bulkhead) on
 	// every downstream gRPC dependency.
-	guard := pkgresilience.NewDependencyGuardInterceptor(srv.Logger)
+	guard := resilience.NewDependencyGuardInterceptor(srv.Logger)
 
 	userConn, err := grpc.NewClient(userAddr, grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithChainUnaryInterceptor(guard.UnaryInterceptor()))
@@ -85,12 +87,29 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	shippingQueryClient := pbshipping_address.NewShippingQueryServiceClient(shippingConn)
 
 	repos := repository.NewRepositories(&repository.Deps{
-		DB:             srv.GormDB,
-		UserQuery:      userQueryClient,
-		MerchantQuery:  merchantQueryClient,
-		OrderQuery:     orderQueryClient,
-		OrderItemQuery: orderItemQueryClient,
-		ShippingQuery:  shippingQueryClient,
+		GormDB:               srv.GormDB,
+		UserQueryClient:      userQueryClient,
+		MerchantQueryClient:  merchantQueryClient,
+		OrderQueryClient:     orderQueryClient,
+		OrderItemQueryClient: orderItemQueryClient,
+		ShippingQueryClient:  shippingQueryClient,
+		Guards: repository.GuardOptions{
+			User: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("user", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+			Merchant: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("merchant", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+			Order: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("order", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+			OrderItem: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("order-item", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+			Shipping: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("shipping-address", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+		},
 	})
 	myKafka := kafka.NewKafka(srv.Logger, []string{viper.GetString("KAFKA_BROKERS")})
 	obs, _ := observability.NewObservability("transaction-server", srv.Logger)

@@ -1,7 +1,7 @@
 package productapimapper
 
 import (
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewProductQueryResponseMapper() ProductQueryResponseMapper {
 }
 
 func (p *productQueryResponseMapper) ToResponseProduct(product *pbproduct.ProductResponse) *response.ProductResponse {
-	if product == nil { return nil }
+	if product == nil {
+		return nil
+	}
 	return &response.ProductResponse{
 		ID:           int(product.Id),
 		MerchantID:   int(product.MerchantId),
@@ -41,7 +43,9 @@ func (p *productQueryResponseMapper) ToResponsesProduct(products []*pbproduct.Pr
 }
 
 func (p *productQueryResponseMapper) ToResponseProductDeleteAt(product *pbproduct.ProductResponseDeleteAt) *response.ProductResponseDeleteAt {
-	if product == nil { return nil }
+	if product == nil {
+		return nil
+	}
 	var deletedAt string
 	if product.DeletedAt != nil {
 		deletedAt = product.DeletedAt.Value

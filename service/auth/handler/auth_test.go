@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
 	"context"
 	"fmt"
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
 	"testing"
 
 	"github.com/MamangRust/microservice-ecommerce-auth/repository"

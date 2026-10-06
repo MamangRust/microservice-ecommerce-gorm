@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrRoleNotFoundRes   = errors.ErrNotFound.WithMessage("Role not found")
 	ErrFailedFindAll     = errors.ErrInternal.WithMessage("Failed to fetch Roles")

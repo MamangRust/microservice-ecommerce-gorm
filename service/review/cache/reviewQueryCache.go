@@ -24,22 +24,22 @@ const (
 
 type reviewCacheResponseDB struct {
 	Data         []*repository.ReviewResult `json:"data"`
-	TotalRecords *int                `json:"total_records"`
+	TotalRecords *int                       `json:"total_records"`
 }
 
 type reviewByProductCacheResponseDB struct {
 	Data         []*repository.ReviewResult `json:"data"`
-	TotalRecords *int                          `json:"total_records"`
+	TotalRecords *int                       `json:"total_records"`
 }
 
 type reviewByMerchantCacheResponseDB struct {
 	Data         []*repository.ReviewResult `json:"data"`
-	TotalRecords *int                           `json:"total_records"`
+	TotalRecords *int                       `json:"total_records"`
 }
 
 type reviewActiveCacheResponseDB struct {
 	Data         []*repository.ReviewResult `json:"data"`
-	TotalRecords *int                      `json:"total_records"`
+	TotalRecords *int                       `json:"total_records"`
 }
 
 type reviewTrashedCacheResponseDB struct {

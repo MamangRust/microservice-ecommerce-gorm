@@ -1,16 +1,15 @@
 package handler
 
 import (
-	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_document"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_document"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/repository"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/convert"
 )
-
 
 func normalizePage(page, pageSize int) (int, int) {
 	if page <= 0 {

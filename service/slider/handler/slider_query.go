@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
 	"context"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbslider "github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-slider/service"

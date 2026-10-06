@@ -1,12 +1,12 @@
 package authhandler
 
 import (
-	pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
 	"net/http"
 	"strconv"
 
 	"fmt"
 	auth_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/auth"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
@@ -18,7 +18,7 @@ import (
 )
 
 type authHandleParams struct {
-	client     pbauth.AuthServiceClient
+	client     pb_auth.AuthServiceClient
 	router     *echo.Echo
 	cache      auth_cache.AuthMencache
 	logger     logger.LoggerInterface
@@ -27,7 +27,7 @@ type authHandleParams struct {
 }
 
 type authHandleApi struct {
-	client        pbauth.AuthServiceClient
+	client        pb_auth.AuthServiceClient
 	logger        logger.LoggerInterface
 	queryMapper   authapimapper.AuthQueryResponseMapper
 	commandMapper authapimapper.AuthCommandResponseMapper
@@ -47,7 +47,7 @@ func RegisterAuthHandler(deps *DepsAuth) {
 	mapper := authapimapper.NewAuthResponseMapper()
 
 	NewHandlerAuth(&authHandleParams{
-		client:     pbauth.NewAuthServiceClient(deps.Client),
+		client:     pb_auth.NewAuthServiceClient(deps.Client),
 		router:     deps.E,
 		cache:      deps.Cache,
 		logger:     deps.Logger,
@@ -108,7 +108,7 @@ func (h *authHandleApi) Register(c echo.Context) error {
 		return sharedErrors.NewValidationError(validations)
 	}
 
-	data := &pbauth.RegisterRequest{
+	data := &pb_auth.RegisterRequest{
 		Firstname:       body.FirstName,
 		Lastname:        body.LastName,
 		Email:           body.Email,
@@ -153,7 +153,7 @@ func (h *authHandleApi) Login(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedResponse)
 	}
 
-	res, err := h.client.LoginUser(ctx, &pbauth.LoginRequest{
+	res, err := h.client.LoginUser(ctx, &pb_auth.LoginRequest{
 		Email:    body.Email,
 		Password: body.Password,
 	})
@@ -197,7 +197,7 @@ func (h *authHandleApi) RefreshToken(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedResponse)
 	}
 
-	res, err := h.client.RefreshToken(ctx, &pbauth.RefreshTokenRequest{
+	res, err := h.client.RefreshToken(ctx, &pb_auth.RefreshTokenRequest{
 		RefreshToken: body.RefreshToken,
 	})
 	if err != nil {
@@ -234,7 +234,7 @@ func (h *authHandleApi) GetMe(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	res, err := h.client.GetMe(ctx, &pbauth.GetMeRequest{UserId: int32(userID)})
+	res, err := h.client.GetMe(ctx, &pb_auth.GetMeRequest{UserId: int32(userID)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}

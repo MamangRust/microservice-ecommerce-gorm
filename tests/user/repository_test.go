@@ -1,8 +1,9 @@
 package user_test
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	"context"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"testing"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/repository"
@@ -24,8 +25,12 @@ func (s *UserRepositoryTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	s.SetupRoleService()
-	roleClient := pbrole.NewRoleQueryServiceClient(s.Conns["role"])
-	s.repo = repository.NewRepositories(gormDB, roleClient)
+	s.repo = repository.NewRepositories(&repository.Deps{
+		Db:                    gormDB,
+		RoleQueryClient:       pbrole.NewRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleQueryClient:   pbuserrole.NewUserRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleCommandClient: pbuserrole.NewUserRoleCommandServiceClient(s.Conns["role"]),
+	})
 }
 
 func (s *UserRepositoryTestSuite) TearDownSuite() {

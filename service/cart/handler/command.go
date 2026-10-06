@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
 	"context"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-cart/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

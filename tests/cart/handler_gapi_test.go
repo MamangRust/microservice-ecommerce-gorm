@@ -1,10 +1,10 @@
 package cart_test
 
 import (
-	pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"testing"
 
 	cart_cache "github.com/MamangRust/microservice-ecommerce-grpc-cart/cache"

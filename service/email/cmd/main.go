@@ -89,14 +89,14 @@ func main() {
 		cfg.SMTPPass,
 	)
 
-	dbConn, err := database.NewGormClientWithPrefix(logger, "DB_EMAIL")
+	dbConn, err := database.NewGormClientWithPrefix(logger, database.EmailCluster)
 	if err != nil {
 		logger.Fatal("Failed to connect to database for consumer inbox", zap.Error(err))
 	}
 
 	// Apply the email service's own migrations (consumer inbox table) on
 	// startup, mirroring the per-service migration pattern.
-	if err := database.RunMigrations(logger, "DB_EMAIL", "./database/migration"); err != nil {
+	if err := database.RunMigrations(logger, database.EmailCluster, "./database/migration"); err != nil {
 		logger.Fatal("Failed to run email service migrations", zap.Error(err))
 	}
 

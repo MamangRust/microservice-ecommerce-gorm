@@ -1,7 +1,7 @@
 package merchantpolicyapimapper
 
 import (
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

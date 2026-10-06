@@ -23,85 +23,85 @@ type CreateOrderItemParams struct {
 }
 
 type CreateOrderItemRow struct {
-	OrderItemID int32            `json:"order_item_id"`
-	OrderID     int32            `json:"order_id"`
-	ProductID   int32            `json:"product_id"`
-	Quantity    int32            `json:"quantity"`
-	Price       int32            `json:"price"`
+	OrderItemID int32      `json:"order_item_id"`
+	OrderID     int32      `json:"order_id"`
+	ProductID   int32      `json:"product_id"`
+	Quantity    int32      `json:"quantity"`
+	Price       int32      `json:"price"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
 type CreateShippingAddressRow struct {
-	ShippingAddressID int32            `json:"shipping_address_id"`
-	OrderID           int32            `json:"order_id"`
-	Alamat            string           `json:"alamat"`
-	Provinsi          string           `json:"provinsi"`
-	Negara            string           `json:"negara"`
-	Kota              string           `json:"kota"`
-	Courier           string           `json:"courier"`
-	ShippingMethod    string           `json:"shipping_method"`
-	ShippingCost      float64          `json:"shipping_cost"`
+	ShippingAddressID int32      `json:"shipping_address_id"`
+	OrderID           int32      `json:"order_id"`
+	Alamat            string     `json:"alamat"`
+	Provinsi          string     `json:"provinsi"`
+	Negara            string     `json:"negara"`
+	Kota              string     `json:"kota"`
+	Courier           string     `json:"courier"`
+	ShippingMethod    string     `json:"shipping_method"`
+	ShippingCost      float64    `json:"shipping_cost"`
 	CreatedAt         *time.Time `json:"created_at"`
 	UpdatedAt         *time.Time `json:"updated_at"`
 }
 
 type GetMerchantByIDRow struct {
-	MerchantID   int32            `json:"merchant_id"`
-	UserID       int32            `json:"user_id"`
-	Name         string           `json:"name"`
-	Description  *string          `json:"description"`
-	Address      *string          `json:"address"`
-	ContactEmail *string          `json:"contact_email"`
-	ContactPhone *string          `json:"contact_phone"`
-	Status       string           `json:"status"`
+	MerchantID   int32      `json:"merchant_id"`
+	UserID       int32      `json:"user_id"`
+	Name         string     `json:"name"`
+	Description  *string    `json:"description"`
+	Address      *string    `json:"address"`
+	ContactEmail *string    `json:"contact_email"`
+	ContactPhone *string    `json:"contact_phone"`
+	Status       string     `json:"status"`
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 }
 
 type GetOrderItemsByOrderRow struct {
-	OrderItemID int32            `json:"order_item_id"`
-	OrderID     int32            `json:"order_id"`
-	ProductID   int32            `json:"product_id"`
-	Quantity    int32            `json:"quantity"`
-	Price       int32            `json:"price"`
+	OrderItemID int32      `json:"order_item_id"`
+	OrderID     int32      `json:"order_id"`
+	ProductID   int32      `json:"product_id"`
+	Quantity    int32      `json:"quantity"`
+	Price       int32      `json:"price"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
 type GetProductByIDRow struct {
-	ProductID    int32            `json:"product_id"`
-	MerchantID   int32            `json:"merchant_id"`
-	CategoryID   int32            `json:"category_id"`
-	Name         string           `json:"name"`
-	Description  *string          `json:"description"`
-	Price        int32            `json:"price"`
-	CountInStock int32            `json:"count_in_stock"`
-	Brand        *string          `json:"brand"`
-	Weight       *int32           `json:"weight"`
-	Rating       *float64         `json:"rating"`
-	SlugProduct  *string          `json:"slug_product"`
-	ImageProduct *string          `json:"image_product"`
+	ProductID    int32      `json:"product_id"`
+	MerchantID   int32      `json:"merchant_id"`
+	CategoryID   int32      `json:"category_id"`
+	Name         string     `json:"name"`
+	Description  *string    `json:"description"`
+	Price        int32      `json:"price"`
+	CountInStock int32      `json:"count_in_stock"`
+	Brand        *string    `json:"brand"`
+	Weight       *int32     `json:"weight"`
+	Rating       *float64   `json:"rating"`
+	SlugProduct  *string    `json:"slug_product"`
+	ImageProduct *string    `json:"image_product"`
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 }
 
 type GetUserByIDRow struct {
-	UserID    int32            `json:"user_id"`
-	Firstname string           `json:"firstname"`
-	Lastname  string           `json:"lastname"`
-	Email     string           `json:"email"`
-	Password  string           `json:"password"`
+	UserID    int32      `json:"user_id"`
+	Firstname string     `json:"firstname"`
+	Lastname  string     `json:"lastname"`
+	Email     string     `json:"email"`
+	Password  string     `json:"password"`
 	CreatedAt *time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 type UpdateOrderItemRow struct {
-	OrderItemID int32            `json:"order_item_id"`
-	OrderID     int32            `json:"order_id"`
-	ProductID   int32            `json:"product_id"`
-	Quantity    int32            `json:"quantity"`
-	Price       int32            `json:"price"`
+	OrderItemID int32      `json:"order_item_id"`
+	OrderID     int32      `json:"order_id"`
+	ProductID   int32      `json:"product_id"`
+	Quantity    int32      `json:"quantity"`
+	Price       int32      `json:"price"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }
@@ -112,25 +112,25 @@ type UpdateProductCountStockRow struct {
 }
 
 type UpdateShippingAddressRow struct {
-	ShippingAddressID int32            `json:"shipping_address_id"`
-	OrderID           int32            `json:"order_id"`
-	Alamat            string           `json:"alamat"`
-	Provinsi          string           `json:"provinsi"`
-	Negara            string           `json:"negara"`
-	Kota              string           `json:"kota"`
-	Courier           string           `json:"courier"`
-	ShippingMethod    string           `json:"shipping_method"`
-	ShippingCost      float64          `json:"shipping_cost"`
+	ShippingAddressID int32      `json:"shipping_address_id"`
+	OrderID           int32      `json:"order_id"`
+	Alamat            string     `json:"alamat"`
+	Provinsi          string     `json:"provinsi"`
+	Negara            string     `json:"negara"`
+	Kota              string     `json:"kota"`
+	Courier           string     `json:"courier"`
+	ShippingMethod    string     `json:"shipping_method"`
+	ShippingCost      float64    `json:"shipping_cost"`
 	CreatedAt         *time.Time `json:"created_at"`
 	UpdatedAt         *time.Time `json:"updated_at"`
 }
 
 type OrderItem struct {
-	OrderItemID int32            `json:"order_item_id"`
-	OrderID     int32            `json:"order_id"`
-	ProductID   int32            `json:"product_id"`
-	Quantity    int32            `json:"quantity"`
-	Price       int32            `json:"price"`
+	OrderItemID int32      `json:"order_item_id"`
+	OrderID     int32      `json:"order_id"`
+	ProductID   int32      `json:"product_id"`
+	Quantity    int32      `json:"quantity"`
+	Price       int32      `json:"price"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 	DeletedAt   *time.Time `json:"deleted_at"`

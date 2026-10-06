@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedReviewNotFound = errors.ErrNotFound.WithMessage("Review not found")
 

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	order_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/order"
-		pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
@@ -14,14 +14,14 @@ import (
 )
 
 type orderQueryHandlerApi struct {
-	client pborder.OrderQueryServiceClient
+	client pb_order.OrderQueryServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.OrderQueryResponseMapper
 	cache  order_cache.OrderQueryCache
 }
 
 type orderQueryHandleDeps struct {
-	client pborder.OrderQueryServiceClient
+	client pb_order.OrderQueryServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.OrderQueryResponseMapper
@@ -59,9 +59,13 @@ func NewOrderQueryHandleApi(params *orderQueryHandleDeps) *orderQueryHandlerApi 
 // @Router /api/order-query [get]
 func (h *orderQueryHandlerApi) FindAll(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 { page = 1 }
+	if page <= 0 {
+		page = 1
+	}
 	pageSize, _ := strconv.Atoi(c.QueryParam("page_size"))
-	if pageSize <= 0 { pageSize = 10 }
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	search := c.QueryParam("search")
 
 	ctx := c.Request().Context()
@@ -71,7 +75,7 @@ func (h *orderQueryHandlerApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindAll(ctx, &pborder.FindAllOrderRequest{
+	res, err := h.client.FindAll(ctx, &pb_order.FindAllOrderRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -97,14 +101,16 @@ func (h *orderQueryHandlerApi) FindAll(c echo.Context) error {
 // @Router /api/order-query/{id} [get]
 func (h *orderQueryHandlerApi) FindById(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
 	if cachedData, found := h.cache.GetCachedOrderCache(ctx, id); found {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindById(ctx, &pborder.FindByIdOrderRequest{Id: int32(id)})
+	res, err := h.client.FindById(ctx, &pb_order.FindByIdOrderRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -129,9 +135,13 @@ func (h *orderQueryHandlerApi) FindById(c echo.Context) error {
 // @Router /api/order-query/active [get]
 func (h *orderQueryHandlerApi) FindByActive(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 { page = 1 }
+	if page <= 0 {
+		page = 1
+	}
 	pageSize, _ := strconv.Atoi(c.QueryParam("page_size"))
-	if pageSize <= 0 { pageSize = 10 }
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	search := c.QueryParam("search")
 
 	ctx := c.Request().Context()
@@ -141,7 +151,7 @@ func (h *orderQueryHandlerApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByActive(ctx, &pborder.FindAllOrderRequest{
+	res, err := h.client.FindByActive(ctx, &pb_order.FindAllOrderRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -168,9 +178,13 @@ func (h *orderQueryHandlerApi) FindByActive(c echo.Context) error {
 // @Router /api/order-query/trashed [get]
 func (h *orderQueryHandlerApi) FindByTrashed(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 { page = 1 }
+	if page <= 0 {
+		page = 1
+	}
 	pageSize, _ := strconv.Atoi(c.QueryParam("page_size"))
-	if pageSize <= 0 { pageSize = 10 }
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	search := c.QueryParam("search")
 
 	ctx := c.Request().Context()
@@ -180,7 +194,7 @@ func (h *orderQueryHandlerApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByTrashed(ctx, &pborder.FindAllOrderRequest{
+	res, err := h.client.FindByTrashed(ctx, &pb_order.FindAllOrderRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -192,4 +206,3 @@ func (h *orderQueryHandlerApi) FindByTrashed(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, apiResponse)
 }
-

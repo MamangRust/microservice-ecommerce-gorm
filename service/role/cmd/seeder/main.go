@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gorm.io/gorm"
 	"context"
 	"fmt"
+	"gorm.io/gorm"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/seeder"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database"
@@ -53,13 +53,13 @@ func main() {
 
 	ctx := context.Background()
 
-	roleDB, closeRole, err := open(logger, "DB_ROLE")
+	roleDB, closeRole, err := open(logger, database.IdentityCluster)
 	if err != nil {
 		logger.Fatal("Failed to connect to role database", zap.Error(err))
 	}
 	defer closeRole()
 
-	userDB, closeUser, err := openUser(logger, "DB_USER")
+	userDB, closeUser, err := openUser(logger, database.IdentityCluster)
 	if err != nil {
 		logger.Fatal("Failed to connect to user database", zap.Error(err))
 	}

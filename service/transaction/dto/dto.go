@@ -11,57 +11,57 @@ import (
 )
 
 type GetMerchantByIDRow struct {
-	MerchantID   int32            `json:"merchant_id"`
-	UserID       int32            `json:"user_id"`
-	Name         string           `json:"name"`
-	Description  *string          `json:"description"`
-	Address      *string          `json:"address"`
-	ContactEmail *string          `json:"contact_email"`
-	ContactPhone *string          `json:"contact_phone"`
-	Status       string           `json:"status"`
+	MerchantID   int32      `json:"merchant_id"`
+	UserID       int32      `json:"user_id"`
+	Name         string     `json:"name"`
+	Description  *string    `json:"description"`
+	Address      *string    `json:"address"`
+	ContactEmail *string    `json:"contact_email"`
+	ContactPhone *string    `json:"contact_phone"`
+	Status       string     `json:"status"`
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 }
 
 type GetOrderByIDRow struct {
-	OrderID    int32            `json:"order_id"`
-	UserID     int32            `json:"user_id"`
-	MerchantID int32            `json:"merchant_id"`
-	TotalPrice int32            `json:"total_price"`
+	OrderID    int32      `json:"order_id"`
+	UserID     int32      `json:"user_id"`
+	MerchantID int32      `json:"merchant_id"`
+	TotalPrice int32      `json:"total_price"`
 	CreatedAt  *time.Time `json:"created_at"`
 	UpdatedAt  *time.Time `json:"updated_at"`
 }
 
 type GetOrderItemsByOrderRow struct {
-	OrderItemID int32            `json:"order_item_id"`
-	OrderID     int32            `json:"order_id"`
-	ProductID   int32            `json:"product_id"`
-	Quantity    int32            `json:"quantity"`
-	Price       int32            `json:"price"`
+	OrderItemID int32      `json:"order_item_id"`
+	OrderID     int32      `json:"order_id"`
+	ProductID   int32      `json:"product_id"`
+	Quantity    int32      `json:"quantity"`
+	Price       int32      `json:"price"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
 type GetShippingAddressByOrderIDRow struct {
-	ShippingAddressID int32            `json:"shipping_address_id"`
-	OrderID           int32            `json:"order_id"`
-	Alamat            string           `json:"alamat"`
-	Provinsi          string           `json:"provinsi"`
-	Negara            string           `json:"negara"`
-	Kota              string           `json:"kota"`
-	Courier           string           `json:"courier"`
-	ShippingMethod    string           `json:"shipping_method"`
-	ShippingCost      float64          `json:"shipping_cost"`
+	ShippingAddressID int32      `json:"shipping_address_id"`
+	OrderID           int32      `json:"order_id"`
+	Alamat            string     `json:"alamat"`
+	Provinsi          string     `json:"provinsi"`
+	Negara            string     `json:"negara"`
+	Kota              string     `json:"kota"`
+	Courier           string     `json:"courier"`
+	ShippingMethod    string     `json:"shipping_method"`
+	ShippingCost      float64    `json:"shipping_cost"`
 	CreatedAt         *time.Time `json:"created_at"`
 	UpdatedAt         *time.Time `json:"updated_at"`
 }
 
 type GetUserByIDRow struct {
-	UserID    int32            `json:"user_id"`
-	Firstname string           `json:"firstname"`
-	Lastname  string           `json:"lastname"`
-	Email     string           `json:"email"`
-	Password  string           `json:"password"`
+	UserID    int32      `json:"user_id"`
+	Firstname string     `json:"firstname"`
+	Lastname  string     `json:"lastname"`
+	Email     string     `json:"email"`
+	Password  string     `json:"password"`
 	CreatedAt *time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 }

@@ -1,8 +1,8 @@
 package banner_test
 
 import (
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
 	"context"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
 	"testing"
 
 	banner_cache "github.com/MamangRust/microservice-ecommerce-grpc-banner/cache"

@@ -24,8 +24,6 @@ var (
 	ErrRestoreAllProducts = errors.ErrInternal.WithMessage("failed to restore all products")
 	ErrDeleteAllProducts  = errors.ErrInternal.WithMessage("failed to permanently delete all products")
 
-	ErrProductInternal = errors.ErrInternal.WithMessage("product internal repository error")
+	ErrProductInternal         = errors.ErrInternal.WithMessage("product internal repository error")
 	ErrUpdateProductCountStock = errors.ErrInternal.WithMessage("failed to update product count stock")
 )
-
-

@@ -2,7 +2,6 @@ package seeder
 
 import (
 	"time"
-
 )
 
 func toBoolPtr(b bool) *bool {

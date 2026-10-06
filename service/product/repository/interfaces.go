@@ -2,18 +2,21 @@ package repository
 
 import (
 	"context"
+	"time"
 
+	categoryadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/category"
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 
-type CategoryQueryRepository interface {
-	FindByID(ctx context.Context, category_id int) (*models.Category, error)
-}
+// CategoryQueryRepository is the shared category query contract, provided by
+// the category gRPC adapter.
+type CategoryQueryRepository = categoryadapter.QueryRepository
 
-type MerchantQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*models.Merchant, error)
-}
+// MerchantQueryRepository is the shared merchant query contract, provided by the
+// merchant gRPC adapter so this service never holds a raw gRPC client.
+type MerchantQueryRepository = merchantadapter.QueryRepository
 
 type ProductResult struct {
 	ProductID    int32
@@ -49,6 +52,7 @@ type ProductCommandRepository interface {
 	Update(ctx context.Context, request *requests.UpdateProductRequest) (*models.Product, error)
 	UpdateProductCountStock(ctx context.Context, product_id int, stock int) (*models.Product, error)
 	AdjustProductStock(ctx context.Context, product_id int, delta int, operationID string) (*models.Product, error)
+	CleanupStockAdjustments(ctx context.Context, cutoff time.Time) (int64, error)
 	Trash(ctx context.Context, product_id int) (*models.Product, error)
 	Restore(ctx context.Context, product_id int) (*models.Product, error)
 	DeletePermanent(ctx context.Context, product_id int) (bool, error)

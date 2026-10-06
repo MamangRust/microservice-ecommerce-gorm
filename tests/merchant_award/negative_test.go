@@ -1,8 +1,8 @@
 package merchant_award_test
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
 	"context"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 	"net/http"
 	"net/http/httptest"
 

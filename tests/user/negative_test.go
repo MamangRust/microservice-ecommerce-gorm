@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 
 	apigatewaymiddlewares "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/middlewares"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
-		pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

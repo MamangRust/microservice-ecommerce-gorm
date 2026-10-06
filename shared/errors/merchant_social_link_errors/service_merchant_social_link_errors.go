@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedCreateMerchantSocialLink              = errors.ErrInternal.WithMessage("failed to create merchant social link")
 	ErrFailedUpdateMerchantSocialLink              = errors.ErrInternal.WithMessage("failed to update merchant social link")

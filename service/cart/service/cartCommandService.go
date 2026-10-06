@@ -52,7 +52,7 @@ func (s *cartCommandService) Create(ctx context.Context, req *requests.CreateCar
 		end(status)
 	}()
 
-	product, err := s.productQueryRepository.FindById(ctx, req.ProductID)
+	product, err := s.productQueryRepository.FindByID(ctx, req.ProductID)
 	if err != nil {
 		status = "error"
 		return errorhandler.HandleError[*repository.CartCreateResult](
@@ -73,7 +73,7 @@ func (s *cartCommandService) Create(ctx context.Context, req *requests.CreateCar
 		return errorhandler.HandleError[*repository.CartCreateResult](s.logger, errors.ErrBadRequest.WithMessage("Insufficient product stock"), method, span)
 	}
 
-	_, err = s.userQueryRepository.FindById(ctx, req.UserID)
+	_, err = s.userQueryRepository.FindByID(ctx, req.UserID)
 	if err != nil {
 		status = "error"
 		return errorhandler.HandleError[*repository.CartCreateResult](
@@ -85,15 +85,8 @@ func (s *cartCommandService) Create(ctx context.Context, req *requests.CreateCar
 		)
 	}
 
-	var imageProduct string
-	if product.ImageProduct != nil {
-		imageProduct = *product.ImageProduct
-	}
-
-	var weight int
-	if product.Weight != nil {
-		weight = int(*product.Weight)
-	}
+	imageProduct := product.ImageProduct
+	weight := int(product.Weight)
 
 	cartRecord := &requests.CartCreateRecord{
 		ProductID:    req.ProductID,

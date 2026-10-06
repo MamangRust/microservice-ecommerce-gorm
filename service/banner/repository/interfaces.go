@@ -8,16 +8,16 @@ import (
 )
 
 type BannerResult struct {
-	BannerID  int32
-	Name      string
-	StartDate *string
-	EndDate   *string
-	StartTime *string
-	EndTime   *string
-	IsActive  *bool
-	CreatedAt *string
-	UpdatedAt *string
-	DeletedAt *string
+	BannerID   int32
+	Name       string
+	StartDate  *string
+	EndDate    *string
+	StartTime  *string
+	EndTime    *string
+	IsActive   *bool
+	CreatedAt  *string
+	UpdatedAt  *string
+	DeletedAt  *string
 	TotalCount int64
 }
 

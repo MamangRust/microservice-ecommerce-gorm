@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedImageNotFound             = errors.ErrNotFound.WithMessage("Image not found")
 	ErrFailedRemoveImageMerchantDetail = errors.ErrInternal.WithMessage("Failed to remove image merchant detail")

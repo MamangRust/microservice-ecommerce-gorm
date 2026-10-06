@@ -2,8 +2,8 @@ package reviewdetail_cache
 
 import (
 	"context"
-	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"fmt"
+	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 )
 
 type reviewDetailCommandCache struct {

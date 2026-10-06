@@ -1,7 +1,7 @@
 package merchantdetailapimapper
 
 import (
-	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_detail"
+	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_detail"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

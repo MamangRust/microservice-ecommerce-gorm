@@ -1,8 +1,8 @@
 package order_test
 
 import (
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
 	"context"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
 	"net/http"
 	"net/http/httptest"
 

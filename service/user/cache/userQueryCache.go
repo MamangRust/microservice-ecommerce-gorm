@@ -12,17 +12,17 @@ import (
 
 type userCacheResponseAll struct {
 	Data         []*repository.UserResult `json:"data"`
-	TotalRecords *int                      `json:"total_records"`
+	TotalRecords *int                     `json:"total_records"`
 }
 
 type userCacheResponseActive struct {
 	Data         []*repository.UserResult `json:"data"`
-	TotalRecords *int                      `json:"total_records"`
+	TotalRecords *int                     `json:"total_records"`
 }
 
 type userCacheResponseTrashed struct {
 	Data         []*repository.UserResult `json:"data"`
-	TotalRecords *int                      `json:"total_records"`
+	TotalRecords *int                     `json:"total_records"`
 }
 
 type userQueryCache struct {

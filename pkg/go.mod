@@ -13,7 +13,6 @@ require (
 	github.com/gosimple/slug v1.15.0
 	github.com/grafana/pyroscope-go v1.2.8
 	github.com/jackc/pgx/v5 v5.9.1
-	github.com/labstack/echo/v4 v4.15.0
 	github.com/lib/pq v1.10.9
 	github.com/pressly/goose/v3 v3.27.0
 	github.com/redis/go-redis/v9 v9.18.0

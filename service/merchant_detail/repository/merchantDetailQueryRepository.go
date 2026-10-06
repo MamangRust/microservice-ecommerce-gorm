@@ -37,7 +37,7 @@ func (r *merchantDetailQueryRepository) FindAll(ctx context.Context, req *reques
 			AND (? = '' OR md.display_name ILIKE ? OR md.short_description ILIKE ?)
 		ORDER BY md.merchant_detail_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, merchantdetail_errors.ErrFindAllMerchantDetails.WithInternal(err)
 	}
@@ -65,7 +65,7 @@ func (r *merchantDetailQueryRepository) FindActive(ctx context.Context, req *req
 			AND (? = '' OR md.display_name ILIKE ? OR md.short_description ILIKE ?)
 		ORDER BY md.merchant_detail_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, merchantdetail_errors.ErrFindActiveMerchantDetails.WithInternal(err)
 	}
@@ -93,7 +93,7 @@ func (r *merchantDetailQueryRepository) FindTrashed(ctx context.Context, req *re
 			AND (? = '' OR md.display_name ILIKE ? OR md.short_description ILIKE ?)
 		ORDER BY md.merchant_detail_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, merchantdetail_errors.ErrFindTrashedMerchantDetails.WithInternal(err)
 	}
@@ -125,4 +125,3 @@ func (r *merchantDetailQueryRepository) FindByID(ctx context.Context, userID int
 	}
 	return &result, nil
 }
-

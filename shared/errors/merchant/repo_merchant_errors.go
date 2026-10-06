@@ -23,5 +23,3 @@ var (
 
 	ErrMerchantInternal = errors.ErrInternal.WithMessage("merchant internal repository error")
 )
-
-

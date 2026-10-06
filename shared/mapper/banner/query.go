@@ -1,7 +1,7 @@
 package bannerapimapper
 
 import (
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewBannerQueryResponseMapper() BannerQueryResponseMapper {
 }
 
 func (m *bannerQueryResponseMapper) ToResponseBanner(banner *pbbanner.BannerResponse) *response.BannerResponse {
-	if banner == nil { return nil }
+	if banner == nil {
+		return nil
+	}
 	return &response.BannerResponse{
 		ID:        banner.BannerId,
 		Name:      banner.Name,
@@ -64,7 +66,9 @@ func (m *bannerQueryResponseMapper) ToApiResponsePaginationBannerDeleteAt(pbResp
 	var data []*response.BannerResponseDeleteAt
 	for _, b := range pbResponse.Data {
 		var deletedAt string
-		if b.DeletedAt != nil { deletedAt = b.DeletedAt.Value }
+		if b.DeletedAt != nil {
+			deletedAt = b.DeletedAt.Value
+		}
 		data = append(data, &response.BannerResponseDeleteAt{
 			ID:        b.BannerId,
 			Name:      b.Name,

@@ -1,8 +1,8 @@
 package order_test
 
 import (
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
 	"context"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
 	"time"
 
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"

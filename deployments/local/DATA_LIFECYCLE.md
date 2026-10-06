@@ -23,9 +23,10 @@ State yang bertahan (persist) didefinisikan sebagai named volumes di compose:
 
 | Volume | Data |
 |---|---|
-| `postgres_ecommerce_data` | PostgreSQL `/var/lib/postgresql/data` |
+| `postgres_identity_data`, `postgres_merchant_data`, `postgres_catalog_data`, `postgres_sales_data`, `postgres_experience_data`, `postgres_email_data` | PostgreSQL `/var/lib/postgresql/data` — satu volume per bounded context |
 | `kafka_ecommerce_data` | Kafka `/bitnami/kafka` |
 | `redis_ecommerce_data` | Redis `/data` |
+| `clickhouse_ecommerce_data` | ClickHouse `/var/lib/clickhouse` |
 | `loki_ecommerce_data` | Log Loki |
 | `grafana_ecommerce-storage` | Dashboard Grafana |
 
@@ -47,8 +48,12 @@ docker compose -f deployments/local/docker-compose.yml up -d
 
 ## 2. Backup PostgreSQL
 
+Database-nya enam instance terpisah — satu per bounded context (`identity`,
+`merchant`, `catalog`, `sales`, `experience`, `email`) — jadi satu kali backup
+menghasilkan satu snapshot berisi enam dump.
+
 ```bash
-# Manual: simpan ke deployments/local/backups/ecommerce_<ts>.sql.gz
+# Manual: simpan ke deployments/local/backups/ecommerce_<ts>/
 ./deployments/local/scripts/backup.sh
 
 # Dengan retention 14 hari
@@ -56,9 +61,10 @@ docker compose -f deployments/local/docker-compose.yml up -d
 ```
 
 Yang dilakukan script:
-1. Memastikan container `postgres` sehat.
-2. `pg_dump --no-owner --no-privileges` → gzip → `backups/`.
-3. Menghapus backup lebih tua dari retention (default 7 hari).
+1. Memastikan keenam container `postgres_<ctx>` sehat.
+2. `pg_dump --no-owner --no-privileges` per context → gzip →
+   `backups/ecommerce_<ts>/ec_<ctx>.sql.gz`, plus file `MANIFEST`.
+3. Menghapus snapshot lebih tua dari retention (default 7 hari).
 
 Hasil dump **portable** (tanpa owner/privilege) sehingga bisa di-restore ke
 environment sekali pakai (disposable).
@@ -69,19 +75,25 @@ environment sekali pakai (disposable).
 
 ```bash
 # Restore dengan konfirmasi
-./deployments/local/scripts/restore.sh backups/ecommerce_20260101_000000.sql.gz
+./deployments/local/scripts/restore.sh backups/ecommerce_20260101_000000
 
 # Restore tanpa prompt (untuk CI/script)
-./deployments/local/scripts/restore.sh --yes backups/ecommerce_20260101_000000.sql.gz
+./deployments/local/scripts/restore.sh --yes backups/ecommerce_20260101_000000
 ```
 
 Yang dilakukan script:
-1. Memvalidasi file backup dan container postgres.
-2. Men-terminate koneksi aktif, `DROP DATABASE`, lalu `CREATE DATABASE`.
-3. Meng-restore isi dump (`.sql` atau `.sql.gz`).
+1. Memvalidasi direktori snapshot, tiap dump (non-kosong + gzip valid), dan
+   container `postgres_<ctx>` untuk setiap context di dalamnya.
+2. Men-terminate koneksi aktif, lalu `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
+   di tiap database context.
+3. Meng-restore tiap dump `ec_<ctx>.sql.gz`.
 
-> ⚠️ Restore bersifat **destruktif** — database di-drop dan dibuat ulang.
-> Selalu pastikan backup terbaru tersedia sebelum restore.
+> ⚠️ Restore bersifat **destruktif** — schema `public` di setiap database
+> context di-drop dan dibuat ulang. Selalu pastikan backup terbaru tersedia
+> sebelum restore.
+
+Schema di-drop (bukan database-nya) supaya target PgBouncer tetap valid dan
+koneksi service yang sedang berjalan bisa reconnect tanpa restart.
 
 **Restore ke environment disposable:** karena dump memakai `--no-owner
 --no-privileges`, cukup jalankan restore terhadap postgres baru di env lain —
@@ -91,7 +103,9 @@ tidak perlu user/role khusus.
 
 ## 4. Migration & rollback (Goose)
 
-Migration ada di `service/migrate/migrations/` dan dijalankan dengan Goose.
+Migration ada di `service/<svc>/database/migration/` (satu direktori per service;
+service yang berbagi bounded context berbagi satu database) dan dijalankan dengan
+Goose.
 
 ```bash
 # Migrate ke versi terbaru
@@ -112,14 +126,17 @@ go run service/migrate/cmd/main.go reset
 
 **Prosedur jika migration gagal:**
 
-1. Cek log container migrate: `docker compose -f deployments/local/docker-compose.yml logs migrate`.
+1. Baca output `go run service/migrate/cmd/main.go up` — tiap context di-log
+   dengan prefix `[identity]`, `[merchant]`, dst.
 2. Identifikasi versi yang gagal: `go run service/migrate/cmd/main.go status`.
 3. Rollback ke versi terakhir yang sukses: `go run service/migrate/cmd/main.go down-to <n>`.
 4. Perbaiki file migration, lalu `just migrate` lagi.
 5. Pastikan service yang bergantung pada kolom baru di-restart setelah migrate.
 
 > Goose mencatat versi terakhir yang berhasil di tabel `goose_db_version` —
-> `down`/`down-to` aman karena hanya membalik migrasi terdaftar.
+> `down`/`down-to` aman karena hanya membalik migrasi terdaftar. Tabel itu
+> dimiliki per bounded context, dan service yang berbagi satu context
+> (mis. `auth`, `user`, `role` di identity) berbagi satu urutan versi.
 
 ---
 

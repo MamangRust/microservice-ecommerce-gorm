@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_award/repository"
@@ -38,8 +38,6 @@ func mapToProtoMerchantAwardResponse(v *repository.MerchantCertResult) *pbmercha
 func mapToProtoMerchantAwardResponseDeleteAt(v *repository.MerchantCertResult) *pbmerchant_award.MerchantAwardResponseDeleteAt {
 	return mapToProtoMerchantAwardResponseDeleteAtFromResult(v)
 }
-
-
 
 func mapToProtoMerchantAwardResponseFromResult(v *repository.MerchantCertResult) *pbmerchant_award.MerchantAwardResponse {
 	if v == nil {

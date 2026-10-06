@@ -2,6 +2,7 @@
 deployments/local/uploads
 bin/
 deployments/local/logs/
+deployments/local/backups/
 
 # Local environment files (keep *.example templates tracked)
 .env

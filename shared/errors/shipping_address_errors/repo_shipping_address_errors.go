@@ -20,4 +20,3 @@ var (
 
 	ErrShippingAddressNotFound = errors.ErrNotFound.WithMessage("shipping address not found")
 )
-

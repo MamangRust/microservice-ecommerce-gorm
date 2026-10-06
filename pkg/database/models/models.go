@@ -258,8 +258,8 @@ type Banner struct {
 	Name      string     `gorm:"column:name" json:"name"`
 	StartDate *time.Time `gorm:"column:start_date" json:"start_date"`
 	EndDate   *time.Time `gorm:"column:end_date" json:"end_date"`
-	StartTime *string `gorm:"column:start_time" json:"start_time"`
-	EndTime   *string `gorm:"column:end_time" json:"end_time"`
+	StartTime *string    `gorm:"column:start_time" json:"start_time"`
+	EndTime   *string    `gorm:"column:end_time" json:"end_time"`
 	IsActive  *bool      `gorm:"column:is_active" json:"is_active"`
 	CreatedAt *time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt *time.Time `gorm:"column:updated_at" json:"updated_at"`

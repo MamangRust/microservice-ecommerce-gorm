@@ -31,7 +31,7 @@ func (r *shippingAddressQueryRepository) FindAll(ctx context.Context, req *reque
 			AND (? = '' OR sa.alamat ILIKE ? OR sa.provinsi ILIKE ?)
 		ORDER BY sa.shipping_address_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, shippingaddress_errors.ErrFindAllShippingAddress
 	}
@@ -53,7 +53,7 @@ func (r *shippingAddressQueryRepository) FindActive(ctx context.Context, req *re
 			AND (? = '' OR sa.alamat ILIKE ? OR sa.provinsi ILIKE ?)
 		ORDER BY sa.shipping_address_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, shippingaddress_errors.ErrFindActiveShippingAddress
 	}
@@ -75,7 +75,7 @@ func (r *shippingAddressQueryRepository) FindTrashed(ctx context.Context, req *r
 			AND (? = '' OR sa.alamat ILIKE ? OR sa.provinsi ILIKE ?)
 		ORDER BY sa.shipping_address_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, shippingaddress_errors.ErrFindTrashedShippingAddress
 	}

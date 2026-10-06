@@ -1,11 +1,11 @@
 package shippingaddresshandler
 
 import (
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
 	"net/http"
 	"strconv"
 
 	shippingaddress_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/shipping_address"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/shipping_address"
@@ -15,14 +15,14 @@ import (
 )
 
 type shippingAddressCommandHandleApi struct {
-	client pbshipping_address.ShippingCommandServiceClient
+	client pb_shipping_address.ShippingCommandServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.ShippingAddressCommandResponseMapper
 	cache  shippingaddress_cache.ShippingAddressCommandCache
 }
 
 type shippingAddressCommandHandleDeps struct {
-	client pbshipping_address.ShippingCommandServiceClient
+	client pb_shipping_address.ShippingCommandServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.ShippingAddressCommandResponseMapper
@@ -63,7 +63,7 @@ func (h *shippingAddressCommandHandleApi) TrashedShippingAddress(c echo.Context)
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.TrashedShipping(ctx, &pbshipping_address.FindByIdShippingRequest{Id: int32(id)})
+	res, err := h.client.TrashedShipping(ctx, &pb_shipping_address.FindByIdShippingRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "Trash")
 	}
@@ -91,7 +91,7 @@ func (h *shippingAddressCommandHandleApi) RestoreShippingAddress(c echo.Context)
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.RestoreShipping(ctx, &pbshipping_address.FindByIdShippingRequest{Id: int32(id)})
+	res, err := h.client.RestoreShipping(ctx, &pb_shipping_address.FindByIdShippingRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "Restore")
 	}
@@ -119,7 +119,7 @@ func (h *shippingAddressCommandHandleApi) DeleteShippingAddressPermanent(c echo.
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.DeleteShippingPermanent(ctx, &pbshipping_address.FindByIdShippingRequest{Id: int32(id)})
+	res, err := h.client.DeleteShippingPermanent(ctx, &pb_shipping_address.FindByIdShippingRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "Delete")
 	}

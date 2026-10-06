@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/service"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 )
 

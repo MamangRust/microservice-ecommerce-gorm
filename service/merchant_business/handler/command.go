@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"context"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_business/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
@@ -48,8 +48,8 @@ func (s *merchantBusinessCommandHandler) Create(ctx context.Context, request *pb
 	return &pbmerchant_business.ApiResponseMerchantBusiness{
 		Status:  "success",
 		Message: "Successfully created merchant business",
-		Data:mapToProtoMerchantBusinessResponseFromModel(merchant),
-		}, nil
+		Data:    mapToProtoMerchantBusinessResponseFromModel(merchant),
+	}, nil
 }
 
 func (s *merchantBusinessCommandHandler) Update(ctx context.Context, request *pbmerchant_business.UpdateMerchantBusinessRequest) (*pbmerchant_business.ApiResponseMerchantBusiness, error) {
@@ -75,8 +75,8 @@ func (s *merchantBusinessCommandHandler) Update(ctx context.Context, request *pb
 	return &pbmerchant_business.ApiResponseMerchantBusiness{
 		Status:  "success",
 		Message: "Successfully updated merchant business",
-		Data:mapToProtoMerchantBusinessResponseFromModel(merchant),
-		}, nil
+		Data:    mapToProtoMerchantBusinessResponseFromModel(merchant),
+	}, nil
 }
 
 func (s *merchantBusinessCommandHandler) TrashedMerchantBusiness(ctx context.Context, request *pbmerchant_business.FindByIdMerchantBusinessRequest) (*pbmerchant_business.ApiResponseMerchantBusinessDeleteAt, error) {
@@ -94,8 +94,8 @@ func (s *merchantBusinessCommandHandler) TrashedMerchantBusiness(ctx context.Con
 	return &pbmerchant_business.ApiResponseMerchantBusinessDeleteAt{
 		Status:  "success",
 		Message: "Successfully trashed merchant business",
-		Data:mapToProtoMerchantBusinessResponseDeleteAtFromModel(merchant),
-		}, nil
+		Data:    mapToProtoMerchantBusinessResponseDeleteAtFromModel(merchant),
+	}, nil
 }
 
 func (s *merchantBusinessCommandHandler) RestoreMerchantBusiness(ctx context.Context, request *pbmerchant_business.FindByIdMerchantBusinessRequest) (*pbmerchant_business.ApiResponseMerchantBusinessDeleteAt, error) {
@@ -113,8 +113,8 @@ func (s *merchantBusinessCommandHandler) RestoreMerchantBusiness(ctx context.Con
 	return &pbmerchant_business.ApiResponseMerchantBusinessDeleteAt{
 		Status:  "success",
 		Message: "Successfully restored merchant business",
-		Data:mapToProtoMerchantBusinessResponseDeleteAtFromModel(merchant),
-		}, nil
+		Data:    mapToProtoMerchantBusinessResponseDeleteAtFromModel(merchant),
+	}, nil
 }
 
 func (s *merchantBusinessCommandHandler) DeleteMerchantBusinessPermanent(ctx context.Context, request *pbmerchant_business.FindByIdMerchantBusinessRequest) (*pbmerchant.ApiResponseMerchantDelete, error) {

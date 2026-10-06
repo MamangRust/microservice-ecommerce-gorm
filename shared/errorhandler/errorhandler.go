@@ -56,7 +56,6 @@ func HandleError[T any](
 	return zero, err
 }
 
-
 func HandlerErrorPagination[T any](
 	logger logger.LoggerInterface,
 	err error,

@@ -2,11 +2,11 @@ package reviewhandler
 
 import (
 	review_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/review"
-		pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
-	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/review"
+	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
 )
@@ -24,7 +24,7 @@ func RegisterReviewHandler(deps *DepsReview) {
 	cache := review_cache.NewReviewMencache(deps.Cache)
 
 	NewReviewQueryHandleApi(&reviewQueryHandleDeps{
-		client:        pbreview.NewReviewQueryServiceClient(deps.Client),
+		client:        pb_review.NewReviewQueryServiceClient(deps.Client),
 		router:        deps.E,
 		logger:        deps.Logger,
 		mapper:        mapper.QueryMapper(),
@@ -33,7 +33,7 @@ func RegisterReviewHandler(deps *DepsReview) {
 	})
 
 	NewReviewCommandHandleApi(&reviewCommandHandleDeps{
-		client:        pbreview.NewReviewCommandServiceClient(deps.Client),
+		client:        pb_review.NewReviewCommandServiceClient(deps.Client),
 		router:        deps.E,
 		logger:        deps.Logger,
 		mapper:        mapper.CommandMapper(),

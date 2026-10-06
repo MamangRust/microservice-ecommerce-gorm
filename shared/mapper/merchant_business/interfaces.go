@@ -1,7 +1,7 @@
 package merchantbusinessapimapper
 
 import (
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

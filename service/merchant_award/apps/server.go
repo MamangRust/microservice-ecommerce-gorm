@@ -1,20 +1,22 @@
 package apps
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"fmt"
+	"time"
+
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_award/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_award/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_award/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_award/service"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-
-	pkgresilience "github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -24,14 +26,12 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 		return nil, err
 	}
 
-	// GORM
-
 	merchantAddr := viper.GetString("GRPC_MERCHANT_ADDR")
 
 	merchantConn, err := grpc.NewClient(
 		merchantAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithChainUnaryInterceptor(pkgresilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
+		grpc.WithChainUnaryInterceptor(resilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to merchant service: %w", err)
@@ -39,7 +39,13 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 
 	merchantQueryClient := pbmerchant.NewMerchantQueryServiceClient(merchantConn)
 
-	repos := repository.NewRepositories(srv.GormDB, merchantQueryClient)
+	repos := repository.NewRepositories(srv.GormDB, merchantQueryClient,
+		repository.GuardOptions{
+			Merchant: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("merchant", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+		},
+	)
 	observability, _ := observability.NewObservability("merchant_award-server", srv.Logger)
 
 	cache := cache.NewMencache(srv.CacheStore)

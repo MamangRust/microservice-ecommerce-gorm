@@ -1,8 +1,8 @@
 package merchant_policy_test
 
 import (
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
 	"context"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
 	"net/http"
 	"net/http/httptest"
 

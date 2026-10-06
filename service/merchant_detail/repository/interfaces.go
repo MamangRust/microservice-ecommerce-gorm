@@ -3,24 +3,14 @@ package repository
 import (
 	"context"
 
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 
-type MerchantQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*MerchantByIDResult, error)
-}
-
-type MerchantByIDResult struct {
-	MerchantID   int32
-	UserID       int32
-	Name         string
-	Description  *string
-	Address      *string
-	ContactEmail *string
-	ContactPhone *string
-	Status       string
-}
+// MerchantQueryRepository is the shared merchant query contract, provided by the
+// merchant gRPC adapter so this service never holds a raw gRPC client.
+type MerchantQueryRepository = merchantadapter.QueryRepository
 
 type MerchantDetailResult struct {
 	MerchantDetailID int32

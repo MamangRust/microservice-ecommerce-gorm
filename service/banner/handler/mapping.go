@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
 	"math"
 	"time"
 
@@ -90,7 +90,6 @@ func mapToProtoBannerResponse(m interface{}) *pbbanner.BannerResponse {
 		return nil
 	}
 }
-
 
 func mapToProtoBannerResponseDeleteAt(m interface{}) *pbbanner.BannerResponseDeleteAt {
 	switch v := m.(type) {

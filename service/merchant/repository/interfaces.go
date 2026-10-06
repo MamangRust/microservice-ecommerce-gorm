@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
-	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/dto"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"gorm.io/gorm"
 )
@@ -78,6 +78,6 @@ type MerchantCommandRepository interface {
 	UpdateStatusInTx(ctx context.Context, tx *gorm.DB, request *requests.UpdateMerchantStatusRequest) (*models.Merchant, error)
 }
 
-type UserQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*dto.GetUserByIDRow, error)
-}
+// UserQueryRepository is the shared user query contract, provided by the user
+// gRPC adapter so this service never holds a raw gRPC client.
+type UserQueryRepository = useradapter.QueryRepository

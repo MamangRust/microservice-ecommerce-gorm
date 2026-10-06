@@ -2,7 +2,7 @@ package sliderhandler
 
 import (
 	slider_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/slider"
-		pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
@@ -24,7 +24,7 @@ func RegisterSliderHandler(deps *DepsSlider) {
 	cache := slider_cache.NewSliderMencache(deps.Cache)
 
 	NewSliderQueryHandleApi(&sliderQueryHandleDeps{
-		client: pbslider.NewSliderQueryServiceClient(deps.Client),
+		client: pb_slider.NewSliderQueryServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.QueryMapper(),
@@ -32,12 +32,12 @@ func RegisterSliderHandler(deps *DepsSlider) {
 	})
 
 	NewSliderCommandHandleApi(&sliderCommandHandleDeps{
-		client: pbslider.NewSliderCommandServiceClient(deps.Client),
-		router: deps.E,
-		logger: deps.Logger,
-		mapper: mapper.CommandMapper(),
+		client:      pb_slider.NewSliderCommandServiceClient(deps.Client),
+		router:      deps.E,
+		logger:      deps.Logger,
+		mapper:      mapper.CommandMapper(),
 		queryMapper: mapper.QueryMapper(),
-		cache:  cache.CommandCache(),
-		upload: deps.Upload,
+		cache:       cache.CommandCache(),
+		upload:      deps.Upload,
 	})
 }

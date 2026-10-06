@@ -1,7 +1,7 @@
 package merchantawardapimapper
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewMerchantAwardQueryResponseMapper() MerchantAwardQueryResponseMapper {
 }
 
 func (m *merchantAwardQueryResponseMapper) ToResponseMerchantAward(MerchantAward *pbmerchant_award.MerchantAwardResponse) *response.MerchantAwardResponse {
-	if MerchantAward == nil { return nil }
+	if MerchantAward == nil {
+		return nil
+	}
 	return &response.MerchantAwardResponse{
 		ID:             int(MerchantAward.Id),
 		MerchantID:     int(MerchantAward.MerchantId),
@@ -65,7 +67,9 @@ func (m *merchantAwardQueryResponseMapper) ToApiResponsePaginationMerchantAwardD
 	var data []*response.MerchantAwardResponseDeleteAt
 	for _, b := range pbResponse.Data {
 		var deletedAt string
-		if b.DeletedAt != nil { deletedAt = b.DeletedAt.Value }
+		if b.DeletedAt != nil {
+			deletedAt = b.DeletedAt.Value
+		}
 		data = append(data, &response.MerchantAwardResponseDeleteAt{
 			ID:             int(b.Id),
 			MerchantID:     int(b.MerchantId),

@@ -11,7 +11,7 @@ func TestReserveValidatesKeys(t *testing.T) {
 		consumerName string
 		eventKey     string
 	}{
-		"empty consumer": {consumerName: "", eventKey: "topic:evt-1"},
+		"empty consumer":  {consumerName: "", eventKey: "topic:evt-1"},
 		"empty event key": {consumerName: "email-service-group", eventKey: ""},
 	} {
 		t.Run(name, func(t *testing.T) {

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"context"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

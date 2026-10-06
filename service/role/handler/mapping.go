@@ -1,8 +1,9 @@
 package handler
 
 import (
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"math"
 	"time"
 
@@ -98,11 +99,11 @@ func mapToProtoRoleResponseDeleteAt(m *models.Role) *pbrole.RoleResponseDeleteAt
 	return res
 }
 
-func mapToProtoUserRoleResponse(v *models.UserRole) *pbrole.UserRoleResponse {
+func mapToProtoUserRoleResponse(v *models.UserRole) *pbuserrole.UserRoleResponse {
 	if v == nil {
 		return nil
 	}
-	return &pbrole.UserRoleResponse{
+	return &pbuserrole.UserRoleResponse{
 		UserRoleId: v.UserRoleID,
 		UserId:     v.UserID,
 		RoleId:     v.RoleID,

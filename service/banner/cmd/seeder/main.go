@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gorm.io/gorm"
 	"context"
 	"fmt"
+	"gorm.io/gorm"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-banner/seeder"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database"
@@ -38,7 +38,7 @@ func main() {
 
 	ctx := context.Background()
 
-	q, closeFn, err := open(logger, "DB_BANNER")
+	q, closeFn, err := open(logger, database.ExperienceCluster)
 	if err != nil {
 		logger.Fatal("Failed to connect to database", zap.Error(err))
 	}

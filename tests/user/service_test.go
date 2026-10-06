@@ -1,8 +1,9 @@
 package user_test
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	"context"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"testing"
 
 	user_cache "github.com/MamangRust/microservice-ecommerce-grpc-user/cache"
@@ -29,12 +30,14 @@ func (s *UserServiceTestSuite) SetupSuite() {
 	gormDB, err := s.GormDB()
 	s.Require().NoError(err)
 
-
 	// Setup Role connection for repository
 	s.SetupRoleService()
-	roleClient := pbrole.NewRoleQueryServiceClient(s.Conns["role"])
-
-	repos := repository.NewRepositories(gormDB, roleClient)
+	repos := repository.NewRepositories(&repository.Deps{
+		Db:                    gormDB,
+		RoleQueryClient:       pbrole.NewRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleQueryClient:   pbuserrole.NewUserRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleCommandClient: pbuserrole.NewUserRoleCommandServiceClient(s.Conns["role"]),
+	})
 
 	logger.ResetInstance()
 	lp := sdklog.NewLoggerProvider()

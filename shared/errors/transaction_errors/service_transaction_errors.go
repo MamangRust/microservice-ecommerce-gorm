@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedPaymentStatusCannotBeModified = errors.ErrBadRequest.WithMessage("Cannot modify payment status")
 	ErrFailedPaymentStatusInvalid          = errors.ErrBadRequest.WithMessage("Invalid payment status")

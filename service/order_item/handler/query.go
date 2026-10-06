@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
 	"context"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-order-item/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

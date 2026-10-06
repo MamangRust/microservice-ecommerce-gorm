@@ -27,7 +27,7 @@ func (r *orderQueryRepository) FindAll(ctx context.Context, req *requests.FindAl
 			AND (? = '' OR CAST(order_id AS TEXT) ILIKE ?)
 		ORDER BY created_at DESC LIMIT ? OFFSET ?
 	`
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, order_errors.ErrFindAllOrders.WithInternal(err)
 	}
@@ -44,7 +44,7 @@ func (r *orderQueryRepository) FindActive(ctx context.Context, req *requests.Fin
 			AND (? = '' OR CAST(order_id AS TEXT) ILIKE ?)
 		ORDER BY created_at DESC LIMIT ? OFFSET ?
 	`
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, order_errors.ErrFindByActive.WithInternal(err)
 	}
@@ -61,7 +61,7 @@ func (r *orderQueryRepository) FindTrashed(ctx context.Context, req *requests.Fi
 			AND (? = '' OR CAST(order_id AS TEXT) ILIKE ?)
 		ORDER BY created_at DESC LIMIT ? OFFSET ?
 	`
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, order_errors.ErrFindByTrashed.WithInternal(err)
 	}
@@ -78,7 +78,7 @@ func (r *orderQueryRepository) FindByMerchant(ctx context.Context, req *requests
 			AND (? = '' OR CAST(order_id AS TEXT) ILIKE ?)
 		ORDER BY created_at DESC LIMIT ? OFFSET ?
 	`
-	err := r.db.WithContext(ctx).Raw(query, req.MerchantID, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.MerchantID, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, order_errors.ErrFindByMerchant.WithInternal(err)
 	}

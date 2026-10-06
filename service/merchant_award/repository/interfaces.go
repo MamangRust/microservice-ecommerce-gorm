@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
@@ -40,6 +41,6 @@ type MerchantAwardCommandRepository interface {
 	DeleteAll(ctx context.Context) (bool, error)
 }
 
-type MerchantQueryRepository interface {
-	FindByID(ctx context.Context, id int) (string, error)
-}
+// MerchantQueryRepository is the shared merchant query contract, provided by the
+// merchant gRPC adapter so this service never holds a raw gRPC client.
+type MerchantQueryRepository = merchantadapter.QueryRepository

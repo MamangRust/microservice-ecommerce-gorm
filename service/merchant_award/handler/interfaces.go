@@ -1,9 +1,8 @@
 package handler
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 )
-
 
 type MerchantAwardQueryHandler interface {
 	pbmerchant_award.MerchantAwardQueryServiceServer

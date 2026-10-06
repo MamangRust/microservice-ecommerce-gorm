@@ -13,19 +13,18 @@ import (
 	gormlogger "gorm.io/gorm/logger"
 )
 
-// NewGormClient connects to the base database using the generic DB_* keys
-// and returns a *gorm.DB instance.
-func NewGormClient(logger logger.LoggerInterface) (*gorm.DB, error) {
-	return NewGormClientWithPrefix(logger, "DB")
-}
-
 // NewGormClientWithPrefix connects to the database configured via the given
-// prefix keys (e.g. DB_ORDER_HOST, DB_ORDER_NAME) with fallback to the base
-// DB_* keys. Each microservice uses its own prefix so it talks exclusively
-// to its own PostgreSQL instance.
+// bounded-context prefix (e.g. DB_SALES_HOST, DB_SALES_NAME). Each service
+// passes its context's prefix so it talks exclusively to that context's
+// PostgreSQL instance (fronted by its own PgBouncer).
+//
+// Host, port and dbname are mandatory per context: there is deliberately no
+// generic DB_HOST/DB_PORT/DB_NAME fallback, which would silently collapse
+// every bounded context onto one shared database. Only the credentials fall
+// back to the base DB_USERNAME/DB_PASSWORD keys.
 func NewGormClientWithPrefix(logger logger.LoggerInterface, prefix string) (*gorm.DB, error) {
 	if prefix == "" {
-		prefix = "DB"
+		return nil, fmt.Errorf("database cluster prefix must not be empty")
 	}
 
 	dbDriver := viper.GetString(fmt.Sprintf("%s_DRIVER", prefix))
@@ -38,31 +37,26 @@ func NewGormClientWithPrefix(logger logger.LoggerInterface, prefix string) (*gor
 		return nil, fmt.Errorf("gorm postgres driver only supports PostgreSQL, got: %s", dbDriver)
 	}
 
-	hostKey := fmt.Sprintf("%s_HOST", prefix)
-	portKey := fmt.Sprintf("%s_PORT", prefix)
-	userKey := fmt.Sprintf("%s_USERNAME", prefix)
-	nameKey := fmt.Sprintf("%s_NAME", prefix)
-	passKey := fmt.Sprintf("%s_PASSWORD", prefix)
+	host := viper.GetString(fmt.Sprintf("%s_HOST", prefix))
+	port := viper.GetString(fmt.Sprintf("%s_PORT", prefix))
+	dbname := viper.GetString(fmt.Sprintf("%s_NAME", prefix))
 
-	host := viper.GetString(hostKey)
-	if host == "" {
-		host = viper.GetString("DB_HOST")
-	}
-	port := viper.GetString(portKey)
-	if port == "" {
-		port = viper.GetString("DB_PORT")
-	}
-	user := viper.GetString(userKey)
+	user := viper.GetString(fmt.Sprintf("%s_USERNAME", prefix))
 	if user == "" {
 		user = viper.GetString("DB_USERNAME")
 	}
-	dbname := viper.GetString(nameKey)
-	if dbname == "" {
-		dbname = viper.GetString("DB_NAME")
-	}
-	password := viper.GetString(passKey)
+	password := viper.GetString(fmt.Sprintf("%s_PASSWORD", prefix))
 	if password == "" {
 		password = viper.GetString("DB_PASSWORD")
+	}
+
+	if host == "" || port == "" || dbname == "" {
+		err := fmt.Errorf("%s_HOST, %s_PORT and %s_NAME must be set (no generic DB_HOST/DB_PORT/DB_NAME fallback)", prefix, prefix, prefix)
+		logger.Error("Incomplete database cluster configuration",
+			zap.String("prefix", prefix),
+			zap.Error(err),
+		)
+		return nil, err
 	}
 
 	dsn := fmt.Sprintf(

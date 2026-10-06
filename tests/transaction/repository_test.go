@@ -1,12 +1,12 @@
 package transaction_test
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"testing"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/repository"
@@ -37,12 +37,12 @@ func (s *TransactionRepositoryTestSuite) SetupSuite() {
 	s.SetupOrderService()
 
 	s.repo = repository.NewRepositories(&repository.Deps{
-		DB:             gormDB,
-		UserQuery:      pbuser.NewUserQueryServiceClient(s.Conns["user"]),
-		MerchantQuery:  pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
-		OrderQuery:     pborder.NewOrderQueryServiceClient(s.Conns["order"]),
-		OrderItemQuery: pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
-		ShippingQuery:  pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
+		GormDB:               gormDB,
+		UserQueryClient:      pbuser.NewUserQueryServiceClient(s.Conns["user"]),
+		MerchantQueryClient:  pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
+		OrderQueryClient:     pborder.NewOrderQueryServiceClient(s.Conns["order"]),
+		OrderItemQueryClient: pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
+		ShippingQueryClient:  pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
 	})
 }
 

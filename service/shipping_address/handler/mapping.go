@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-shipping-address/repository"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
@@ -10,8 +10,12 @@ import (
 )
 
 func normalizePage(page, pageSize int) (int, int) {
-	if page <= 0 { page = 1 }
-	if pageSize <= 0 { pageSize = 10 }
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	return page, pageSize
 }
 

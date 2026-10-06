@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	transaction_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/transaction"
-		pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/transaction"
@@ -14,7 +14,7 @@ import (
 )
 
 type transactionCommandHandlerApi struct {
-	client     pbtransaction.TransactionCommandServiceClient
+	client     pb_transaction.TransactionCommandServiceClient
 	logger     logger.LoggerInterface
 	mapper     apimapper.TransactionCommandResponseMapper
 	cache      transaction_cache.TransactionCommandCache
@@ -22,7 +22,7 @@ type transactionCommandHandlerApi struct {
 }
 
 type transactionCommandHandleDeps struct {
-	client     pbtransaction.TransactionCommandServiceClient
+	client     pb_transaction.TransactionCommandServiceClient
 	router     *echo.Echo
 	logger     logger.LoggerInterface
 	mapper     apimapper.TransactionCommandResponseMapper
@@ -69,7 +69,7 @@ func NewTransactionCommandHandleApi(params *transactionCommandHandleDeps) *trans
 // @Failure 500 {object} errors.ErrorResponse "Failed to create transaction"
 // @Router /api/transaction-command/create [post]
 func (h *transactionCommandHandlerApi) Create(c echo.Context) error {
-	req := new(pbtransaction.CreateTransactionRequest)
+	req := new(pb_transaction.CreateTransactionRequest)
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
 	}
@@ -100,12 +100,14 @@ func (h *transactionCommandHandlerApi) Create(c echo.Context) error {
 // @Router /api/transaction-command/update/{id} [post]
 func (h *transactionCommandHandlerApi) Update(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	status := c.FormValue("status")
 
 	ctx := c.Request().Context()
-	res, err := h.client.Update(ctx, &pbtransaction.UpdateTransactionRequest{
+	res, err := h.client.Update(ctx, &pb_transaction.UpdateTransactionRequest{
 		TransactionId: int32(id),
 		PaymentStatus: status,
 	})
@@ -131,10 +133,12 @@ func (h *transactionCommandHandlerApi) Update(c echo.Context) error {
 // @Router /api/transaction-command/trashed/{id} [post]
 func (h *transactionCommandHandlerApi) Trashed(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.TrashedTransaction(ctx, &pbtransaction.FindByIdTransactionRequest{Id: int32(id)})
+	res, err := h.client.TrashedTransaction(ctx, &pb_transaction.FindByIdTransactionRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -157,10 +161,12 @@ func (h *transactionCommandHandlerApi) Trashed(c echo.Context) error {
 // @Router /api/transaction-command/restore/{id} [post]
 func (h *transactionCommandHandlerApi) Restore(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.RestoreTransaction(ctx, &pbtransaction.FindByIdTransactionRequest{Id: int32(id)})
+	res, err := h.client.RestoreTransaction(ctx, &pb_transaction.FindByIdTransactionRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -183,10 +189,12 @@ func (h *transactionCommandHandlerApi) Restore(c echo.Context) error {
 // @Router /api/transaction-command/permanent/{id} [delete]
 func (h *transactionCommandHandlerApi) DeletePermanent(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.DeleteTransactionPermanent(ctx, &pbtransaction.FindByIdTransactionRequest{Id: int32(id)})
+	res, err := h.client.DeleteTransactionPermanent(ctx, &pb_transaction.FindByIdTransactionRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -237,4 +245,3 @@ func (h *transactionCommandHandlerApi) DeleteAllPermanent(c echo.Context) error 
 
 	return c.JSON(http.StatusOK, h.mapper.ToApiResponseTransactionAll(res))
 }
-

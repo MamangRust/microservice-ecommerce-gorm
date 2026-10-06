@@ -2,7 +2,7 @@ package merchantdetailhandler
 
 import (
 	merchant_detail_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/merchant_detail"
-		pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_detail"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_detail"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
@@ -40,7 +40,7 @@ func RegisterMerchantDetailHandler(deps *DepsMerchantDetail) {
 func setupMerchantDetailQueryHandler(deps *DepsMerchantDetail, mapper apimapper.MerchantDetailQueryResponseMapper, cache merchant_detail_cache.MerchantDetailQueryCache) func() {
 	return func() {
 		NewMerchantDetailQueryHandleApi(&merchantDetailQueryHandleDeps{
-			client:     pbmerchant_detail.NewMerchantDetailQueryServiceClient(deps.Client),
+			client:     pb_merchant_detail.NewMerchantDetailQueryServiceClient(deps.Client),
 			router:     deps.E,
 			logger:     deps.Logger,
 			mapper:     mapper,
@@ -53,7 +53,7 @@ func setupMerchantDetailQueryHandler(deps *DepsMerchantDetail, mapper apimapper.
 func setupMerchantDetailCommandHandler(deps *DepsMerchantDetail, mapper apimapper.MerchantDetailCommandResponseMapper, merchantMapper merchantapimapper.MerchantCommandResponseMapper, cache merchant_detail_cache.MerchantDetailCommandCache) func() {
 	return func() {
 		NewMerchantDetailCommandHandleApi(&merchantDetailCommandHandleDeps{
-			client:         pbmerchant_detail.NewMerchantDetailCommandServiceClient(deps.Client),
+			client:         pb_merchant_detail.NewMerchantDetailCommandServiceClient(deps.Client),
 			router:         deps.E,
 			logger:         deps.Logger,
 			mapper:         mapper,

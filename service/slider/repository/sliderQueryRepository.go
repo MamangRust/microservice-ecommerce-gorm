@@ -30,7 +30,7 @@ func (r *sliderQueryRepository) FindAll(ctx context.Context, req *requests.FindA
 			AND (? = '' OR s.name ILIKE ?)
 		ORDER BY s.slider_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, slider_errors.ErrFindAllSliders
 	}
@@ -51,7 +51,7 @@ func (r *sliderQueryRepository) FindActive(ctx context.Context, req *requests.Fi
 			AND (? = '' OR s.name ILIKE ?)
 		ORDER BY s.slider_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, slider_errors.ErrFindActiveSliders
 	}
@@ -72,7 +72,7 @@ func (r *sliderQueryRepository) FindTrashed(ctx context.Context, req *requests.F
 			AND (? = '' OR s.name ILIKE ?)
 		ORDER BY s.slider_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, slider_errors.ErrFindTrashedSliders
 	}

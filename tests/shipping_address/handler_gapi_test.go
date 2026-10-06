@@ -1,8 +1,8 @@
 package shipping_address_test
 
 import (
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
 	"context"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"testing"
 
 	ship_cache "github.com/MamangRust/microservice-ecommerce-grpc-shipping-address/cache"

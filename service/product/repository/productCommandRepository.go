@@ -106,6 +106,17 @@ func (r *productCommandRepository) AdjustProductStock(ctx context.Context, produ
 	return &product, nil
 }
 
+// CleanupStockAdjustments deletes product_stock_adjustments rows older than
+// cutoff. The product context owns this table, so the purge lives here rather
+// than in the order service that used to delete it directly.
+func (r *productCommandRepository) CleanupStockAdjustments(ctx context.Context, cutoff time.Time) (int64, error) {
+	result := r.db.WithContext(ctx).Where("created_at < ?", cutoff).Delete(&models.ProductStockAdjustment{})
+	if result.Error != nil {
+		return 0, product_errors.ErrProductInternal.WithInternal(result.Error)
+	}
+	return result.RowsAffected, nil
+}
+
 func (r *productCommandRepository) Trash(ctx context.Context, product_id int) (*models.Product, error) {
 	var product models.Product
 	if err := r.db.WithContext(ctx).First(&product, product_id).Error; err != nil {

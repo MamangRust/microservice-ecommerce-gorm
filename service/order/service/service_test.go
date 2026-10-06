@@ -76,7 +76,7 @@ func (s *stubOrderQueryCache) GetCachedOrderCache(_ context.Context, _ int) (*mo
 	return s.order, true
 }
 func (s *stubOrderQueryCache) SetCachedOrderCache(_ context.Context, _ *models.Order) {}
-func (s *stubOrderQueryCache) InvalidateOrderCache(_ context.Context)                {}
+func (s *stubOrderQueryCache) InvalidateOrderCache(_ context.Context)                 {}
 
 // --- Query Service Tests ---
 
@@ -144,10 +144,10 @@ func TestOrderQueryServiceFindByIDFromCache(t *testing.T) {
 	obs, _ := observability.NewObservability("test", log)
 	now := time.Now()
 	svc := &orderQueryService{
-		observability: obs,
-		cache:         &stubOrderQueryCache{order: &models.Order{OrderID: 42, CreatedAt: &now, UpdatedAt: &now}},
+		observability:   obs,
+		cache:           &stubOrderQueryCache{order: &models.Order{OrderID: 42, CreatedAt: &now, UpdatedAt: &now}},
 		orderRepository: &stubOrderQueryRepo{},
-		logger:        log,
+		logger:          log,
 	}
 
 	result, err := svc.FindByID(context.Background(), 42)

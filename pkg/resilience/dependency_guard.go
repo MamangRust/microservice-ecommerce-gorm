@@ -95,11 +95,11 @@ func isTransportFailure(err error) bool {
 // used when a guard is constructed without a logger (tests, optional paths).
 type noopLogger struct{}
 
-func (noopLogger) Info(string, ...zap.Field)                {}
-func (noopLogger) Fatal(string, ...zap.Field)               {}
-func (noopLogger) Debug(string, ...zap.Field)               {}
-func (noopLogger) Error(string, ...zap.Field)               {}
-func (noopLogger) Warn(string, ...zap.Field)                {}
+func (noopLogger) Info(string, ...zap.Field)                         {}
+func (noopLogger) Fatal(string, ...zap.Field)                        {}
+func (noopLogger) Debug(string, ...zap.Field)                        {}
+func (noopLogger) Error(string, ...zap.Field)                        {}
+func (noopLogger) Warn(string, ...zap.Field)                         {}
 func (noopLogger) Check(zapcore.Level, string) *zapcore.CheckedEntry { return nil }
-func (noopLogger) With(...zap.Field) logger.LoggerInterface { return noopLogger{} }
-func (noopLogger) Sync() error                              { return nil }
+func (noopLogger) With(...zap.Field) logger.LoggerInterface          { return noopLogger{} }
+func (noopLogger) Sync() error                                       { return nil }

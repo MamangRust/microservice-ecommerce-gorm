@@ -1,14 +1,14 @@
 package handler
 
 import (
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
 	"context"
+	pbslider "github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-slider/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
-	"github.com/MamangRust/microservice-ecommerce-shared/errors/slider_errors"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
+	"github.com/MamangRust/microservice-ecommerce-shared/errors/slider_errors"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

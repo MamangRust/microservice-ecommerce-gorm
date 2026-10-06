@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
 	"context"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 )

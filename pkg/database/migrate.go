@@ -12,39 +12,32 @@ import (
 )
 
 // RunMigrations executes database migrations using goose against the DB
-// configured via the given prefix (e.g. "DB_ORDER"). Falls back to the base
-// "DB_*" keys when no prefix-specific keys are set.
+// configured via the given bounded-context prefix (e.g. "DB_SALES").
+// Host, port and dbname are mandatory per context — there is deliberately no
+// generic DB_HOST/DB_PORT/DB_NAME fallback, so a misconfigured service fails
+// fast instead of migrating the wrong instance. Only the credentials fall back
+// to the base DB_USERNAME/DB_PASSWORD keys.
 // path: directory containing migration files.
 func RunMigrations(log logger.LoggerInterface, prefix, path string) error {
 	if prefix == "" {
-		prefix = "DB"
+		return fmt.Errorf("database cluster prefix must not be empty")
 	}
 
-	hostKey := fmt.Sprintf("%s_HOST", prefix)
-	portKey := fmt.Sprintf("%s_PORT", prefix)
-	userKey := fmt.Sprintf("%s_USERNAME", prefix)
-	nameKey := fmt.Sprintf("%s_NAME", prefix)
-	passKey := fmt.Sprintf("%s_PASSWORD", prefix)
+	host := viper.GetString(fmt.Sprintf("%s_HOST", prefix))
+	port := viper.GetString(fmt.Sprintf("%s_PORT", prefix))
+	dbname := viper.GetString(fmt.Sprintf("%s_NAME", prefix))
 
-	host := viper.GetString(hostKey)
-	if host == "" {
-		host = viper.GetString("DB_HOST")
-	}
-	port := viper.GetString(portKey)
-	if port == "" {
-		port = viper.GetString("DB_PORT")
-	}
-	user := viper.GetString(userKey)
+	user := viper.GetString(fmt.Sprintf("%s_USERNAME", prefix))
 	if user == "" {
 		user = viper.GetString("DB_USERNAME")
 	}
-	dbname := viper.GetString(nameKey)
-	if dbname == "" {
-		dbname = viper.GetString("DB_NAME")
-	}
-	password := viper.GetString(passKey)
+	password := viper.GetString(fmt.Sprintf("%s_PASSWORD", prefix))
 	if password == "" {
 		password = viper.GetString("DB_PASSWORD")
+	}
+
+	if host == "" || port == "" || dbname == "" {
+		return fmt.Errorf("%s_HOST, %s_PORT and %s_NAME must be set (no generic DB_HOST/DB_PORT/DB_NAME fallback)", prefix, prefix, prefix)
 	}
 
 	connStr := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",

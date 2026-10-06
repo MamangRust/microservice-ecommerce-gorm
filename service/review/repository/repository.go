@@ -1,10 +1,20 @@
 package repository
 
 import (
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
+	pbproducts "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbusers "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	productadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/product"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"gorm.io/gorm"
 )
+
+// GuardOptions carries the resilience guard options for each outbound
+// dependency.
+type GuardOptions struct {
+	User    []adapter.GuardOption
+	Product []adapter.GuardOption
+}
 
 type Repositories struct {
 	ProductQuery  ProductQueryRepository
@@ -13,11 +23,20 @@ type Repositories struct {
 	ReviewCommand ReviewCommandRepository
 }
 
-func NewRepositories(DB *gorm.DB, userQueryClient pbuser.UserQueryServiceClient, productQueryClient pbproduct.ProductQueryServiceClient) *Repositories {
+func NewRepositories(db *gorm.DB,
+	userQueryClient pbusers.UserQueryServiceClient,
+	productQueryClient pbproducts.ProductQueryServiceClient,
+	guards ...GuardOptions,
+) *Repositories {
+	var g GuardOptions
+	if len(guards) > 0 {
+		g = guards[0]
+	}
+
 	return &Repositories{
-		ProductQuery:  NewProductQueryRepository(productQueryClient),
-		ReviewQuery:   NewReviewQueryRepository(DB),
-		UserQuery:     NewUserQueryRepository(userQueryClient),
-		ReviewCommand: NewReviewCommandRepository(DB),
+		ProductQuery:  productadapter.New(productQueryClient, nil, g.Product...),
+		ReviewQuery:   NewReviewQueryRepository(db),
+		UserQuery:     useradapter.New(userQueryClient, nil, g.User...),
+		ReviewCommand: NewReviewCommandRepository(db),
 	}
 }

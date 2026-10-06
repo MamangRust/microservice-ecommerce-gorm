@@ -1,9 +1,8 @@
 package handler
 
 import (
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 )
-
 
 type TransactionQueryHandler interface {
 	pbtransaction.TransactionQueryServiceServer

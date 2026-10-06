@@ -2,16 +2,19 @@ package apps
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-cart/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-cart/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-cart/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-cart/service"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
-		pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -45,7 +48,13 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	userQueryClient := pbuser.NewUserQueryServiceClient(userConn)
 	productQueryClient := pbproduct.NewProductQueryServiceClient(productConn)
 
-	repos := repository.NewRepositories(srv.GormDB, userQueryClient, productQueryClient)
+	guardUser := resilience.NewDependencyGuard("user", 5, 30, 100, 3*time.Second, srv.Logger)
+	guardProduct := resilience.NewDependencyGuard("product", 5, 30, 100, 3*time.Second, srv.Logger)
+
+	repos := repository.NewRepositories(srv.GormDB, userQueryClient, productQueryClient, repository.GuardOptions{
+		User:    []adapter.GuardOption{adapter.WithDependencyGuard(guardUser)},
+		Product: []adapter.GuardOption{adapter.WithDependencyGuard(guardProduct)},
+	})
 
 	obs, _ := observability.NewObservability("cart-service", srv.Logger)
 	mencache := cache.NewMencache(srv.CacheStore)

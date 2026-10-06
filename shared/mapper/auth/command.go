@@ -1,7 +1,7 @@
 package authapimapper
 
 import (
-	pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

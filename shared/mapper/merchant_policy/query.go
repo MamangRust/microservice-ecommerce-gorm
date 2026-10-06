@@ -1,7 +1,7 @@
 package merchantpolicyapimapper
 
 import (
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewMerchantPolicyQueryResponseMapper() MerchantPolicyQueryResponseMapper {
 }
 
 func (m *merchantPolicyQueryResponseMapper) ToResponseMerchantPolicy(merchant *pbmerchant_policy.MerchantPoliciesResponse) *response.MerchantPoliciesResponse {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	return &response.MerchantPoliciesResponse{
 		ID:           int(merchant.Id),
 		MerchantID:   int(merchant.MerchantId),
@@ -63,7 +65,9 @@ func (m *merchantPolicyQueryResponseMapper) ToApiResponsePaginationMerchantPolic
 	var data []*response.MerchantPoliciesResponseDeleteAt
 	for _, b := range pbResponse.Data {
 		var deletedAt string
-		if b.DeletedAt != nil { deletedAt = b.DeletedAt.Value }
+		if b.DeletedAt != nil {
+			deletedAt = b.DeletedAt.Value
+		}
 		data = append(data, &response.MerchantPoliciesResponseDeleteAt{
 			ID:           int(b.Id),
 			MerchantID:   int(b.MerchantId),

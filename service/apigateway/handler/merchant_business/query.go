@@ -5,24 +5,24 @@ import (
 	"strconv"
 
 	merchantbusiness_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/merchant_business"
-		pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
-	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_business"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
+	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_business"
 	"github.com/labstack/echo/v4"
 )
 
 type merchantBusinessQueryHandlerApi struct {
-	client pbmerchant_business.MerchantBusinessQueryServiceClient
+	client pb_merchant_business.MerchantBusinessQueryServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.MerchantBusinessQueryResponseMapper
 	cache  merchantbusiness_cache.MerchantBusinessQueryCache
 }
 
 type merchantBusinessQueryHandleDeps struct {
-	client pbmerchant_business.MerchantBusinessQueryServiceClient
+	client pb_merchant_business.MerchantBusinessQueryServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.MerchantBusinessQueryResponseMapper
@@ -60,9 +60,13 @@ func NewMerchantBusinessQueryHandleApi(params *merchantBusinessQueryHandleDeps) 
 // @Router /api/merchant-business-query [get]
 func (h *merchantBusinessQueryHandlerApi) FindAll(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 { page = 1 }
+	if page <= 0 {
+		page = 1
+	}
 	pageSize, _ := strconv.Atoi(c.QueryParam("page_size"))
-	if pageSize <= 0 { pageSize = 10 }
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	search := c.QueryParam("search")
 
 	ctx := c.Request().Context()
@@ -72,7 +76,7 @@ func (h *merchantBusinessQueryHandlerApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindAll(ctx, &pbmerchant.FindAllMerchantRequest{
+	res, err := h.client.FindAll(ctx, &pb_merchant.FindAllMerchantRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -98,14 +102,16 @@ func (h *merchantBusinessQueryHandlerApi) FindAll(c echo.Context) error {
 // @Router /api/merchant-business-query/{id} [get]
 func (h *merchantBusinessQueryHandlerApi) FindById(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 { return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID") }
+	if err != nil || id <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
 
 	ctx := c.Request().Context()
 	if cachedData, found := h.cache.GetCachedMerchantBusiness(ctx, id); found {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindById(ctx, &pbmerchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
+	res, err := h.client.FindById(ctx, &pb_merchant_business.FindByIdMerchantBusinessRequest{Id: int32(id)})
 	if err != nil {
 		return sharedErrors.ParseGrpcError(err)
 	}
@@ -130,9 +136,13 @@ func (h *merchantBusinessQueryHandlerApi) FindById(c echo.Context) error {
 // @Router /api/merchant-business-query/active [get]
 func (h *merchantBusinessQueryHandlerApi) FindByActive(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 { page = 1 }
+	if page <= 0 {
+		page = 1
+	}
 	pageSize, _ := strconv.Atoi(c.QueryParam("page_size"))
-	if pageSize <= 0 { pageSize = 10 }
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	search := c.QueryParam("search")
 
 	ctx := c.Request().Context()
@@ -142,7 +152,7 @@ func (h *merchantBusinessQueryHandlerApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByActive(ctx, &pbmerchant.FindAllMerchantRequest{
+	res, err := h.client.FindByActive(ctx, &pb_merchant.FindAllMerchantRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -169,9 +179,13 @@ func (h *merchantBusinessQueryHandlerApi) FindByActive(c echo.Context) error {
 // @Router /api/merchant-business-query/trashed [get]
 func (h *merchantBusinessQueryHandlerApi) FindByTrashed(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 { page = 1 }
+	if page <= 0 {
+		page = 1
+	}
 	pageSize, _ := strconv.Atoi(c.QueryParam("page_size"))
-	if pageSize <= 0 { pageSize = 10 }
+	if pageSize <= 0 {
+		pageSize = 10
+	}
 	search := c.QueryParam("search")
 
 	ctx := c.Request().Context()
@@ -181,7 +195,7 @@ func (h *merchantBusinessQueryHandlerApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByTrashed(ctx, &pbmerchant.FindAllMerchantRequest{
+	res, err := h.client.FindByTrashed(ctx, &pb_merchant.FindAllMerchantRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -193,4 +207,3 @@ func (h *merchantBusinessQueryHandlerApi) FindByTrashed(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, apiResponse)
 }
-

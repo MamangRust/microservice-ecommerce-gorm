@@ -1,8 +1,8 @@
 package slider_test
 
 import (
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
 	"context"
+	pbslider "github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 	"net/http"
 	"net/http/httptest"
 

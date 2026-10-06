@@ -2,7 +2,7 @@ package userhandler
 
 import (
 	user_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/user"
-		pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
@@ -41,7 +41,7 @@ func RegisterUserHandler(deps *DepsUser) {
 func setupUserQueryHandler(deps *DepsUser, mapper apimapper.UserQueryResponseMapper, cache user_cache.UserMencache) func() {
 	return func() {
 		NewUserQueryHandleApi(&userQueryHandleDeps{
-			client:     pbuser.NewUserQueryServiceClient(deps.Client),
+			client:     pb_user.NewUserQueryServiceClient(deps.Client),
 			router:     deps.E,
 			logger:     deps.Logger,
 			mapper:     mapper,
@@ -54,7 +54,7 @@ func setupUserQueryHandler(deps *DepsUser, mapper apimapper.UserQueryResponseMap
 func setupUserCommandHandler(deps *DepsUser, mapper apimapper.UserCommandResponseMapper, cache user_cache.UserMencache) func() {
 	return func() {
 		NewUserCommandHandleApi(&userCommandHandleDeps{
-			client:     pbuser.NewUserCommandServiceClient(deps.Client),
+			client:     pb_user.NewUserCommandServiceClient(deps.Client),
 			router:     deps.E,
 			logger:     deps.Logger,
 			mapper:     mapper,

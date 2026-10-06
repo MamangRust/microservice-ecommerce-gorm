@@ -26,4 +26,3 @@ var (
 	ErrRestoreAllBanners = errors.ErrInternal.WithMessage("failed to restore all banners")
 	ErrDeleteAllBanners  = errors.ErrInternal.WithMessage("failed to permanently delete all banners")
 )
-

@@ -38,7 +38,7 @@ func (r *transactionQueryRepository) FindAll(ctx context.Context, req *requests.
 			AND (? = '' OR payment_method ILIKE ? OR payment_status ILIKE ?)
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, transaction_errors.ErrFindAllTransactions.WithInternal(err)
 	}
@@ -57,7 +57,7 @@ func (r *transactionQueryRepository) FindActive(ctx context.Context, req *reques
 			AND (? = '' OR payment_method ILIKE ? OR payment_status ILIKE ?)
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, transaction_errors.ErrFindByActive.WithInternal(err)
 	}
@@ -76,7 +76,7 @@ func (r *transactionQueryRepository) FindTrashed(ctx context.Context, req *reque
 			AND (? = '' OR payment_method ILIKE ? OR payment_status ILIKE ?)
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, transaction_errors.ErrFindByTrashed.WithInternal(err)
 	}
@@ -96,7 +96,7 @@ func (r *transactionQueryRepository) FindByMerchant(ctx context.Context, req *re
 			AND (? = '' OR payment_method ILIKE ? OR payment_status ILIKE ?)
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.MerchantID, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.MerchantID, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, transaction_errors.ErrFindByMerchant.WithInternal(err)
 	}

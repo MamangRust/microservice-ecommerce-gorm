@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-review-detail/repository"
@@ -10,8 +10,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/convert"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
-
-
 
 func normalizePage(page, pageSize int) (int, int) {
 	if page <= 0 {

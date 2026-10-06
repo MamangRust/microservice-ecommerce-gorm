@@ -1,9 +1,9 @@
 package product_test
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"context"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
 	"testing"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-product/repository"

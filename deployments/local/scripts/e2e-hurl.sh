@@ -3,7 +3,8 @@
 # e2e-hurl.sh — run every E2E hurl suite in tests/hurl/ against the gateway.
 #
 # Prerequisites:
-#   - infra stack running:  docker compose -f deployments/local/docker-compose.yml up -d <svc>-db ... (per-service postgres)
+#   - infra stack running:  docker compose -f deployments/local/docker-compose.infra.yml up -d
+#     (6 PostgreSQL instances — one per bounded context — each fronted by a PgBouncer)
 #   - Go services running locally (via `just services-local-start` or run-e2e-mega.sh)
 #   - PostgreSQL has seeded data (run `just seeder-local` at least once) so
 #     rules_strict.hurl can pick a seeded role-less user.
@@ -13,10 +14,11 @@
 #
 # Exits non-zero if any suite fails.
 #
-# The stack is 1 DB per service: each service owns its own PostgreSQL instance
-# (service/<name>/migrations + DB_<CLUSTER>_* env keys). The reset below drops
-# the schema in every service DB, re-runs each service's own migrations, then
-# runs the per-service seeder (idempotent, no artificial delays).
+# The stack is 1 DB per bounded context: identity, merchant, catalog, sales,
+# experience and email each own a PostgreSQL instance carrying a single
+# ec_<ctx> database (DB_<CONTEXT>_* env keys). The reset below drops the schema
+# in every context DB, runs the context-wide migration (goose), then runs the
+# seeder (idempotent, no artificial delays).
 
 set -uo pipefail
 
@@ -38,15 +40,14 @@ echo "== e2e-hurl: $BASE_URL =="
 echo "hurl: $(hurl --version 2>/dev/null | head -1)"
 
 # ---------------------------------------------------------------------------
-# Per-service databases: service name -> postgres container / db name / host port
-# (ports match deployments/local/docker-compose.yml *-db services).
+# One PostgreSQL instance per bounded context. Mirrors pkg/database/names.go
+# (DB_IDENTITY … DB_EMAIL) and deployments/kubernetes/database/.
 # ---------------------------------------------------------------------------
-declare -A DB_CONTAINER=( [auth]=postgres_auth [role]=postgres_role [user]=postgres_user [email]=postgres_email [category]=postgres_category [merchant]=postgres_merchant [merchant_award]=postgres_merchant_award [merchant_business]=postgres_merchant_business [merchant_detail]=postgres_merchant_detail [merchant_policy]=postgres_merchant_policy [order]=postgres_order [order_item]=postgres_order-item [product]=postgres_product [transaction]=postgres_transaction [cart]=postgres_cart [review]=postgres_review [review_detail]=postgres_review_detail [slider]=postgres_slider [shipping_address]=postgres_shipping_address [banner]=postgres_banner )
-declare -A DB_NAME=( [auth]=auth_db [role]=role_db [user]=user_db [email]=email_db [category]=category_db [merchant]=merchant_db [merchant_award]=merchant_award_db [merchant_business]=merchant_business_db [merchant_detail]=merchant_detail_db [merchant_policy]=merchant_policy_db [order]=order_db [order_item]=order_item_db [product]=product_db [transaction]=transaction_db [cart]=cart_db [review]=review_db [review_detail]=review_detail_db [slider]=slider_db [shipping_address]=shipping_address_db [banner]=banner_db )
-declare -A DB_PORT=( [auth]=5543 [role]=5544 [user]=5545 [email]=5546 [category]=5547 [merchant]=5548 [merchant_award]=5549 [merchant_business]=5550 [merchant_detail]=5551 [merchant_policy]=5552 [order]=5553 [order_item]=5554 [product]=5555 [transaction]=5556 [cart]=5557 [review]=5558 [review_detail]=5559 [slider]=5560 [shipping_address]=5561 [banner]=5562 )
+CONTEXTS=(identity merchant catalog sales experience email)
 
-# Services that own migrations + a database.
-ALL_SERVICES=(auth role user email category merchant merchant_award merchant_business merchant_detail merchant_policy order order_item product transaction cart review review_detail slider shipping_address banner)
+# The identity context owns users, roles and user_roles (auth, user, role).
+IDENTITY_CONTAINER="ecommerce-postgres-identity"
+IDENTITY_DB="ec_identity"
 
 # ---------------------------------------------------------------------------
 # Reset every service database so each run starts from a deterministic state.
@@ -54,22 +55,25 @@ ALL_SERVICES=(auth role user email category merchant merchant_award merchant_bus
 # runs would otherwise 5xx on already-deleted records.
 # ---------------------------------------------------------------------------
 if [ "$RESET_DB" = "yes" ]; then
-  echo "Resetting databases (drop schema + migrate up per service + seed)..."
-  for svc in "${ALL_SERVICES[@]}"; do
-    if ! docker exec "${DB_CONTAINER[$svc]}" psql -U DRAGON -d "${DB_NAME[$svc]}" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" > /tmp/hurl_db_drop_$svc.log 2>&1; then
-      echo "WARN: drop schema failed for $svc (see /tmp/hurl_db_drop_$svc.log); continuing"
+  echo "Resetting databases (drop schema per context + migrate up + seed)..."
+  for ctx in "${CONTEXTS[@]}"; do
+    if ! docker exec "ecommerce-postgres-$ctx" psql -U DRAGON -d "ec_$ctx" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" > /tmp/hurl_db_drop_$ctx.log 2>&1; then
+      echo "WARN: drop schema failed for $ctx (see /tmp/hurl_db_drop_$ctx.log); continuing"
     fi
   done
 
-  for svc in "${ALL_SERVICES[@]}"; do
-    if ! (cd "$PROJECT_ROOT" && DB_HOST=localhost DB_PORT="${DB_PORT[$svc]}" DB_NAME="${DB_NAME[$svc]}" go run service/migrate/cmd/main.go -dir "service/$svc/database/migration" up > /tmp/hurl_migrate_$svc.log 2>&1); then
-      echo "ERROR: migrate up failed for $svc (see /tmp/hurl_migrate_$svc.log)"
-      exit 1
-    fi
-  done
+  # One goose run migrates all six contexts in dependency order (reads
+  # DB_<CONTEXT>_* from the repo-root .env). Per-service migration dirs are
+  # staged into a single ordered set per context, so a higher-versioned service
+  # cannot make a lower-versioned one "missing" for goose.
+  if ! (cd "$PROJECT_ROOT" && go run service/migrate/cmd/main.go up > /tmp/hurl_migrate.log 2>&1); then
+    echo "ERROR: migrate up failed (see /tmp/hurl_migrate.log)"
+    exit 1
+  fi
 
   # register auto-assigns ROLE_ADMIN; the seeder only creates Cashier/Manager/Admin/Supplier.
-  docker exec postgres_role psql -U DRAGON -d role_db -c \
+  # roles/user_roles live in the identity context (ec_identity).
+  docker exec "$IDENTITY_CONTAINER" psql -U DRAGON -d "$IDENTITY_DB" -c \
     "INSERT INTO roles (role_name) VALUES ('ROLE_ADMIN'), ('ROLE_USER') ON CONFLICT DO NOTHING;" >/dev/null 2>&1 || true
 
   # Drop cached role/auth entries so a fresh run starts from a clean cache.
@@ -90,21 +94,19 @@ fi
 # Discover a seeded role-less user for rules_strict.hurl (firstname User1,
 # seeded with password "password1"). Register assigns ROLE_ADMIN to every new
 # user, so a role-less seeded user is required to prove the 403 path.
-# users live in the user service DB (user_db).
+# users, roles and user_roles all live in the identity context (ec_identity).
 # ---------------------------------------------------------------------------
 USER_EMAIL=""
-if docker exec postgres_user psql -U DRAGON -d user_db -t -A -c \
+if docker exec "$IDENTITY_CONTAINER" psql -U DRAGON -d "$IDENTITY_DB" -t -A -c \
   "SELECT email FROM users WHERE firstname='User1' AND email LIKE 'user_%' ORDER BY user_id LIMIT 1;" \
   > /tmp/hurl_seed_user.txt 2>/dev/null; then
   USER_EMAIL=$(tr -d ' \r' < /tmp/hurl_seed_user.txt)
   # Guarantee the chosen user is role-less so the 401 denial path is deterministic
   # (register auto-assigns ROLE_ADMIN, and the role seeder may assign random roles).
-  # users live in user_db; user_roles live in role_db — resolve the id in the
-  # user DB first (the old single-DB subquery would fail against role_db).
-  USER_ID=$(docker exec postgres_user psql -U DRAGON -d user_db -t -A -c \
+  USER_ID=$(docker exec "$IDENTITY_CONTAINER" psql -U DRAGON -d "$IDENTITY_DB" -t -A -c \
     "SELECT user_id FROM users WHERE email = '$USER_EMAIL' LIMIT 1;" | tr -d ' \r')
   if [ -n "$USER_ID" ]; then
-    docker exec postgres_role psql -U DRAGON -d role_db -c \
+    docker exec "$IDENTITY_CONTAINER" psql -U DRAGON -d "$IDENTITY_DB" -c \
       "DELETE FROM user_roles WHERE user_id = $USER_ID;" >/dev/null 2>&1 || true
   fi
 fi

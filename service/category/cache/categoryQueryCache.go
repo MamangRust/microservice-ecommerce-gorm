@@ -36,13 +36,20 @@ func NewCategoryQueryCache(store *cache.CacheStore) *categoryQueryCache {
 func (s *categoryQueryCache) GetCachedCategoriesCache(ctx context.Context, req *requests.FindAllCategory) ([]*repository.CategoryResult, *int, bool) {
 	key := fmt.Sprintf(categoryAllCacheKey, req.Page, req.PageSize, req.Search)
 	result, found := cache.GetFromCache[categoryCacheResponseDB](ctx, s.store, key)
-	if !found || result == nil { return nil, nil, false }
+	if !found || result == nil {
+		return nil, nil, false
+	}
 	return result.Data, result.TotalRecords, true
 }
 
 func (s *categoryQueryCache) SetCachedCategoriesCache(ctx context.Context, req *requests.FindAllCategory, data []*repository.CategoryResult, total *int) {
-	if total == nil { zero := 0; total = &zero }
-	if data == nil { data = []*repository.CategoryResult{} }
+	if total == nil {
+		zero := 0
+		total = &zero
+	}
+	if data == nil {
+		data = []*repository.CategoryResult{}
+	}
 	key := fmt.Sprintf(categoryAllCacheKey, req.Page, req.PageSize, req.Search)
 	cache.SetToCache(ctx, s.store, key, &categoryCacheResponseDB{Data: data, TotalRecords: total}, ttlDefault)
 }
@@ -50,13 +57,20 @@ func (s *categoryQueryCache) SetCachedCategoriesCache(ctx context.Context, req *
 func (s *categoryQueryCache) GetCachedCategoryActiveCache(ctx context.Context, req *requests.FindAllCategory) ([]*repository.CategoryResult, *int, bool) {
 	key := fmt.Sprintf(categoryActiveCacheKey, req.Page, req.PageSize, req.Search)
 	result, found := cache.GetFromCache[categoryCacheResponseDB](ctx, s.store, key)
-	if !found || result == nil { return nil, nil, false }
+	if !found || result == nil {
+		return nil, nil, false
+	}
 	return result.Data, result.TotalRecords, true
 }
 
 func (s *categoryQueryCache) SetCachedCategoryActiveCache(ctx context.Context, req *requests.FindAllCategory, data []*repository.CategoryResult, total *int) {
-	if total == nil { zero := 0; total = &zero }
-	if data == nil { data = []*repository.CategoryResult{} }
+	if total == nil {
+		zero := 0
+		total = &zero
+	}
+	if data == nil {
+		data = []*repository.CategoryResult{}
+	}
 	key := fmt.Sprintf(categoryActiveCacheKey, req.Page, req.PageSize, req.Search)
 	cache.SetToCache(ctx, s.store, key, &categoryCacheResponseDB{Data: data, TotalRecords: total}, ttlDefault)
 }
@@ -64,13 +78,20 @@ func (s *categoryQueryCache) SetCachedCategoryActiveCache(ctx context.Context, r
 func (s *categoryQueryCache) GetCachedCategoryTrashedCache(ctx context.Context, req *requests.FindAllCategory) ([]*repository.CategoryResult, *int, bool) {
 	key := fmt.Sprintf(categoryTrashedCacheKey, req.Page, req.PageSize, req.Search)
 	result, found := cache.GetFromCache[categoryCacheResponseDB](ctx, s.store, key)
-	if !found || result == nil { return nil, nil, false }
+	if !found || result == nil {
+		return nil, nil, false
+	}
 	return result.Data, result.TotalRecords, true
 }
 
 func (s *categoryQueryCache) SetCachedCategoryTrashedCache(ctx context.Context, req *requests.FindAllCategory, data []*repository.CategoryResult, total *int) {
-	if total == nil { zero := 0; total = &zero }
-	if data == nil { data = []*repository.CategoryResult{} }
+	if total == nil {
+		zero := 0
+		total = &zero
+	}
+	if data == nil {
+		data = []*repository.CategoryResult{}
+	}
 	key := fmt.Sprintf(categoryTrashedCacheKey, req.Page, req.PageSize, req.Search)
 	cache.SetToCache(ctx, s.store, key, &categoryCacheResponseDB{Data: data, TotalRecords: total}, ttlDefault)
 }
@@ -78,12 +99,16 @@ func (s *categoryQueryCache) SetCachedCategoryTrashedCache(ctx context.Context, 
 func (s *categoryQueryCache) GetCachedCategoryCache(ctx context.Context, id int) (*models.Category, bool) {
 	key := fmt.Sprintf(categoryByIdCacheKey, id)
 	result, found := cache.GetFromCache[*models.Category](ctx, s.store, key)
-	if !found || result == nil { return nil, false }
+	if !found || result == nil {
+		return nil, false
+	}
 	return *result, true
 }
 
 func (s *categoryQueryCache) SetCachedCategoryCache(ctx context.Context, data *models.Category) {
-	if data == nil { return }
+	if data == nil {
+		return
+	}
 	key := fmt.Sprintf(categoryByIdCacheKey, data.CategoryID)
 	cache.SetToCache(ctx, s.store, key, data, ttlDefault)
 }

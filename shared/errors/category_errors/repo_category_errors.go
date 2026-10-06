@@ -35,4 +35,3 @@ var (
 	ErrRestoreAllCategories         = errors.ErrInternal.WithMessage("failed to restore all categories")
 	ErrDeleteAllPermanentCategories = errors.ErrInternal.WithMessage("failed to permanently delete all categories")
 )
-

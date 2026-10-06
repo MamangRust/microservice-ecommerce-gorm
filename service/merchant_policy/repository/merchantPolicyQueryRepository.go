@@ -30,7 +30,7 @@ func (r *merchantPolicyQueryRepository) FindAll(ctx context.Context, req *reques
 			AND (? = '' OR m.name ILIKE ? OR mp.policy_type ILIKE ?)
 		ORDER BY mp.created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, merchant_policy_errors.ErrFindAllMerchantPolicies.WithInternal(err)
 	}
@@ -51,7 +51,7 @@ func (r *merchantPolicyQueryRepository) FindActive(ctx context.Context, req *req
 			AND (? = '' OR m.name ILIKE ? OR mp.policy_type ILIKE ?)
 		ORDER BY mp.created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, merchant_policy_errors.ErrFindActiveMerchantPolicies.WithInternal(err)
 	}
@@ -72,7 +72,7 @@ func (r *merchantPolicyQueryRepository) FindTrashed(ctx context.Context, req *re
 			AND (? = '' OR m.name ILIKE ? OR mp.policy_type ILIKE ?)
 		ORDER BY mp.created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, merchant_policy_errors.ErrFindTrashedMerchantPolicies.WithInternal(err)
 	}
@@ -97,4 +97,3 @@ func (r *merchantPolicyQueryRepository) FindByID(ctx context.Context, id int) (*
 	}
 	return &result, nil
 }
-

@@ -1,8 +1,8 @@
 package errors
 
 import (
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
 	"errors"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
 	"net/http"
 
 	"google.golang.org/grpc/codes"

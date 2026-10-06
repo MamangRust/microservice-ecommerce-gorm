@@ -1,8 +1,8 @@
 package merchant_business_test
 
 import (
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
 	"context"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 	"net/http"
 	"net/http/httptest"
 

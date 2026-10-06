@@ -2,7 +2,7 @@ package shippingaddresshandler
 
 import (
 	shippingaddress_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/shipping_address"
-		pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/shipping_address"
@@ -22,7 +22,7 @@ func RegisterShippingAddressHandler(deps *DepsShippingAddress) {
 	cache := shippingaddress_cache.NewShippingAddressMencache(deps.Cache)
 
 	NewShippingAddressQueryHandleApi(&shippingAddressQueryHandleDeps{
-		client: pbshipping_address.NewShippingQueryServiceClient(deps.Client),
+		client: pb_shipping_address.NewShippingQueryServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.QueryMapper(),
@@ -30,7 +30,7 @@ func RegisterShippingAddressHandler(deps *DepsShippingAddress) {
 	})
 
 	NewShippingAddressCommandHandleApi(&shippingAddressCommandHandleDeps{
-		client: pbshipping_address.NewShippingCommandServiceClient(deps.Client),
+		client: pb_shipping_address.NewShippingCommandServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.CommandMapper(),

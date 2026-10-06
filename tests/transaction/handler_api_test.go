@@ -57,7 +57,6 @@ func (s *TransactionApiTestSuite) SetupSuite() {
 
 	transactionhandler.RegisterTransactionHandler(&transactionhandler.DepsTransaction{
 		Client:      s.Conns["transaction"],
-		StatsClient: s.Conns["transaction"],
 		E:           s.echo,
 		Logger:      s.Log,
 		CacheStore:  s.GetCacheStore(),

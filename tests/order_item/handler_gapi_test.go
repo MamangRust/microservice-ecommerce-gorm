@@ -1,8 +1,8 @@
 package order_item_test
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
 	"context"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"testing"
 
 	item_cache "github.com/MamangRust/microservice-ecommerce-grpc-order-item/cache"

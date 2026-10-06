@@ -1,7 +1,7 @@
 package transactionapimapper
 
 import (
-	pbtxstats "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
+	pbtxstats "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

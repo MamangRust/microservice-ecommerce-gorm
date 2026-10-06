@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_detail/repository"
+	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 

@@ -50,11 +50,10 @@ func (s *OrderApiTestSuite) SetupSuite() {
 	s.echo = echo.New()
 
 	orderhandler.RegisterOrderHandler(&orderhandler.DepsOrder{
-		Client:      s.Conns["order"],
-		StatsClient: s.Conns["order"],
-		E:           s.echo,
-		Logger:      s.Log,
-		CacheStore:  s.GetCacheStore(),
+		Client:     s.Conns["order"],
+		E:          s.echo,
+		Logger:     s.Log,
+		CacheStore: s.GetCacheStore(),
 	})
 }
 

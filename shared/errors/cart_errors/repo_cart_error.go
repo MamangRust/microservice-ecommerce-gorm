@@ -14,4 +14,3 @@ var (
 	ErrDeleteCartPermanent = errors.ErrInternal.WithMessage("failed to permanently delete cart")
 	ErrDeleteAllCarts      = errors.ErrInternal.WithMessage("failed to permanently delete all carts")
 )
-

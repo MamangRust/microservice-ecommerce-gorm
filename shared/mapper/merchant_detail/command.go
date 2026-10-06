@@ -1,7 +1,7 @@
 package merchantdetailapimapper
 
 import (
-	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_detail"
+	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_detail"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewMerchantDetailCommandResponseMapper() MerchantDetailCommandResponseMappe
 }
 
 func (m *merchantDetailCommandResponseMapper) ToResponseMerchantDetail(merchant *pbmerchant_detail.MerchantDetailResponse) *response.MerchantDetailResponse {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	return &response.MerchantDetailResponse{
 		ID:               int(merchant.Id),
 		MerchantID:       int(merchant.MerchantId),
@@ -29,7 +31,9 @@ func (m *merchantDetailCommandResponseMapper) ToResponseMerchantDetail(merchant 
 }
 
 func (m *merchantDetailCommandResponseMapper) ToResponseMerchantDetailRelation(merchant *pbmerchant_detail.MerchantDetailResponse) *response.MerchantDetailResponse {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	var socialMediaLinks []*response.MerchantSocialMediaLinkResponse
 	for _, sm := range merchant.SocialMediaLinks {
 		socialMediaLinks = append(socialMediaLinks, &response.MerchantSocialMediaLinkResponse{
@@ -62,7 +66,9 @@ func (m *merchantDetailCommandResponseMapper) ToResponsesMerchantDetail(merchant
 }
 
 func (m *merchantDetailCommandResponseMapper) ToResponseMerchantDetailDeleteAt(merchant *pbmerchant_detail.MerchantDetailResponseDeleteAt) *response.MerchantDetailResponseDeleteAt {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	var deletedAt string
 	if merchant.DeletedAt != nil {
 		deletedAt = merchant.DeletedAt.Value

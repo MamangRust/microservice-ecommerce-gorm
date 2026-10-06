@@ -2,13 +2,13 @@ package merchantawardhandler
 
 import (
 	merchantaward_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/merchant_awards"
-		pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
-	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_award"
+	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	merchantapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant"
+	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_award"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
-	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 )
 
 type DepsMerchantAward struct {
@@ -24,7 +24,7 @@ func RegisterMerchantAwardHandler(deps *DepsMerchantAward) {
 	cache := merchantaward_cache.NewMerchantAward(deps.CacheStore)
 
 	NewMerchantAwardQueryHandleApi(&merchantAwardQueryHandleDeps{
-		client: pbmerchant_award.NewMerchantAwardQueryServiceClient(deps.Client),
+		client: pb_merchant_award.NewMerchantAwardQueryServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.QueryMapper(),
@@ -32,7 +32,7 @@ func RegisterMerchantAwardHandler(deps *DepsMerchantAward) {
 	})
 
 	NewMerchantAwardCommandHandleApi(&merchantAwardCommandHandleDeps{
-		client:         pbmerchant_award.NewMerchantAwardCommandServiceClient(deps.Client),
+		client:         pb_merchant_award.NewMerchantAwardCommandServiceClient(deps.Client),
 		router:         deps.E,
 		logger:         deps.Logger,
 		mapper:         mapper.CommandMapper(),

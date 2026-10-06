@@ -1,19 +1,19 @@
 package service
 
 import (
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-order/cache"
-	"github.com/MamangRust/microservice-ecommerce-grpc-order/dto"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order/repository"
+	orderitemadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order_item"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/events"
@@ -279,7 +279,7 @@ func (s *orderCommandService) Update(ctx context.Context, req *requests.UpdateOr
 		status = "error"
 		return errorhandler.HandleError[*models.Order](s.logger, err, method, span)
 	}
-	itemsByID := make(map[int32]*dto.GetOrderItemsByOrderRow, len(existingItems))
+	itemsByID := make(map[int32]orderitemadapter.OrderItem, len(existingItems))
 	for _, existingItem := range existingItems {
 		itemsByID[existingItem.OrderItemID] = existingItem
 	}
@@ -807,7 +807,9 @@ func (s *orderCommandService) CleanupIdempotencyRecords(ctx context.Context, ret
 		return errorhandler.HandleError[*CleanupResult](s.logger, err, method, span)
 	}
 
-	adjustmentsRemoved, err := s.stockReservationRepository.DeleteOldProductStockAdjustments(ctx, cutoff)
+	// product_stock_adjustments is owned by the product context, so the purge
+	// goes through the product service instead of a local DELETE.
+	adjustmentsRemoved, err := s.productCommandRepository.CleanupProductStockAdjustments(ctx, retentionDays)
 	if err != nil {
 		status = "error"
 		return errorhandler.HandleError[*CleanupResult](s.logger, err, method, span)

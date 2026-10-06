@@ -19,8 +19,8 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-pkg/kafka"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	pkgmiddleware "github.com/MamangRust/microservice-ecommerce-pkg/middleware"
+	otel_pkg "github.com/MamangRust/microservice-ecommerce-pkg/otel"
 	pkgresilience "github.com/MamangRust/microservice-ecommerce-pkg/resilience"
-	otel_pkg	"github.com/MamangRust/microservice-ecommerce-pkg/otel"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
@@ -375,7 +375,7 @@ func (c *Client) Cleanup() {
 	c.Logger.Info("Cleaning up resources...")
 
 	if c.cancelTasks != nil {
-		c.Logger.Info("Stopping background tasks...")
+		c.Logger.Info("Stopping background tasks")
 		c.cancelTasks()
 
 		for i, done := range c.tasksDone {
@@ -783,9 +783,9 @@ func closeConnections(conns *handler.ServiceConnections, logger logger.LoggerInt
 		"Saldo":       conns.Saldo,
 		"Topup":       conns.Topup,
 		"Transaction": conns.Transaction,
+		"StatsReader": conns.StatsReader,
 		"Transfer":    conns.Transfer,
 		"Withdraw":    conns.Withdraw,
-		"StatsReader": conns.StatsReader,
 	}
 
 	for name, conn := range connectionMap {

@@ -5,23 +5,23 @@ import (
 	"strconv"
 
 	orderitem_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/order_item"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/order_item"
-		pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
 	"github.com/labstack/echo/v4"
 )
 
 type orderItemQueryHandlerApi struct {
-	client pborder_item.OrderItemQueryServiceClient
+	client pb_order_item.OrderItemQueryServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.OrderItemQueryResponseMapper
 	cache  orderitem_cache.OrderItemQueryCache
 }
 
 type orderItemQueryHandleDeps struct {
-	client pborder_item.OrderItemQueryServiceClient
+	client pb_order_item.OrderItemQueryServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.OrderItemQueryResponseMapper
@@ -75,7 +75,7 @@ func (h *orderItemQueryHandlerApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindAll(ctx, &pborder_item.FindAllOrderItemRequest{
+	res, err := h.client.FindAll(ctx, &pb_order_item.FindAllOrderItemRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -118,7 +118,7 @@ func (h *orderItemQueryHandlerApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByActive(ctx, &pborder_item.FindAllOrderItemRequest{
+	res, err := h.client.FindByActive(ctx, &pb_order_item.FindAllOrderItemRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -161,7 +161,7 @@ func (h *orderItemQueryHandlerApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByTrashed(ctx, &pborder_item.FindAllOrderItemRequest{
+	res, err := h.client.FindByTrashed(ctx, &pb_order_item.FindAllOrderItemRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -196,7 +196,7 @@ func (h *orderItemQueryHandlerApi) FindOrderItemByOrder(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindOrderItemByOrder(ctx, &pborder_item.FindByIdOrderItemRequest{Id: int32(orderId)})
+	res, err := h.client.FindOrderItemByOrder(ctx, &pb_order_item.FindByIdOrderItemRequest{Id: int32(orderId)})
 	if err != nil {
 		return h.handleGrpcError(err, "FindOrderItemByOrder")
 	}

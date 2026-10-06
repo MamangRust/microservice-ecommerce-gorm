@@ -11,24 +11,24 @@ import (
 )
 
 type GetCategoryByIDRow struct {
-	CategoryID    int32            `json:"category_id"`
-	Name          string           `json:"name"`
-	Description   *string          `json:"description"`
-	SlugCategory  *string          `json:"slug_category"`
-	ImageCategory *string          `json:"image_category"`
+	CategoryID    int32      `json:"category_id"`
+	Name          string     `json:"name"`
+	Description   *string    `json:"description"`
+	SlugCategory  *string    `json:"slug_category"`
+	ImageCategory *string    `json:"image_category"`
 	CreatedAt     *time.Time `json:"created_at"`
 	UpdatedAt     *time.Time `json:"updated_at"`
 }
 
 type GetMerchantByIDRow struct {
-	MerchantID   int32            `json:"merchant_id"`
-	UserID       int32            `json:"user_id"`
-	Name         string           `json:"name"`
-	Description  *string          `json:"description"`
-	Address      *string          `json:"address"`
-	ContactEmail *string          `json:"contact_email"`
-	ContactPhone *string          `json:"contact_phone"`
-	Status       string           `json:"status"`
+	MerchantID   int32      `json:"merchant_id"`
+	UserID       int32      `json:"user_id"`
+	Name         string     `json:"name"`
+	Description  *string    `json:"description"`
+	Address      *string    `json:"address"`
+	ContactEmail *string    `json:"contact_email"`
+	ContactPhone *string    `json:"contact_phone"`
+	Status       string     `json:"status"`
 	CreatedAt    *time.Time `json:"created_at"`
 	UpdatedAt    *time.Time `json:"updated_at"`
 }

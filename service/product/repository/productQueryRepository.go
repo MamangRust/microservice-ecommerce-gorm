@@ -1,21 +1,21 @@
 package repository
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"context"
 
+	categoryadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/category"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors/product_errors"
 	"gorm.io/gorm"
 )
 
 type productQueryRepository struct {
-	db             *gorm.DB
-	categoryClient pbcategory.CategoryQueryServiceClient
+	db           *gorm.DB
+	categoryRepo categoryadapter.QueryRepository
 }
 
-func NewProductQueryRepository(db *gorm.DB, categoryClient pbcategory.CategoryQueryServiceClient) *productQueryRepository {
-	return &productQueryRepository{db: db, categoryClient: categoryClient}
+func NewProductQueryRepository(db *gorm.DB, categoryRepo categoryadapter.QueryRepository) *productQueryRepository {
+	return &productQueryRepository{db: db, categoryRepo: categoryRepo}
 }
 
 func (r *productQueryRepository) FindAll(ctx context.Context, req *requests.FindAllProduct) ([]*ProductResult, error) {
@@ -31,7 +31,7 @@ func (r *productQueryRepository) FindAll(ctx context.Context, req *requests.Find
 			AND (? = '' OR p.name ILIKE ? OR p.description ILIKE ?)
 		ORDER BY p.product_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, product_errors.ErrFindAllProducts.WithInternal(err)
 	}
@@ -51,7 +51,7 @@ func (r *productQueryRepository) FindActive(ctx context.Context, req *requests.F
 			AND (? = '' OR p.name ILIKE ? OR p.description ILIKE ?)
 		ORDER BY p.product_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, product_errors.ErrFindActiveProducts.WithInternal(err)
 	}
@@ -71,7 +71,7 @@ func (r *productQueryRepository) FindTrashed(ctx context.Context, req *requests.
 			AND (? = '' OR p.name ILIKE ? OR p.description ILIKE ?)
 		ORDER BY p.product_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, product_errors.ErrFindTrashedProducts.WithInternal(err)
 	}
@@ -95,7 +95,7 @@ func (r *productQueryRepository) FindByMerchant(ctx context.Context, req *reques
 			AND (? = 0 OR p.price <= ?)
 		ORDER BY p.product_id DESC
 		LIMIT ? OFFSET ?
-	`, req.MerchantID, req.Search, "%" + req.Search + "%",
+	`, req.MerchantID, req.Search, "%"+req.Search+"%",
 		0, req.CategoryID,
 		0, IntPtrToInt(req.MinPrice),
 		0, IntPtrToInt(req.MaxPrice),
@@ -111,16 +111,12 @@ func (r *productQueryRepository) FindByCategory(ctx context.Context, req *reques
 
 	categoryID := 0
 	if req.CategoryName != "" {
-		catRes, err := r.categoryClient.FindAll(ctx, &pbcategory.FindAllCategoryRequest{
-			Page:     1,
-			PageSize: 1,
-			Search:   req.CategoryName,
-		})
+		cat, err := r.categoryRepo.FindByName(ctx, req.CategoryName)
 		if err != nil {
 			return nil, product_errors.ErrFindProductsByCategory.WithInternal(err)
 		}
-		if len(catRes.Data) > 0 {
-			categoryID = int(catRes.Data[0].Id)
+		if cat != nil {
+			categoryID = int(cat.CategoryID)
 		}
 	}
 
@@ -138,7 +134,7 @@ func (r *productQueryRepository) FindByCategory(ctx context.Context, req *reques
 			AND (? = 0 OR p.price <= ?)
 		ORDER BY p.product_id DESC
 		LIMIT ? OFFSET ?
-	`, categoryID, categoryID, req.Search, "%" + req.Search + "%",
+	`, categoryID, categoryID, req.Search, "%"+req.Search+"%",
 		0, IntPtrToInt(req.MinPrice),
 		0, IntPtrToInt(req.MaxPrice),
 		req.PageSize, offset).Scan(&results).Error

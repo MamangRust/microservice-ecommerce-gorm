@@ -11,11 +11,11 @@ import (
 )
 
 type GetUserByIDRow struct {
-	UserID    int32            `json:"user_id"`
-	Firstname string           `json:"firstname"`
-	Lastname  string           `json:"lastname"`
-	Email     string           `json:"email"`
-	Password  string           `json:"password"`
+	UserID    int32      `json:"user_id"`
+	Firstname string     `json:"firstname"`
+	Lastname  string     `json:"lastname"`
+	Email     string     `json:"email"`
+	Password  string     `json:"password"`
 	CreatedAt *time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 }

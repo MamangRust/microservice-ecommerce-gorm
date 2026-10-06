@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbmerchant_social_link "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_social_link"
 	"context"
+	pbmerchant_social_link "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_social_link"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_detail/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

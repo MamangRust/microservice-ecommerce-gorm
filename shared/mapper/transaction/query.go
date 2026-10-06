@@ -1,7 +1,7 @@
 package transactionapimapper
 
 import (
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewTransactionQueryResponseMapper() TransactionQueryResponseMapper {
 }
 
 func (t *transactionQueryResponseMapper) ToResponseTransaction(transaction *pbtransaction.TransactionResponse) *response.TransactionResponse {
-	if transaction == nil { return nil }
+	if transaction == nil {
+		return nil
+	}
 	return &response.TransactionResponse{
 		ID:            int(transaction.Id),
 		OrderID:       int(transaction.OrderId),

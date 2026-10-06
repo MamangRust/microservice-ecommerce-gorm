@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order/repository"
+	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 
 const (
-	orderAllCacheKey     = "order:all:page:%d:pageSize:%d:search:%s"
-	orderByIdCacheKey    = "order:id:%d"
-	orderActiveCacheKey  = "order:active:page:%d:pageSize:%d:search:%s"
-	orderTrashedCacheKey = "order:trashed:page:%d:pageSize:%d:search:%s"
+	orderAllCacheKey        = "order:all:page:%d:pageSize:%d:search:%s"
+	orderByIdCacheKey       = "order:id:%d"
+	orderActiveCacheKey     = "order:active:page:%d:pageSize:%d:search:%s"
+	orderTrashedCacheKey    = "order:trashed:page:%d:pageSize:%d:search:%s"
 	orderByMerchantCacheKey = "order:merchant:merchantID:%d:page:%d:pageSize:%d:search:%s"
 
 	ttlDefault = 5 * time.Minute
@@ -23,12 +23,12 @@ const (
 
 type orderCacheResponseDB struct {
 	Data         []*repository.OrderResult `json:"data"`
-	TotalRecords *int               `json:"total_records"`
+	TotalRecords *int                      `json:"total_records"`
 }
 
 type orderActiveCacheResponseDB struct {
 	Data         []*repository.OrderResult `json:"data"`
-	TotalRecords *int                     `json:"total_records"`
+	TotalRecords *int                      `json:"total_records"`
 }
 
 type orderTrashedCacheResponseDB struct {
@@ -38,7 +38,7 @@ type orderTrashedCacheResponseDB struct {
 
 type orderMerchantCacheResponseDB struct {
 	Data         []*repository.OrderResult `json:"data"`
-	TotalRecords *int                         `json:"total_records"`
+	TotalRecords *int                      `json:"total_records"`
 }
 
 type orderQueryCache struct {

@@ -1,10 +1,9 @@
 package handler
 
 import (
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
 	"context"
-
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
 )
 
 type ReviewDetailQueryHandler interface {

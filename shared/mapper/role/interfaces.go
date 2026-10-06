@@ -1,7 +1,7 @@
 package roleapimapper
 
 import (
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

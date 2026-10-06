@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedFindMonthlyTotalPrice           = errors.ErrInternal.WithMessage("Failed to find monthly total price")
 	ErrFailedFindYearlyTotalPrice            = errors.ErrInternal.WithMessage("Failed to find yearly total price")

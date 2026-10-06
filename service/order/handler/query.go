@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
 	"context"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-order/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
@@ -13,8 +13,8 @@ import (
 
 type orderQueryHandler struct {
 	pborder.UnimplementedOrderQueryServiceServer
-	orderQuery           service.OrderQueryService
-	logger               logger.LoggerInterface
+	orderQuery service.OrderQueryService
+	logger     logger.LoggerInterface
 }
 
 func NewOrderQueryHandler(
@@ -22,8 +22,8 @@ func NewOrderQueryHandler(
 	logger logger.LoggerInterface,
 ) pborder.OrderQueryServiceServer {
 	return &orderQueryHandler{
-		orderQuery:           orderQuery,
-		logger:               logger,
+		orderQuery: orderQuery,
+		logger:     logger,
 	}
 }
 

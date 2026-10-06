@@ -3,12 +3,10 @@ package cache
 import (
 	"context"
 
-	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-grpc-order/repository"
+	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
-
-
 
 type OrderQueryCache interface {
 	GetOrderAllCache(ctx context.Context, req *requests.FindAllOrder) ([]*repository.OrderResult, *int, bool)

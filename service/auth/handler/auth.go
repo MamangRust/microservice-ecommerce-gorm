@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/MamangRust/microservice-ecommerce-auth/service"
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
-		pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"go.uber.org/zap"
 )
 

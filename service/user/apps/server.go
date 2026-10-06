@@ -1,9 +1,13 @@
 package apps
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"fmt"
+	"time"
+
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/handler"
@@ -14,8 +18,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-
-	pkgresilience "github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -30,15 +32,23 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	roleConn, err := grpc.NewClient(
 		roleAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithChainUnaryInterceptor(pkgresilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
+		grpc.WithChainUnaryInterceptor(resilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to role service: %w", err)
 	}
 
-	roleClient := pbrole.NewRoleQueryServiceClient(roleConn)
+	roleQueryClient := pbrole.NewRoleQueryServiceClient(roleConn)
 
-	repos := repository.NewRepositories(srv.GormDB, roleClient)
+	repos := repository.NewRepositories(&repository.Deps{
+		Db:              srv.GormDB,
+		RoleQueryClient: roleQueryClient,
+		Guard: repository.GuardOptions{
+			Role: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("role", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+		},
+	})
 	hashing := hash.NewHashingPassword()
 	obs, _ := observability.NewObservability("user-server", srv.Logger)
 	cache := cache.NewMencache(srv.CacheStore)

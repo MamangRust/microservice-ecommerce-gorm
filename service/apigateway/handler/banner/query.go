@@ -6,12 +6,12 @@ import (
 	"strconv"
 
 	banner_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/banner"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/banner"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
-		pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
 	"github.com/labstack/echo/v4"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -20,7 +20,7 @@ import (
 )
 
 type bannerQueryHandlerApi struct {
-	client        pbbanner.BannerQueryServiceClient
+	client        pb_banner.BannerQueryServiceClient
 	logger        logger.LoggerInterface
 	mapper        apimapper.BannerQueryResponseMapper
 	cache         banner_cache.BannerQueryCache
@@ -28,7 +28,7 @@ type bannerQueryHandlerApi struct {
 }
 
 type bannerQueryHandleDeps struct {
-	client        pbbanner.BannerQueryServiceClient
+	client        pb_banner.BannerQueryServiceClient
 	router        *echo.Echo
 	logger        logger.LoggerInterface
 	mapper        apimapper.BannerQueryResponseMapper
@@ -93,7 +93,7 @@ func (h *bannerQueryHandlerApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindAll(ctx, &pbbanner.FindAllBannerRequest{
+	res, err := h.client.FindAll(ctx, &pb_banner.FindAllBannerRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -140,7 +140,7 @@ func (h *bannerQueryHandlerApi) FindById(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindById(ctx, &pbbanner.FindByIdBannerRequest{Id: int32(id)})
+	res, err := h.client.FindById(ctx, &pb_banner.FindByIdBannerRequest{Id: int32(id)})
 	if err != nil {
 		status = "error"
 		return h.handleError(c, err, span, "FindById")
@@ -192,7 +192,7 @@ func (h *bannerQueryHandlerApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByActive(ctx, &pbbanner.FindAllBannerRequest{
+	res, err := h.client.FindByActive(ctx, &pb_banner.FindAllBannerRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -246,7 +246,7 @@ func (h *bannerQueryHandlerApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.client.FindByTrashed(ctx, &pbbanner.FindAllBannerRequest{
+	res, err := h.client.FindByTrashed(ctx, &pb_banner.FindAllBannerRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {

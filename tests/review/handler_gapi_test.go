@@ -1,10 +1,10 @@
 package review_test
 
 import (
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"testing"
 
 	review_cache "github.com/MamangRust/microservice-ecommerce-grpc-review/cache"

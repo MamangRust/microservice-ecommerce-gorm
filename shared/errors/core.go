@@ -6,6 +6,7 @@ import (
 )
 
 type ErrorType string
+
 const (
 	ErrorTypeInternal     ErrorType = "INTERNAL"
 	ErrorTypeNotFound     ErrorType = "NOT_FOUND"
@@ -30,7 +31,6 @@ type AppError struct {
 	Validations []ValidationError `json:"validations,omitempty"`
 	Internal    error             `json:"-"`
 }
-
 
 func (e *AppError) Error() string {
 	if e.Internal != nil {
@@ -70,7 +70,6 @@ func (e *AppError) AsRetryable() *AppError {
 func NewValidationError(validations []ValidationError) *AppError {
 	return ErrValidationFailed.WithValidations(validations)
 }
-
 
 var (
 	ErrBadRequest = &AppError{
@@ -136,4 +135,3 @@ var (
 		Retryable: true,
 	}
 )
-

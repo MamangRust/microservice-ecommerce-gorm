@@ -28,7 +28,7 @@ func (r *orderItemQueryRepository) FindAll(ctx context.Context, req *requests.Fi
 			AND (? = '' OR CAST(product_id AS TEXT) LIKE '%' || ? || '%')
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, orderitem_errors.ErrFindAllOrderItems.WithInternal(err)
 	}
@@ -47,7 +47,7 @@ func (r *orderItemQueryRepository) FindActive(ctx context.Context, req *requests
 			AND (? = '' OR CAST(product_id AS TEXT) LIKE '%' || ? || '%')
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, orderitem_errors.ErrFindByActive.WithInternal(err)
 	}
@@ -66,7 +66,7 @@ func (r *orderItemQueryRepository) FindTrashed(ctx context.Context, req *request
 			AND (? = '' OR CAST(product_id AS TEXT) LIKE '%' || ? || '%')
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, orderitem_errors.ErrFindByTrashed.WithInternal(err)
 	}

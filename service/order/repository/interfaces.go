@@ -4,8 +4,13 @@ import (
 	"context"
 	"time"
 
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
+	orderitemadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order_item"
+	productadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/product"
+	shippingaddressadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/shipping_address"
+	transactionadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/transaction"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
-	"github.com/MamangRust/microservice-ecommerce-grpc-order/dto"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 )
 
@@ -30,50 +35,40 @@ type StockReservationResult struct {
 	UpdatedAt     *time.Time
 }
 
-type UserQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*dto.GetUserByIDRow, error)
-}
+// UserQueryRepository is the shared user query contract, provided by the user
+// gRPC adapter.
+type UserQueryRepository = useradapter.QueryRepository
 
-type ProductQueryRepository interface {
-	FindByID(ctx context.Context, product_id int) (*dto.GetProductByIDRow, error)
-}
+// ProductQueryRepository is the shared product query contract, provided by the
+// product gRPC adapter.
+type ProductQueryRepository = productadapter.QueryRepository
 
-type MerchantQueryRepository interface {
-	FindByID(ctx context.Context, user_id int) (*dto.GetMerchantByIDRow, error)
-}
+// MerchantQueryRepository is the shared merchant query contract, provided by the
+// merchant gRPC adapter so this service never holds a raw gRPC client.
+type MerchantQueryRepository = merchantadapter.QueryRepository
 
-type ProductCommandRepository interface {
-	UpdateProductCountStock(ctx context.Context, product_id int, stock int) (*dto.UpdateProductCountStockRow, error)
-	AdjustProductStock(ctx context.Context, product_id int, delta int, operationID string) (*dto.AdjustProductStockRow, error)
-}
+// ProductCommandRepository is the shared product command contract, provided by
+// the product gRPC adapter.
+type ProductCommandRepository = productadapter.CommandRepository
 
-type ShippingAddressCommandRepository interface {
-	Create(ctx context.Context, request *requests.CreateShippingAddressRequest) (*dto.CreateShippingAddressRow, error)
-	Update(ctx context.Context, request *requests.UpdateShippingAddressRequest) (*dto.UpdateShippingAddressRow, error)
-	DeleteByOrderIDPermanent(ctx context.Context, order_id int) (bool, error)
-	DeleteAll(ctx context.Context) (bool, error)
-}
+// ShippingAddressCommandRepository is the shared shipping-address command
+// contract, provided by the shipping-address gRPC adapter.
+type ShippingAddressCommandRepository = shippingaddressadapter.CommandRepository
 
-type TransactionCommandRepository interface {
-	DeleteByOrderIDPermanent(ctx context.Context, order_id int) (bool, error)
-	DeleteAll(ctx context.Context) (bool, error)
-}
+// TransactionCommandRepository is the shared transaction command contract,
+// provided by the transaction gRPC adapter.
+type TransactionCommandRepository = transactionadapter.CommandRepository
 
+// OrderItemQueryRepository is the shared order-item query contract plus the
+// price calculation the order flow needs.
 type OrderItemQueryRepository interface {
-	FindOrderItemByOrder(ctx context.Context, order_id int) ([]*dto.GetOrderItemsByOrderRow, error)
+	orderitemadapter.QueryRepository
 	CalculateTotalPrice(ctx context.Context, order_id int) (*int32, error)
 }
 
-type OrderItemCommandRepository interface {
-	Create(ctx context.Context, req *requests.CreateOrderItemRecordRequest) (*dto.CreateOrderItemRow, error)
-	Update(ctx context.Context, req *requests.UpdateOrderItemRecordRequest) (*dto.UpdateOrderItemRow, error)
-	Trash(ctx context.Context, order_id int) (*dto.OrderItem, error)
-	Restore(ctx context.Context, order_id int) (*dto.OrderItem, error)
-	DeletePermanent(ctx context.Context, order_id int) (bool, error)
-	DeleteByOrderIDPermanent(ctx context.Context, order_id int) (bool, error)
-	RestoreAll(ctx context.Context) (bool, error)
-	DeleteAll(ctx context.Context) (bool, error)
-}
+// OrderItemCommandRepository is the shared order-item command contract, provided
+// by the order-item gRPC adapter.
+type OrderItemCommandRepository = orderitemadapter.CommandRepository
 
 type OrderCommandRepository interface {
 	Create(ctx context.Context, request *requests.CreateOrderRecordRequest) (*models.Order, error)
@@ -119,5 +114,4 @@ type StockReservationRepository interface {
 	DeleteAllForTrashedOrders(ctx context.Context) error
 	GetReleasedForActiveOrders(ctx context.Context) ([]*models.OrderStockReservation, error)
 	DeleteOldReleasedReservations(ctx context.Context, cutoff time.Time) (int64, error)
-	DeleteOldProductStockAdjustments(ctx context.Context, cutoff time.Time) (int64, error)
 }

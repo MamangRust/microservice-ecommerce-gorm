@@ -2,12 +2,12 @@ package orderitemhandler
 
 import (
 	orderitem_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/order_item"
-		pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
+	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/order_item"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
-	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 )
 
 type DepsOrderItem struct {
@@ -21,7 +21,7 @@ func RegisterOrderItemHandler(deps *DepsOrderItem) {
 	mapper := apimapper.NewOrderItemResponseMapper()
 	cache := orderitem_cache.NewOrderItemMencache(deps.CacheStore)
 
-	queryClient := pborder_item.NewOrderItemQueryServiceClient(deps.Client)
+	queryClient := pb_order_item.NewOrderItemQueryServiceClient(deps.Client)
 
 	NewOrderItemQueryHandleApi(&orderItemQueryHandleDeps{
 		client: queryClient,
@@ -32,7 +32,7 @@ func RegisterOrderItemHandler(deps *DepsOrderItem) {
 	})
 
 	NewOrderItemCommandHandleApi(&orderItemCommandHandleDeps{
-		client: pborder_item.NewOrderItemCommandServiceClient(deps.Client),
+		client: pb_order_item.NewOrderItemCommandServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.CommandMapper(),

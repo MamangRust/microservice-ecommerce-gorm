@@ -1,7 +1,7 @@
 package reviewapimapper
 
 import (
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )

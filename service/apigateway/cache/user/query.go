@@ -2,10 +2,10 @@ package user_cache
 
 import (
 	"context"
+	"fmt"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
-	"fmt"
 )
 
 type userQueryCache struct {

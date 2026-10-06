@@ -1,11 +1,16 @@
 package apps
 
 import (
-	pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
 	"fmt"
+	"time"
+
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 
 	"github.com/MamangRust/microservice-ecommerce-auth/cache"
 	"github.com/MamangRust/microservice-ecommerce-auth/handler"
@@ -19,8 +24,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-
-	pkgresilience "github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -51,7 +54,7 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	roleConn, err := grpc.NewClient(
 		roleAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithChainUnaryInterceptor(pkgresilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
+		grpc.WithChainUnaryInterceptor(resilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to role service: %w", err)
@@ -60,19 +63,35 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	userConn, err := grpc.NewClient(
 		userAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithChainUnaryInterceptor(pkgresilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
+		grpc.WithChainUnaryInterceptor(resilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to user service: %w", err)
 	}
 
 	roleQueryClient := pbrole.NewRoleQueryServiceClient(roleConn)
-	roleCommandClient := pbrole.NewRoleCommandServiceClient(roleConn)
+	userRoleCommandClient := pbuserrole.NewUserRoleCommandServiceClient(roleConn)
 	userQueryClient := pbuser.NewUserQueryServiceClient(userConn)
 	userCommandClient := pbuser.NewUserCommandServiceClient(userConn)
 
+	guardUser := resilience.NewDependencyGuard("user", 5, 30, 100, 3*time.Second, srv.Logger)
+	guardRole := resilience.NewDependencyGuard("role", 5, 30, 100, 3*time.Second, srv.Logger)
+	guardUserRole := resilience.NewDependencyGuard("user_role", 5, 30, 100, 3*time.Second, srv.Logger)
+
 	hasher := hash.NewHashingPassword()
-	repositories := repository.NewRepositories(srv.GormDB, userQueryClient, userCommandClient, roleQueryClient, roleCommandClient)
+	repositories := repository.NewRepositories(&repository.Deps{
+		Db:              srv.GormDB,
+		User:            userQueryClient,
+		UserCommand:     userCommandClient,
+		Role:            roleQueryClient,
+		UserRoleCommand: userRoleCommandClient,
+		Guards: repository.GuardOptions{
+			User:     []adapter.GuardOption{adapter.WithDependencyGuard(guardUser)},
+			Role:     []adapter.GuardOption{adapter.WithDependencyGuard(guardRole)},
+			UserRole: []adapter.GuardOption{adapter.WithDependencyGuard(guardUserRole)},
+		},
+	})
+
 	myKafka := kafka.NewKafka(srv.Logger, []string{viper.GetString("KAFKA_BROKERS")})
 
 	obs, _ := observability.NewObservability("auth-server", srv.Logger)

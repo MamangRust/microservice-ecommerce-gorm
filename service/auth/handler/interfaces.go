@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-		pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
 )
 
 type AuthHandleGrpc interface {

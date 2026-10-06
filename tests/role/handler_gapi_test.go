@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
 	role_cache "github.com/MamangRust/microservice-ecommerce-grpc-role/cache"
 	role_handler "github.com/MamangRust/microservice-ecommerce-grpc-role/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/service"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	tests "github.com/MamangRust/microservice-ecommerce-test"
 
 	"github.com/stretchr/testify/suite"

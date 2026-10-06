@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package pb;
+package pb.product;
 
 import "google/protobuf/empty.proto";
 import "product/product_common.proto";
 
-option go_package = "github.com/MamangRust/microservice-ecommerce-grpc/pb/product";
+option go_package = "github.com/MamangRust/microservice-ecommerce-grpc-pb/product;pb_product";
 
 message CreateProductRequest {
     int32 merchant_id = 1;
@@ -49,11 +49,22 @@ message AdjustProductStockRequest {
     string operation_id = 3;
 }
 
+message CleanupProductStockAdjustmentsRequest {
+    int32 retention_days = 1;
+}
+
+message CleanupProductStockAdjustmentsResponse {
+    string status = 1;
+    string message = 2;
+    int64 deleted = 3;
+}
+
 service ProductCommandService {
     rpc Create(CreateProductRequest) returns (ApiResponseProduct);
     rpc Update(UpdateProductRequest) returns (ApiResponseProduct);
     rpc UpdateProductCountStock(UpdateProductCountStockRequest) returns (ApiResponseProduct);
     rpc AdjustProductStock(AdjustProductStockRequest) returns (ApiResponseProduct);
+    rpc CleanupProductStockAdjustments(CleanupProductStockAdjustmentsRequest) returns (CleanupProductStockAdjustmentsResponse);
     rpc TrashedProduct(FindByIdProductRequest) returns (ApiResponseProductDeleteAt);
     rpc RestoreProduct(FindByIdProductRequest) returns (ApiResponseProductDeleteAt);
     rpc DeleteProductPermanent(FindByIdProductRequest) returns (ApiResponseProductDelete);

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
 	"context"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

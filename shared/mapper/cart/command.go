@@ -1,7 +1,7 @@
 package cartapimapper
 
 import (
-	pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 
@@ -12,7 +12,9 @@ func NewCartCommandResponseMapper() CartCommandResponseMapper {
 }
 
 func (t *cartCommandResponseMapper) ToResponseCart(pbResponse *pbcart.CartResponse) *response.CartResponse {
-	if pbResponse == nil { return nil }
+	if pbResponse == nil {
+		return nil
+	}
 	return &response.CartResponse{
 		ID:        int(pbResponse.Id),
 		UserID:    int(pbResponse.UserId),

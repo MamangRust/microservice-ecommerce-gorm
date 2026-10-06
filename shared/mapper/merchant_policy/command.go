@@ -1,7 +1,7 @@
 package merchantpolicyapimapper
 
 import (
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 
@@ -12,7 +12,9 @@ func NewMerchantPolicyCommandResponseMapper() MerchantPolicyCommandResponseMappe
 }
 
 func (m *merchantPolicyCommandResponseMapper) ToResponseMerchantPolicy(merchant *pbmerchant_policy.MerchantPoliciesResponse) *response.MerchantPoliciesResponse {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	return &response.MerchantPoliciesResponse{
 		ID:           int(merchant.Id),
 		MerchantID:   int(merchant.MerchantId),
@@ -42,7 +44,9 @@ func (m *merchantPolicyCommandResponseMapper) ToApiResponseMerchantPolicies(pbRe
 }
 
 func (m *merchantPolicyCommandResponseMapper) ToResponseMerchantPolicyDeleteAt(merchant *pbmerchant_policy.MerchantPoliciesResponseDeleteAt) *response.MerchantPoliciesResponseDeleteAt {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	var deletedAt string
 	if merchant.DeletedAt != nil {
 		deletedAt = merchant.DeletedAt.Value

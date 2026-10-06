@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedFindAllSliders            = errors.ErrInternal.WithMessage("failed to fetch sliders")
 	ErrFailedFindActiveSliders         = errors.ErrInternal.WithMessage("failed to fetch active sliders")

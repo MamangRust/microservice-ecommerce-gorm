@@ -1,7 +1,7 @@
 package merchantdocumenthandler
 
 import (
-		pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_document"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_document"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/merchant_documents"
@@ -20,14 +20,14 @@ func RegisterMerchantDocumentHandler(deps *DepsMerchantDocument) {
 	mapper := apimapper.NewMerchantDocumentResponseMapper()
 
 	NewMerchantDocumentQueryHandleApi(&merchantDocumentQueryHandleDeps{
-		client: pbmerchant_document.NewMerchantDocumentQueryServiceClient(deps.Client),
+		client: pb_merchant_document.NewMerchantDocumentQueryServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.QueryMapper(),
 	})
 
 	NewMerchantDocumentCommandHandleApi(&merchantDocumentCommandHandleDeps{
-		client:       pbmerchant_document.NewMerchantDocumentCommandServiceClient(deps.Client),
+		client:       pb_merchant_document.NewMerchantDocumentCommandServiceClient(deps.Client),
 		router:       deps.E,
 		logger:       deps.Logger,
 		mapper:       mapper.CommandMapper(),

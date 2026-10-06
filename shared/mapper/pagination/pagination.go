@@ -1,7 +1,7 @@
 package paginationapimapper
 
 import (
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

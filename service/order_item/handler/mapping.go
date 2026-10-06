@@ -1,9 +1,9 @@
 package handler
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
 	"fmt"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"time"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-order-item/repository"

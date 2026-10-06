@@ -1,7 +1,7 @@
 package apps
 
 import (
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
 	"github.com/MamangRust/microservice-ecommerce-grpc-review-detail/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-review-detail/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-review-detail/repository"

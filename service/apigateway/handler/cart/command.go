@@ -4,23 +4,23 @@ import (
 	"net/http"
 
 	cart_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/cart"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/cart"
-		pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
 	"github.com/labstack/echo/v4"
 )
 
 type cartCommandHandlerApi struct {
-	client pbcart.CartCommandServiceClient
+	client pb_cart.CartCommandServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.CartCommandResponseMapper
 	cache  cart_cache.CartQueryCache
 }
 
 type cartCommandHandleDeps struct {
-	client pbcart.CartCommandServiceClient
+	client pb_cart.CartCommandServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.CartCommandResponseMapper
@@ -70,7 +70,7 @@ func (h *cartCommandHandlerApi) Create(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.Create(ctx, &pbcart.CreateCartRequest{
+	res, err := h.client.Create(ctx, &pb_cart.CreateCartRequest{
 		UserId:    int32(userID),
 		ProductId: int32(body.ProductID),
 		Quantity:  int32(body.Quantity),
@@ -110,7 +110,7 @@ func (h *cartCommandHandlerApi) Delete(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.client.Delete(ctx, &pbcart.DeleteCartRequest{
+	res, err := h.client.Delete(ctx, &pb_cart.DeleteCartRequest{
 		UserId: int32(userID),
 		CartId: int32(body.CartID),
 	})
@@ -154,7 +154,7 @@ func (h *cartCommandHandlerApi) DeleteAll(c echo.Context) error {
 		cartIdsPb[i] = int32(id)
 	}
 
-	res, err := h.client.DeleteAll(ctx, &pbcart.DeleteAllCartRequest{
+	res, err := h.client.DeleteAll(ctx, &pb_cart.DeleteAllCartRequest{
 		UserId:  int32(userID),
 		CartIds: cartIdsPb,
 	})

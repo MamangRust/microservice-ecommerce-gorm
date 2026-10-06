@@ -1,9 +1,15 @@
 package repository
 
 import (
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
+	pbmerchants "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
 	"gorm.io/gorm"
 )
+
+type GuardOptions struct {
+	Merchant []adapter.GuardOption
+}
 
 type Repositories struct {
 	MerchantBusinessQuery   MerchantBusinessQueryRepository
@@ -11,10 +17,15 @@ type Repositories struct {
 	MerchantQuery           MerchantQueryRepository
 }
 
-func NewRepositories(DB *gorm.DB, merchantQuery pbmerchant.MerchantQueryServiceClient) *Repositories {
+func NewRepositories(db *gorm.DB, merchantQueryClient pbmerchants.MerchantQueryServiceClient, guards ...GuardOptions) *Repositories {
+	var g GuardOptions
+	if len(guards) > 0 {
+		g = guards[0]
+	}
+
 	return &Repositories{
-		MerchantBusinessQuery:   NewMerchantBusinessQueryRepository(DB),
-		MerchantBusinessCommand: NewMerchantBusinessCommandRepository(DB),
-		MerchantQuery:           NewMerchantQueryRepository(merchantQuery),
+		MerchantBusinessQuery:   NewMerchantBusinessQueryRepository(db),
+		MerchantBusinessCommand: NewMerchantBusinessCommandRepository(db),
+		MerchantQuery:           merchantadapter.New(merchantQueryClient, g.Merchant...),
 	}
 }

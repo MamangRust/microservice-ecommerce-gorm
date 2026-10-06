@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedFindAllMerchantAwards            = errors.ErrInternal.WithMessage("Failed to find all merchant awards")
 	ErrFailedFindActiveMerchantAwards         = errors.ErrInternal.WithMessage("Failed to find active merchant awards")

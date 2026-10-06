@@ -1,26 +1,27 @@
 package tests
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
-	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_detail"
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
-	pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"bytes"
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
+	pbmerchant_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_detail"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
+	pbslider "github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"mime/multipart"
 
 	"github.com/MamangRust/microservice-ecommerce-pkg/auth"
@@ -167,6 +168,8 @@ func (s *BaseTestSuite) SetupRoleService() {
 	server := grpc.NewServer()
 	pbrole.RegisterRoleQueryServiceServer(server, roleGapi.RoleQuery)
 	pbrole.RegisterRoleCommandServiceServer(server, roleGapi.RoleCommand)
+	pbuserrole.RegisterUserRoleQueryServiceServer(server, roleGapi.UserRoleQuery)
+	pbuserrole.RegisterUserRoleCommandServiceServer(server, roleGapi.UserRoleCommand)
 	addr, err := RunGRPCServer(server)
 	s.Require().NoError(err)
 
@@ -183,8 +186,12 @@ func (s *BaseTestSuite) SetupUserService() {
 	hasher := hash.NewHashingPassword()
 
 	userMencache := user_cache.NewMencache(cacheStore)
-	roleQueryClient := pbrole.NewRoleQueryServiceClient(s.Conns["role"])
-	userRepos := user_repo.NewRepositories(gormDB, roleQueryClient)
+	userRepos := user_repo.NewRepositories(&user_repo.Deps{
+		Db:                    gormDB,
+		RoleQueryClient:       pbrole.NewRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleQueryClient:   pbuserrole.NewUserRoleQueryServiceClient(s.Conns["role"]),
+		UserRoleCommandClient: pbuserrole.NewUserRoleCommandServiceClient(s.Conns["role"]),
+	})
 	userSvc := user_service.NewService(&user_service.Deps{
 		Repositories:  userRepos,
 		Logger:        s.Log,
@@ -218,9 +225,14 @@ func (s *BaseTestSuite) SetupAuthService() {
 	userQueryClient := pbuser.NewUserQueryServiceClient(s.Conns["user"])
 	userCommandClient := pbuser.NewUserCommandServiceClient(s.Conns["user"])
 	roleQueryClient := pbrole.NewRoleQueryServiceClient(s.Conns["role"])
-	roleCommandClient := pbrole.NewRoleCommandServiceClient(s.Conns["role"])
 
-	authRepos := auth_repo.NewRepositories(gormDB, userQueryClient, userCommandClient, roleQueryClient, roleCommandClient)
+	authRepos := auth_repo.NewRepositories(&auth_repo.Deps{
+		Db:              gormDB,
+		User:            userQueryClient,
+		UserCommand:     userCommandClient,
+		Role:            roleQueryClient,
+		UserRoleCommand: pbuserrole.NewUserRoleCommandServiceClient(s.Conns["role"]),
+	})
 	authMencache := auth_cache.NewMencache(cacheStore)
 	authSvc := auth_service.NewService(&auth_service.Deps{
 		Repositories:  authRepos,
@@ -418,16 +430,18 @@ func (s *BaseTestSuite) SetupOrderService() {
 
 	orderMencache := order_cache.NewMencache(cacheStore)
 	orderRepos := order_repo.NewRepositories(&order_repo.Deps{
-		DB:                 gormDB,
-		MerchantQuery:      pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
-		ProductQuery:       pbproduct.NewProductQueryServiceClient(s.Conns["product"]),
-		ProductCommand:     pbproduct.NewProductCommandServiceClient(s.Conns["product"]),
-		OrderItemQuery:     pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
-		OrderItemCommand:   pborder_item.NewOrderItemCommandServiceClient(s.Conns["order-item"]),
-		UserQuery:          pbuser.NewUserQueryServiceClient(s.Conns["user"]),
-		ShippingCommand:    pbshipping_address.NewShippingCommandServiceClient(s.Conns["shipping-address"]),
-		ShippingQuery:      pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
-		TransactionCommand: pbtransaction.NewTransactionCommandServiceClient(s.Conns["transaction"]),
+		GormDB:                 gormDB,
+		UserQueryClient:        pbuser.NewUserQueryServiceClient(s.Conns["user"]),
+		MerchantQueryClient:    pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
+		ProductQueryClient:     pbproduct.NewProductQueryServiceClient(s.Conns["product"]),
+		ProductCommandClient:   pbproduct.NewProductCommandServiceClient(s.Conns["product"]),
+		OrderItemQueryClient:   pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
+		OrderItemCommandClient: pborder_item.NewOrderItemCommandServiceClient(s.Conns["order-item"]),
+		ShippingCommandClient:  pbshipping_address.NewShippingCommandServiceClient(s.Conns["shipping-address"]),
+		ShippingQueryClient:    pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
+		TransactionCommandClient: pbtransaction.NewTransactionCommandServiceClient(
+			s.Conns["transaction"],
+		),
 	})
 	orderSvc := order_service.NewService(&order_service.Deps{
 		Cache:         orderMencache,
@@ -507,12 +521,12 @@ func (s *BaseTestSuite) SetupTransactionService() {
 
 	transactionMencache := transaction_cache.NewMencache(cacheStore)
 	transactionRepos := transaction_repo.NewRepositories(&transaction_repo.Deps{
-		DB:             gormDB,
-		UserQuery:      pbuser.NewUserQueryServiceClient(s.Conns["user"]),
-		MerchantQuery:  pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
-		OrderQuery:     pborder.NewOrderQueryServiceClient(s.Conns["order"]),
-		OrderItemQuery: pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
-		ShippingQuery:  pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
+		GormDB:               gormDB,
+		UserQueryClient:      pbuser.NewUserQueryServiceClient(s.Conns["user"]),
+		MerchantQueryClient:  pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
+		OrderQueryClient:     pborder.NewOrderQueryServiceClient(s.Conns["order"]),
+		OrderItemQueryClient: pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
+		ShippingQueryClient:  pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
 	})
 	transactionSvc := transaction_service.NewService(&transaction_service.Deps{
 		Cache:         transactionMencache,

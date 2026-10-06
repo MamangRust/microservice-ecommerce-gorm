@@ -1,11 +1,11 @@
 package sliderhandler
 
 import (
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
 	"net/http"
 	"strconv"
 
 	slider_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/slider"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	sharedErrors "github.com/MamangRust/microservice-ecommerce-shared/errors"
@@ -15,14 +15,14 @@ import (
 )
 
 type sliderQueryHandleApi struct {
-	client pbslider.SliderQueryServiceClient
+	client pb_slider.SliderQueryServiceClient
 	logger logger.LoggerInterface
 	mapper apimapper.SliderQueryResponseMapper
 	cache  slider_cache.SliderQueryCache
 }
 
 type sliderQueryHandleDeps struct {
-	client pbslider.SliderQueryServiceClient
+	client pb_slider.SliderQueryServiceClient
 	router *echo.Echo
 	logger logger.LoggerInterface
 	mapper apimapper.SliderQueryResponseMapper
@@ -78,7 +78,7 @@ func (h *sliderQueryHandleApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbslider.FindAllSliderRequest{
+	grpcReq := &pb_slider.FindAllSliderRequest{
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 		Search:   search,
@@ -117,7 +117,7 @@ func (h *sliderQueryHandleApi) FindById(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	res, err := h.client.FindById(ctx, &pbslider.FindByIdSliderRequest{Id: int32(id)})
+	res, err := h.client.FindById(ctx, &pb_slider.FindByIdSliderRequest{Id: int32(id)})
 	if err != nil {
 		return h.handleGrpcError(err, "FindById")
 	}
@@ -162,7 +162,7 @@ func (h *sliderQueryHandleApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbslider.FindAllSliderRequest{
+	grpcReq := &pb_slider.FindAllSliderRequest{
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 		Search:   search,
@@ -213,7 +213,7 @@ func (h *sliderQueryHandleApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cached)
 	}
 
-	grpcReq := &pbslider.FindAllSliderRequest{
+	grpcReq := &pb_slider.FindAllSliderRequest{
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 		Search:   search,

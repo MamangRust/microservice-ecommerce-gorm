@@ -25,5 +25,3 @@ var (
 
 	ErrUserInternal = errors.ErrInternal.WithMessage("User internal error")
 )
-
-

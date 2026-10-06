@@ -1,12 +1,12 @@
 package auth_test
 
 import (
-	pbauth "github.com/MamangRust/microservice-ecommerce-grpc/pb/auth"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	pbauth "github.com/MamangRust/microservice-ecommerce-grpc-pb/auth"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -18,6 +18,8 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-auth/service"
 	auth_cache_api "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/auth"
 	authhandler "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/auth"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	role_cache "github.com/MamangRust/microservice-ecommerce-grpc-role/cache"
 	role_handler "github.com/MamangRust/microservice-ecommerce-grpc-role/handler"
 	role_repo "github.com/MamangRust/microservice-ecommerce-grpc-role/repository"
@@ -32,7 +34,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	tests "github.com/MamangRust/microservice-ecommerce-test"
 
 	"github.com/labstack/echo/v4"
@@ -67,9 +68,6 @@ func (s *AuthHandlerApiTestSuite) SetupSuite() {
 	s.redisClient = redis.NewClient(opts)
 	s.redisClient.FlushAll(context.Background())
 
-
-
-
 	logger.ResetInstance()
 	lp := sdklog.NewLoggerProvider()
 	log, _ := logger.NewLogger("test", lp)
@@ -94,14 +92,20 @@ func (s *AuthHandlerApiTestSuite) SetupSuite() {
 	roleServer := grpc.NewServer()
 	pbrole.RegisterRoleQueryServiceServer(roleServer, roleGapi.RoleQuery)
 	pbrole.RegisterRoleCommandServiceServer(roleServer, roleGapi.RoleCommand)
+	pbuserrole.RegisterUserRoleQueryServiceServer(roleServer, roleGapi.UserRoleQuery)
+	pbuserrole.RegisterUserRoleCommandServiceServer(roleServer, roleGapi.UserRoleCommand)
 	roleLis, _ := net.Listen("tcp", "localhost:0")
 	go roleServer.Serve(roleLis)
 	roleConn, _ := grpc.NewClient(roleLis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	// 2. Setup User Service & gRPC Server
 	userMencache := user_cache.NewMencache(cacheStore)
-	roleQueryClientForUser := pbrole.NewRoleQueryServiceClient(roleConn)
-	userRepos := user_repo.NewRepositories(gormDB, roleQueryClientForUser)
+	userRepos := user_repo.NewRepositories(&user_repo.Deps{
+		Db:                    gormDB,
+		RoleQueryClient:       pbrole.NewRoleQueryServiceClient(roleConn),
+		UserRoleQueryClient:   pbuserrole.NewUserRoleQueryServiceClient(roleConn),
+		UserRoleCommandClient: pbuserrole.NewUserRoleCommandServiceClient(roleConn),
+	})
 	userSvc := user_service.NewService(&user_service.Deps{
 		Repositories:  userRepos,
 		Logger:        log,
@@ -123,10 +127,14 @@ func (s *AuthHandlerApiTestSuite) SetupSuite() {
 	// 3. Setup Auth Service with gRPC clients
 	userQueryClient := pbuser.NewUserQueryServiceClient(userConn)
 	userCommandClient := pbuser.NewUserCommandServiceClient(userConn)
-	roleQueryClient := pbrole.NewRoleQueryServiceClient(roleConn)
-	roleCommandClient := pbrole.NewRoleCommandServiceClient(roleConn)
 
-	repos := repository.NewRepositories(gormDB, userQueryClient, userCommandClient, roleQueryClient, roleCommandClient)
+	repos := repository.NewRepositories(&repository.Deps{
+		Db:              gormDB,
+		User:            userQueryClient,
+		UserCommand:     userCommandClient,
+		Role:            pbrole.NewRoleQueryServiceClient(roleConn),
+		UserRoleCommand: pbuserrole.NewUserRoleCommandServiceClient(roleConn),
+	})
 
 	tokenManager, _ := auth.NewManager("mysecret")
 	mencache := auth_cache.NewMencache(cacheStore)
@@ -189,7 +197,7 @@ func (s *AuthHandlerApiTestSuite) SetupSuite() {
 	s.password = "password123"
 
 	// Seed ROLE_ADMIN via gRPC to ensure visibility
-	roleCommandClient = pbrole.NewRoleCommandServiceClient(roleConn)
+	roleCommandClient := pbrole.NewRoleCommandServiceClient(roleConn)
 	createdRoleRes, err := roleCommandClient.CreateRole(context.Background(), &pbrole.CreateRoleRequest{
 		Name: "ROLE_ADMIN",
 	})
@@ -201,8 +209,8 @@ func (s *AuthHandlerApiTestSuite) SetupSuite() {
 
 	// Verify via direct gormDB
 	var testRes []struct {
-		RoleID   int32  
-		RoleName string 
+		RoleID   int32
+		RoleName string
 	}
 	gormDB.Raw("SELECT role_id, role_name FROM roles WHERE deleted_at IS NULL LIMIT ?", 10).Scan(&testRes)
 	if err != nil {

@@ -7,18 +7,20 @@ import (
 	mencache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache"
 	role_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/role"
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/middlewares"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pb_user_role "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"github.com/MamangRust/microservice-ecommerce-pkg/kafka"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/role"
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
 	"github.com/labstack/echo/v4"
 )
 
 type roleQueryHandlerApi struct {
 	kafka      *kafka.Kafka
-	role       pbrole.RoleQueryServiceClient
+	role       pb_role.RoleQueryServiceClient
+	userRole   pb_user_role.UserRoleQueryServiceClient
 	logger     logger.LoggerInterface
 	mapper     apimapper.RoleQueryResponseMapper
 	cache      role_cache.RoleQueryCache
@@ -26,19 +28,21 @@ type roleQueryHandlerApi struct {
 }
 
 type roleQueryHandleDeps struct {
-	client     pbrole.RoleQueryServiceClient
-	router     *echo.Echo
-	logger     logger.LoggerInterface
-	mapper     apimapper.RoleQueryResponseMapper
-	kafka      *kafka.Kafka
-	cache_role mencache.RoleCache
-	cache      role_cache.RoleQueryCache
-	apiHandler errors.ApiHandler
+	client         pb_role.RoleQueryServiceClient
+	userRoleClient pb_user_role.UserRoleQueryServiceClient
+	router         *echo.Echo
+	logger         logger.LoggerInterface
+	mapper         apimapper.RoleQueryResponseMapper
+	kafka          *kafka.Kafka
+	cache_role     mencache.RoleCache
+	cache          role_cache.RoleQueryCache
+	apiHandler     errors.ApiHandler
 }
 
 func NewRoleQueryHandleApi(params *roleQueryHandleDeps) *roleQueryHandlerApi {
 	handler := &roleQueryHandlerApi{
 		role:       params.client,
+		userRole:   params.userRoleClient,
 		logger:     params.logger,
 		mapper:     params.mapper,
 		kafka:      params.kafka,
@@ -46,7 +50,7 @@ func NewRoleQueryHandleApi(params *roleQueryHandleDeps) *roleQueryHandlerApi {
 		apiHandler: params.apiHandler,
 	}
 
-	roleMiddleware := middlewares.RoleValidatorGRPC(params.client, params.logger, params.cache_role)
+	roleMiddleware := middlewares.RoleValidatorGRPC(params.userRoleClient, params.logger, params.cache_role)
 	routerRole := params.router.Group("/api/role-query")
 	requireAdmin := middlewares.RequireRoles("Admin", "ROLE_ADMIN", "Admin_Role_10")
 
@@ -89,7 +93,7 @@ func (h *roleQueryHandlerApi) FindAll(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.role.FindAllRole(ctx, &pbrole.FindAllRoleRequest{
+	res, err := h.role.FindAllRole(ctx, &pb_role.FindAllRoleRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -124,7 +128,7 @@ func (h *roleQueryHandlerApi) FindById(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.role.FindByIdRole(ctx, &pbrole.FindByIdRoleRequest{RoleId: int32(roleID)})
+	res, err := h.role.FindByIdRole(ctx, &pb_role.FindByIdRoleRequest{RoleId: int32(roleID)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}
@@ -165,7 +169,7 @@ func (h *roleQueryHandlerApi) FindByActive(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.role.FindByActive(ctx, &pbrole.FindAllRoleRequest{
+	res, err := h.role.FindByActive(ctx, &pb_role.FindAllRoleRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -208,7 +212,7 @@ func (h *roleQueryHandlerApi) FindByTrashed(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.role.FindByTrashed(ctx, &pbrole.FindAllRoleRequest{
+	res, err := h.role.FindByTrashed(ctx, &pb_role.FindAllRoleRequest{
 		Page: int32(page), PageSize: int32(pageSize), Search: search,
 	})
 	if err != nil {
@@ -243,7 +247,7 @@ func (h *roleQueryHandlerApi) FindByUserId(c echo.Context) error {
 		return c.JSON(http.StatusOK, cachedData)
 	}
 
-	res, err := h.role.FindByUserId(ctx, &pbrole.FindByIdUserRoleRequest{UserId: int32(userID)})
+	res, err := h.userRole.FindByUserId(ctx, &pb_user_role.FindByIdUserRoleRequest{UserId: int32(userID)})
 	if err != nil {
 		return errors.ParseGrpcError(err)
 	}

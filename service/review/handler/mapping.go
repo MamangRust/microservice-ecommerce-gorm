@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
 	"fmt"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
 	"time"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-review/repository"

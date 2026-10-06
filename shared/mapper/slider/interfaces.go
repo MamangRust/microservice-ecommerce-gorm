@@ -1,7 +1,7 @@
 package sliderapimapper
 
 import (
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
+	pbslider "github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

@@ -1,7 +1,8 @@
 package apps
 
 import (
-	pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
+	pbuserrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/user_role"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-role/repository"
@@ -36,6 +37,8 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	srv.RegisterServices = func(gs *grpc.Server) {
 		pbrole.RegisterRoleQueryServiceServer(gs, h.RoleQuery)
 		pbrole.RegisterRoleCommandServiceServer(gs, h.RoleCommand)
+		pbuserrole.RegisterUserRoleQueryServiceServer(gs, h.UserRoleQuery)
+		pbuserrole.RegisterUserRoleCommandServiceServer(gs, h.UserRoleCommand)
 	}
 
 	return srv, nil

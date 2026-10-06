@@ -1,7 +1,7 @@
 package reviewdetailapimapper
 
 import (
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

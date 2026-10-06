@@ -1,10 +1,18 @@
 package repository
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
+	pbcategories "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbmerchants "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	categoryadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/category"
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
 	"gorm.io/gorm"
 )
+
+type GuardOptions struct {
+	Category []adapter.GuardOption
+	Merchant []adapter.GuardOption
+}
 
 type Repositories struct {
 	ProductQuery   ProductQueryRepository
@@ -13,27 +21,22 @@ type Repositories struct {
 	MerchantQuery  MerchantQueryRepository
 }
 
-type categoryQueryRepository struct {
-	client pbcategory.CategoryQueryServiceClient
-}
+func NewRepositories(db *gorm.DB,
+	categoryQueryClient pbcategories.CategoryQueryServiceClient,
+	merchantQueryClient pbmerchants.MerchantQueryServiceClient,
+	guards ...GuardOptions,
+) *Repositories {
+	var g GuardOptions
+	if len(guards) > 0 {
+		g = guards[0]
+	}
 
-func NewCategoryQueryRepository(client pbcategory.CategoryQueryServiceClient) *categoryQueryRepository {
-	return &categoryQueryRepository{client: client}
-}
+	categoryQuery := categoryadapter.New(categoryQueryClient, g.Category...)
 
-type merchantQueryRepository struct {
-	client pbmerchant.MerchantQueryServiceClient
-}
-
-func NewMerchantQueryRepository(client pbmerchant.MerchantQueryServiceClient) *merchantQueryRepository {
-	return &merchantQueryRepository{client: client}
-}
-
-func NewRepositories(db *gorm.DB, categoryClient pbcategory.CategoryQueryServiceClient, merchantClient pbmerchant.MerchantQueryServiceClient) *Repositories {
 	return &Repositories{
-		ProductQuery:   NewProductQueryRepository(db, categoryClient),
+		ProductQuery:   NewProductQueryRepository(db, categoryQuery),
 		ProductCommand: NewProductCommandRepository(db),
-		CategoryQuery:  NewCategoryQueryRepository(categoryClient),
-		MerchantQuery:  NewMerchantQueryRepository(merchantClient),
+		CategoryQuery:  categoryQuery,
+		MerchantQuery:  merchantadapter.New(merchantQueryClient, g.Merchant...),
 	}
 }

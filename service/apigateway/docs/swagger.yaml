@@ -3820,112 +3820,149 @@ paths:
       summary: Retrieve trashed categories
       tags:
       - Category Query
-  /api/category-stats/merchant/monthly-pricing:
+  /api/category-stats/by-id/month-price:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly pricing statistics for categories by merchant
+      description: Monthly prices for a category
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Merchant ID
+      - description: Category ID
         in: query
-        name: merchant_id
+        name: category_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly pricing stats by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryMonthPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly pricing stats by merchant
+      summary: Monthly prices by category
       tags:
       - Category Stats
-  /api/category-stats/merchant/monthly-total-pricing:
+  /api/category-stats/by-id/monthly-total-prices:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly total revenue for categories by merchant
+      description: Monthly total prices for a category
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
-      - description: Merchant ID
+      - description: Category ID
         in: query
-        name: merchant_id
+        name: category_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly total pricing by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryMonthlyTotalPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly total pricing by merchant
+      summary: Monthly total prices by category
       tags:
       - Category Stats
-  /api/category-stats/merchant/yearly-pricing:
+  /api/category-stats/by-id/year-price:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly pricing statistics for categories by merchant
+      description: Yearly prices for a category
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Merchant ID
+      - description: Category ID
         in: query
-        name: merchant_id
+        name: category_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly pricing stats by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryYearPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly pricing stats by merchant
+      summary: Yearly prices by category
       tags:
       - Category Stats
-  /api/category-stats/merchant/yearly-total-pricing:
+  /api/category-stats/by-id/yearly-total-prices:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly total revenue for categories by merchant
+      description: Yearly total prices for a category
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
+        type: integer
+      - description: Category ID
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponseCategoryYearlyTotalPrice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly total prices by category
+      tags:
+      - Category Stats
+  /api/category-stats/by-merchant/month-price:
+    get:
+      consumes:
+      - application/json
+      description: Monthly prices per category for a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -3936,256 +3973,230 @@ paths:
       - application/json
       responses:
         "200":
-          description: Yearly total pricing by merchant
-          schema:
-            $ref: '#/definitions/response.ApiResponseCategoryYearlyTotalPrice'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly total pricing by merchant
-      tags:
-      - Category Stats
-  /api/category-stats/monthly-pricing:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve monthly pricing statistics for categories
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Month
-        in: query
-        name: month
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Monthly pricing stats
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryMonthPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly pricing stats
+      summary: Monthly prices by merchant
       tags:
       - Category Stats
-  /api/category-stats/monthly-total-pricing:
+  /api/category-stats/by-merchant/monthly-total-prices:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly total revenue for all categories
+      description: Monthly total prices for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Monthly total pricing
-          schema:
-            $ref: '#/definitions/response.ApiResponseCategoryMonthlyTotalPrice'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get monthly total pricing for all categories
-      tags:
-      - Category Stats
-  /api/category-stats/mycategory/monthly-pricing:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve monthly pricing statistics for a specific category
-      parameters:
-      - description: Year
+      - description: Merchant ID
         in: query
-        name: year
-        type: integer
-      - description: Category ID
-        in: query
-        name: category_id
+        name: merchant_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly pricing stats by category ID
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponseCategoryMonthlyTotalPrice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Monthly total prices by merchant
+      tags:
+      - Category Stats
+  /api/category-stats/by-merchant/year-price:
+    get:
+      consumes:
+      - application/json
+      description: Yearly prices per category for a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Merchant ID
+        in: query
+        name: merchant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponseCategoryYearPrice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly prices by merchant
+      tags:
+      - Category Stats
+  /api/category-stats/by-merchant/yearly-total-prices:
+    get:
+      consumes:
+      - application/json
+      description: Yearly total prices for a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Merchant ID
+        in: query
+        name: merchant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponseCategoryYearlyTotalPrice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly total prices by merchant
+      tags:
+      - Category Stats
+  /api/category-stats/month-price:
+    get:
+      consumes:
+      - application/json
+      description: Monthly prices per category
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryMonthPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly pricing stats by category ID
+      summary: Monthly prices
       tags:
       - Category Stats
-  /api/category-stats/mycategory/monthly-total-pricing:
+  /api/category-stats/monthly-total-prices:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly total revenue for a specific category
+      description: Monthly total prices across all categories
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
-        type: integer
-      - description: Category ID
-        in: query
-        name: category_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly total pricing by category ID
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryMonthlyTotalPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly total pricing by category ID
+      summary: Monthly total prices
       tags:
       - Category Stats
-  /api/category-stats/mycategory/yearly-pricing:
+  /api/category-stats/year-price:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly pricing statistics for a specific category
+      description: Yearly prices per category
       parameters:
       - description: Year
         in: query
         name: year
-        type: integer
-      - description: Category ID
-        in: query
-        name: category_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly pricing stats by category ID
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryYearPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly pricing stats by category ID
+      summary: Yearly prices
       tags:
       - Category Stats
-  /api/category-stats/mycategory/yearly-total-pricing:
+  /api/category-stats/yearly-total-prices:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly total revenue for a specific category
+      description: Yearly total prices across all categories
       parameters:
       - description: Year
         in: query
         name: year
-        type: integer
-      - description: Category ID
-        in: query
-        name: category_id
         required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly total pricing by category ID
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseCategoryYearlyTotalPrice'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly total pricing by category ID
-      tags:
-      - Category Stats
-  /api/category-stats/yearly-pricing:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve yearly pricing statistics for categories
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Yearly pricing stats
-          schema:
-            $ref: '#/definitions/response.ApiResponseCategoryYearPrice'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly pricing stats
-      tags:
-      - Category Stats
-  /api/category-stats/yearly-total-pricing:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve yearly total revenue for all categories
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Yearly total pricing
-          schema:
-            $ref: '#/definitions/response.ApiResponseCategoryYearlyTotalPrice'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly total pricing for all categories
+      summary: Yearly total prices
       tags:
       - Category Stats
   /api/merchant-award-command/create:
@@ -7057,15 +7068,16 @@ paths:
       summary: Retrieve trashed orders
       tags:
       - Order Query
-  /api/order/merchant/monthly-revenue:
+  /api/order-stats/by-merchant/monthly-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly revenue statistics for a specific merchant
+      description: Monthly order aggregates for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -7076,31 +7088,33 @@ paths:
       - application/json
       responses:
         "200":
-          description: Monthly revenue stats by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderMonthly'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly revenue stats by merchant
+      summary: Monthly revenue by merchant
       tags:
       - Order Stats
-  /api/order/merchant/monthly-total-revenue:
+  /api/order-stats/by-merchant/monthly-total-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly total revenue for a specific merchant
+      description: Monthly total order revenue for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -7111,27 +7125,28 @@ paths:
       - application/json
       responses:
         "200":
-          description: Monthly total revenue by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderMonthlyTotalRevenue'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly total revenue by merchant
+      summary: Monthly total revenue by merchant
       tags:
       - Order Stats
-  /api/order/merchant/yearly-revenue:
+  /api/order-stats/by-merchant/yearly-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly revenue statistics for a specific merchant
+      description: Yearly order aggregates for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -7142,27 +7157,28 @@ paths:
       - application/json
       responses:
         "200":
-          description: Yearly revenue stats by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderYearly'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly revenue stats by merchant
+      summary: Yearly revenue by merchant
       tags:
       - Order Stats
-  /api/order/merchant/yearly-total-revenue:
+  /api/order-stats/by-merchant/yearly-total-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly total revenue for a specific merchant
+      description: Yearly total order revenue for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -7173,124 +7189,129 @@ paths:
       - application/json
       responses:
         "200":
-          description: Yearly total revenue by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderYearlyTotalRevenue'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly total revenue by merchant
+      summary: Yearly total revenue by merchant
       tags:
       - Order Stats
-  /api/order/monthly-revenue:
+  /api/order-stats/monthly-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly revenue statistics
+      description: Monthly order aggregates (count, revenue, items sold)
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly revenue stats
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderMonthly'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly revenue stats
+      summary: Monthly revenue
       tags:
       - Order Stats
-  /api/order/monthly-total-revenue:
+  /api/order-stats/monthly-total-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly total revenue and order stats
+      description: Monthly total order revenue
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly total revenue
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderMonthlyTotalRevenue'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly total revenue
+      summary: Monthly total revenue
       tags:
       - Order Stats
-  /api/order/yearly-revenue:
+  /api/order-stats/yearly-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly revenue statistics
+      description: Yearly order aggregates (count, revenue, items sold)
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly revenue stats
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderYearly'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly revenue stats
+      summary: Yearly revenue
       tags:
       - Order Stats
-  /api/order/yearly-total-revenue:
+  /api/order-stats/yearly-total-revenue:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly total revenue and order stats
+      description: Yearly total order revenue
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly total revenue
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponseOrderYearlyTotalRevenue'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly total revenue
+      summary: Yearly total revenue
       tags:
       - Order Stats
   /api/product-command/create:
@@ -10048,19 +10069,21 @@ paths:
       summary: Retrieve trashed transactions
       tags:
       - Transaction Query
-  /api/transaction-stats/merchant/monthly-failed:
+  /api/transaction-stats/by-merchant/month-method-failed:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly failed transaction amount for a specific merchant
+      description: Monthly payment-method breakdown of failed transactions for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -10071,32 +10094,108 @@ paths:
       - application/json
       responses:
         "200":
-          description: Monthly failed transaction amount by merchant
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Monthly failed transactions by merchant and payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/by-merchant/month-method-success:
+    get:
+      consumes:
+      - application/json
+      description: Monthly payment-method breakdown of successful transactions for
+        a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Month (1-12)
+        in: query
+        name: month
+        required: true
+        type: integer
+      - description: Merchant ID
+        in: query
+        name: merchant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Monthly successful transactions by merchant and payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/by-merchant/month-status-failed:
+    get:
+      consumes:
+      - application/json
+      description: Monthly amount of failed transactions for a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Month (1-12)
+        in: query
+        name: month
+        required: true
+        type: integer
+      - description: Merchant ID
+        in: query
+        name: merchant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionMonthFailed'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly failed transaction amount by merchant
+      summary: Monthly failed transactions by merchant
       tags:
       - Transaction Stats
-  /api/transaction-stats/merchant/monthly-method-failed:
+  /api/transaction-stats/by-merchant/month-status-success:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly failed transaction method statistics for a specific
-        merchant
+      description: Monthly amount of successful transactions for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -10107,98 +10206,28 @@ paths:
       - application/json
       responses:
         "200":
-          description: Monthly failed transaction method stats by merchant
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get monthly failed transaction method stats by merchant
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/merchant/monthly-method-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve monthly successful transaction method statistics for a
-        specific merchant
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Month
-        in: query
-        name: month
-        type: integer
-      - description: Merchant ID
-        in: query
-        name: merchant_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Monthly successful transaction method stats by merchant
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get monthly successful transaction method stats by merchant
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/merchant/monthly-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve monthly successful transaction amount for a specific merchant
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Month
-        in: query
-        name: month
-        type: integer
-      - description: Merchant ID
-        in: query
-        name: merchant_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Monthly successful transaction amount by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionMonthSuccess'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly successful transaction amount by merchant
+      summary: Monthly successful transactions by merchant
       tags:
       - Transaction Stats
-  /api/transaction-stats/merchant/yearly-failed:
+  /api/transaction-stats/by-merchant/year-method-failed:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly failed transaction amount for a specific merchant
+      description: Yearly payment-method breakdown of failed transactions for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -10209,28 +10238,93 @@ paths:
       - application/json
       responses:
         "200":
-          description: Yearly failed transaction amount by merchant
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly failed transactions by merchant and payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/by-merchant/year-method-success:
+    get:
+      consumes:
+      - application/json
+      description: Yearly payment-method breakdown of successful transactions for
+        a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Merchant ID
+        in: query
+        name: merchant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly successful transactions by merchant and payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/by-merchant/year-status-failed:
+    get:
+      consumes:
+      - application/json
+      description: Yearly amount of failed transactions for a merchant
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Merchant ID
+        in: query
+        name: merchant_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionYearFailed'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly failed transaction amount by merchant
+      summary: Yearly failed transactions by merchant
       tags:
       - Transaction Stats
-  /api/transaction-stats/merchant/yearly-method-failed:
+  /api/transaction-stats/by-merchant/year-status-success:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly failed transaction method statistics for a specific
-        merchant
+      description: Yearly amount of successful transactions for a merchant
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       - description: Merchant ID
         in: query
@@ -10241,303 +10335,252 @@ paths:
       - application/json
       responses:
         "200":
-          description: Yearly failed transaction method stats by merchant
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly failed transaction method stats by merchant
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/merchant/yearly-method-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve yearly successful transaction method statistics for a
-        specific merchant
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Merchant ID
-        in: query
-        name: merchant_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Yearly successful transaction method stats by merchant
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly successful transaction method stats by merchant
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/merchant/yearly-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve yearly successful transaction amount for a specific merchant
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Merchant ID
-        in: query
-        name: merchant_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Yearly successful transaction amount by merchant
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionYearSuccess'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly successful transaction amount by merchant
+      summary: Yearly successful transactions by merchant
       tags:
       - Transaction Stats
-  /api/transaction-stats/monthly-failed:
+  /api/transaction-stats/month-method-failed:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly failed transaction amount and count
+      description: Monthly payment-method breakdown of failed transactions
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly failed transaction amount
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Monthly failed transactions by payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/month-method-success:
+    get:
+      consumes:
+      - application/json
+      description: Monthly payment-method breakdown of successful transactions
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Month (1-12)
+        in: query
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Monthly successful transactions by payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/month-status-failed:
+    get:
+      consumes:
+      - application/json
+      description: Monthly amount of failed transactions
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Month (1-12)
+        in: query
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionMonthFailed'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly failed transaction amount
+      summary: Monthly failed transactions
       tags:
       - Transaction Stats
-  /api/transaction-stats/monthly-method-failed:
+  /api/transaction-stats/month-status-success:
     get:
       consumes:
       - application/json
-      description: Retrieve monthly failed transaction method statistics
+      description: Monthly amount of successful transactions
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
-      - description: Month
+      - description: Month (1-12)
         in: query
         name: month
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Monthly failed transaction method stats
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get monthly failed transaction method stats
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/monthly-method-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve monthly successful transaction method statistics
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Month
-        in: query
-        name: month
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Monthly successful transaction method stats
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionMonthMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get monthly successful transaction method stats
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/monthly-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve monthly successful transaction amount and count
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      - description: Month
-        in: query
-        name: month
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Monthly successful transaction amount
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionMonthSuccess'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get monthly successful transaction amount
+      summary: Monthly successful transactions
       tags:
       - Transaction Stats
-  /api/transaction-stats/yearly-failed:
+  /api/transaction-stats/year-method-failed:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly failed transaction amount and count
+      description: Yearly payment-method breakdown of failed transactions
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly failed transaction amount
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly failed transactions by payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/year-method-success:
+    get:
+      consumes:
+      - application/json
+      description: Yearly payment-method breakdown of successful transactions
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Yearly successful transactions by payment method
+      tags:
+      - Transaction Stats
+  /api/transaction-stats/year-status-failed:
+    get:
+      consumes:
+      - application/json
+      description: Yearly amount of failed transactions
+      parameters:
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionYearFailed'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly failed transaction amount
+      summary: Yearly failed transactions
       tags:
       - Transaction Stats
-  /api/transaction-stats/yearly-method-failed:
+  /api/transaction-stats/year-status-success:
     get:
       consumes:
       - application/json
-      description: Retrieve yearly failed transaction method statistics
+      description: Yearly amount of successful transactions
       parameters:
       - description: Year
         in: query
         name: year
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Yearly failed transaction method stats
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly failed transaction method stats
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/yearly-method-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve yearly successful transaction method statistics
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Yearly successful transaction method stats
-          schema:
-            $ref: '#/definitions/response.ApiResponsesTransactionYearMethod'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/errors.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get yearly successful transaction method stats
-      tags:
-      - Transaction Stats
-  /api/transaction-stats/yearly-success:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve yearly successful transaction amount and count
-      parameters:
-      - description: Year
-        in: query
-        name: year
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Yearly successful transaction amount
+          description: OK
           schema:
             $ref: '#/definitions/response.ApiResponsesTransactionYearSuccess'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get yearly successful transaction amount
+      summary: Yearly successful transactions
       tags:
       - Transaction Stats
   /api/user-command/create:

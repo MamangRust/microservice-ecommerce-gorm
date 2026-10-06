@@ -1,8 +1,8 @@
 package orderapimapper
 
 import (
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pborderstats "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborderstats "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

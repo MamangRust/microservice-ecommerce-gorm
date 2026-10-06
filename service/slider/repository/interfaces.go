@@ -8,12 +8,12 @@ import (
 )
 
 type SliderResult struct {
-	SliderID  int32
-	Name      string
-	Image     string
-	CreatedAt *string
-	UpdatedAt *string
-	DeletedAt *string
+	SliderID   int32
+	Name       string
+	Image      string
+	CreatedAt  *string
+	UpdatedAt  *string
+	DeletedAt  *string
 	TotalCount int64
 }
 

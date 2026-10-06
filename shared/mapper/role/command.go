@@ -1,7 +1,7 @@
 package roleapimapper
 
 import (
-		pbrole "github.com/MamangRust/microservice-ecommerce-grpc/pb/role"
+	pbrole "github.com/MamangRust/microservice-ecommerce-grpc-pb/role"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 
@@ -35,7 +35,9 @@ func (s *roleCommandResponseMapper) ToApiResponseRoleAll(pbResponse *pbrole.ApiR
 }
 
 func (s *roleCommandResponseMapper) mapResponseRole(role *pbrole.RoleResponse) *response.RoleResponse {
-	if role == nil { return nil }
+	if role == nil {
+		return nil
+	}
 	return &response.RoleResponse{
 		ID:        int(role.Id),
 		Name:      role.Name,

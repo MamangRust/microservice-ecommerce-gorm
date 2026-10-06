@@ -1,14 +1,18 @@
 package apps
 
 import (
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
 	"fmt"
+	"time"
+
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_business/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_business/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_business/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_business/service"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
@@ -36,7 +40,13 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 
 	merchantQueryClient := pbmerchant.NewMerchantQueryServiceClient(merchantConn)
 
-	repos := repository.NewRepositories(srv.GormDB, merchantQueryClient)
+	repos := repository.NewRepositories(srv.GormDB, merchantQueryClient,
+		repository.GuardOptions{
+			Merchant: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("merchant", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+		},
+	)
 	obs, _ := observability.NewObservability("merchant_business-server", srv.Logger)
 
 	cache := cache.NewMencache(srv.CacheStore)

@@ -2,7 +2,7 @@ package merchanthandler
 
 import (
 	merchant_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/merchant"
-		pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-pkg/upload_image"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
@@ -13,12 +13,12 @@ import (
 )
 
 type DepsMerchant struct {
-	Client *grpc.ClientConn
-	E      *echo.Echo
-	Logger logger.LoggerInterface
-	CacheStore *cache.CacheStore
+	Client      *grpc.ClientConn
+	E           *echo.Echo
+	Logger      logger.LoggerInterface
+	CacheStore  *cache.CacheStore
 	UploadImage upload_image.ImageUploads
-	ApiHandler errors.ApiHandler
+	ApiHandler  errors.ApiHandler
 }
 
 func RegisterMerchantHandler(deps *DepsMerchant) {
@@ -38,7 +38,7 @@ func RegisterMerchantHandler(deps *DepsMerchant) {
 func setupMerchantQueryHandler(deps *DepsMerchant, mapper apimapper.MerchantQueryResponseMapper, cache merchant_cache.MerchantQueryCache) func() {
 	return func() {
 		NewMerchantQueryHandleApi(&merchantQueryHandleDeps{
-			client:     pbmerchant.NewMerchantQueryServiceClient(deps.Client),
+			client:     pb_merchant.NewMerchantQueryServiceClient(deps.Client),
 			router:     deps.E,
 			logger:     deps.Logger,
 			mapper:     mapper,
@@ -51,13 +51,13 @@ func setupMerchantQueryHandler(deps *DepsMerchant, mapper apimapper.MerchantQuer
 func setupMerchantCommandHandler(deps *DepsMerchant, mapper apimapper.MerchantCommandResponseMapper, cache merchant_cache.MerchantCommandCache) func() {
 	return func() {
 		NewMerchantCommandHandleApi(&merchantCommandHandleDeps{
-			client:     pbmerchant.NewMerchantCommandServiceClient(deps.Client),
-			router:     deps.E,
-			logger:     deps.Logger,
-			mapper:     mapper,
-			cache:      cache,
+			client:       pb_merchant.NewMerchantCommandServiceClient(deps.Client),
+			router:       deps.E,
+			logger:       deps.Logger,
+			mapper:       mapper,
+			cache:        cache,
 			upload_image: deps.UploadImage,
-			apiHandler: deps.ApiHandler,
+			apiHandler:   deps.ApiHandler,
 		})
 	}
 }

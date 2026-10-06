@@ -1,8 +1,8 @@
 package categoryapimapper
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
-	pbcatestats "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
+	pbcatestats "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

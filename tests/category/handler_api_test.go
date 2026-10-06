@@ -30,7 +30,6 @@ func (s *CategoryApiTestSuite) SetupSuite() {
 
 	categoryhandler.RegisterCategoryHandler(&categoryhandler.DepsCategory{
 		Client:      s.Conns["category"],
-		StatsClient: s.Conns["category"],
 		E:           s.echo,
 		Logger:      s.Log,
 		CacheStore:  s.GetCacheStore(),

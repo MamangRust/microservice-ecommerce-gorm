@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
 	"github.com/MamangRust/microservice-ecommerce-grpc-shipping-address/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 )

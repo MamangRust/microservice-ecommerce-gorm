@@ -1,25 +1,27 @@
 package apps
 
 import (
-	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_document"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
 	"fmt"
+	"time"
+
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_document"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/handler"
 	merchantKafka "github.com/MamangRust/microservice-ecommerce-grpc-merchant/kafka"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant/service"
+	"github.com/MamangRust/microservice-ecommerce-pkg/adapter"
 	"github.com/MamangRust/microservice-ecommerce-pkg/kafka"
 	"github.com/MamangRust/microservice-ecommerce-pkg/outbox"
+	"github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"github.com/MamangRust/microservice-ecommerce-pkg/server"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-
-	pkgresilience "github.com/MamangRust/microservice-ecommerce-pkg/resilience"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -42,7 +44,7 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 	userConn, err := grpc.NewClient(
 		userAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithChainUnaryInterceptor(pkgresilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
+		grpc.WithChainUnaryInterceptor(resilience.NewDependencyGuardInterceptor(srv.Logger).UnaryInterceptor()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to user service: %w", err)
@@ -50,7 +52,13 @@ func NewServer(cfg *server.Config) (*server.GRPCServer, error) {
 
 	userQueryClient := pbuser.NewUserQueryServiceClient(userConn)
 
-	repos := repository.NewRepositories(srv.GormDB, userQueryClient)
+	repos := repository.NewRepositories(srv.GormDB, userQueryClient,
+		repository.GuardOptions{
+			User: []adapter.GuardOption{
+				adapter.WithDependencyGuard(resilience.NewDependencyGuard("user", 5, 30, 100, 3*time.Second, srv.Logger)),
+			},
+		},
+	)
 	myKafka := kafka.NewKafka(srv.Logger, []string{viper.GetString("KAFKA_BROKERS")})
 	mencache := cache.NewMencache(srv.CacheStore)
 	obs, _ := observability.NewObservability(viper.GetString("merchant-server"), srv.Logger)

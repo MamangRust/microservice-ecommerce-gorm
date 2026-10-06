@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrRefreshTokenNotFound = errors.ErrNotFound.WithMessage("Refresh token not found")
 	ErrFailedExpire         = errors.ErrInternal.WithMessage("Failed to find refresh token by token")

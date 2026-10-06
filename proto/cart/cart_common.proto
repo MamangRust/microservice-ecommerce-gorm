@@ -1,11 +1,10 @@
 syntax = "proto3";
 
-package pb;
-
-
-option go_package = "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart";
+package pb.cart;
 
 import "common/api.proto";
+
+option go_package = "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart;pb_cart";
 
 message CartResponse {
     int32 id = 1;
@@ -54,5 +53,5 @@ message ApiResponsePaginationCart {
     string status = 1;
     string message = 2;
     repeated CartResponse data = 3;
-    PaginationMeta pagination = 4;
+    pb.common.PaginationMeta pagination = 4;
 }

@@ -101,7 +101,7 @@ func (r *orderCommandRepository) FindTrashed(ctx context.Context) ([]*models.Ord
 func (r *orderCommandRepository) DeletePermanent(ctx context.Context, order_id int) (bool, error) {
 	// Delete child records first to avoid FK constraint
 	r.db.WithContext(ctx).Unscoped().Where("order_id = ?", order_id).Delete(&models.OrderStockReservation{})
-	
+
 	result := r.db.WithContext(ctx).Unscoped().Where("order_id = ? AND deleted_at IS NOT NULL", order_id).Delete(&models.Order{})
 	if result.Error != nil {
 		return false, order_errors.ErrDeleteOrderPermanent.WithInternal(result.Error)

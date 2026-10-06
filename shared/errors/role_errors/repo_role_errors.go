@@ -24,4 +24,3 @@ var (
 	ErrAssignRole = errors.ErrInternal.WithMessage("Failed to assign role to user")
 	ErrRemoveRole = errors.ErrInternal.WithMessage("Failed to remove role from user")
 )
-

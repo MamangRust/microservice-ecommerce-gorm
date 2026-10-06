@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 )
 
 type UserQueryHandler interface {

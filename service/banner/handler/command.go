@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc/pb/banner"
 	"context"
+	pbbanner "github.com/MamangRust/microservice-ecommerce-grpc-pb/banner"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-banner/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"

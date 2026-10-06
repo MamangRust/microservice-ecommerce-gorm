@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pbreview "github.com/MamangRust/microservice-ecommerce-grpc/pb/review"
+	pbreview "github.com/MamangRust/microservice-ecommerce-grpc-pb/review"
 	"github.com/MamangRust/microservice-ecommerce-grpc-review/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 )

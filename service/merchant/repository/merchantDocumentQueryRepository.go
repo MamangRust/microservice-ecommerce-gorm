@@ -29,7 +29,7 @@ func (r *merchantDocumentQueryRepository) FindAll(ctx context.Context, req *requ
 			AND (? = '' OR md.document_type ILIKE ? OR md.status ILIKE ?)
 		ORDER BY md.document_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, nil, merchant_errors.ErrMerchantInternal.WithInternal(err)
 	}
@@ -69,7 +69,7 @@ func (r *merchantDocumentQueryRepository) FindActive(ctx context.Context, req *r
 			AND (? = '' OR md.document_type ILIKE ? OR md.status ILIKE ?)
 		ORDER BY md.document_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, nil, merchant_errors.ErrMerchantInternal.WithInternal(err)
 	}
@@ -94,7 +94,7 @@ func (r *merchantDocumentQueryRepository) FindTrashed(ctx context.Context, req *
 			AND (? = '' OR md.document_type ILIKE ? OR md.status ILIKE ?)
 		ORDER BY md.document_id DESC
 		LIMIT ? OFFSET ?
-	`, req.Search, "%" + req.Search + "%", "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	`, req.Search, "%"+req.Search+"%", "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, nil, merchant_errors.ErrMerchantInternal.WithInternal(err)
 	}

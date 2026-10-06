@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
 	"github.com/MamangRust/microservice-ecommerce-grpc-review-detail/service"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 )
@@ -12,8 +12,8 @@ type Deps struct {
 }
 
 type Handler struct {
-	ReviewDetail      ReviewDetailHandleGrpc
-	ReviewDetailQuery pbreview_detail.ReviewDetailQueryServiceServer
+	ReviewDetail        ReviewDetailHandleGrpc
+	ReviewDetailQuery   pbreview_detail.ReviewDetailQueryServiceServer
 	ReviewDetailCommand pbreview_detail.ReviewDetailCommandServiceServer
 }
 

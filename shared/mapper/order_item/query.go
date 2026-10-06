@@ -1,7 +1,7 @@
 package orderitemapimapper
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewOrderItemQueryResponseMapper() OrderItemQueryResponseMapper {
 }
 
 func (o *orderItemQueryResponseMapper) ToResponseOrderItem(orderItem *pborder_item.OrderItemResponse) *response.OrderItemResponse {
-	if orderItem == nil { return nil }
+	if orderItem == nil {
+		return nil
+	}
 	return &response.OrderItemResponse{
 		ID:        int(orderItem.Id),
 		OrderID:   int(orderItem.OrderId),

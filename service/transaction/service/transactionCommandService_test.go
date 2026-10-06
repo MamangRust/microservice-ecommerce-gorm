@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/dto"
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/repository"
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
+	orderadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order"
+	orderitem "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order_item"
+	shippingaddress "github.com/MamangRust/microservice-ecommerce-pkg/adapter/shipping_address"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
@@ -84,40 +88,64 @@ func (s *stubTxCmdRepo) DeleteAll(_ context.Context) (bool, error) {
 
 type stubUserQuery struct{}
 
-func (s *stubUserQuery) FindByID(_ context.Context, id int) (*dto.GetUserByIDRow, error) {
-	return &dto.GetUserByIDRow{UserID: int32(id), Email: "test@example.com", Firstname: "Test", Lastname: "User"}, nil
+func (s *stubUserQuery) FindByID(_ context.Context, id int) (*useradapter.User, error) {
+	return &useradapter.User{UserID: int32(id), Email: "test@example.com", Firstname: "Test", Lastname: "User"}, nil
+}
+
+func (s *stubUserQuery) FindByEmail(_ context.Context, email string) (*useradapter.User, error) {
+	return &useradapter.User{UserID: 1, Email: email, Firstname: "Test", Lastname: "User"}, nil
+}
+
+func (s *stubUserQuery) FindByEmailAndVerify(_ context.Context, email string) (*useradapter.User, error) {
+	return &useradapter.User{UserID: 1, Email: email, Firstname: "Test", Lastname: "User"}, nil
+}
+
+func (s *stubUserQuery) FindByVerificationCode(_ context.Context, _ string) (*useradapter.User, error) {
+	return &useradapter.User{UserID: 1, Email: "test@example.com", Firstname: "Test", Lastname: "User"}, nil
 }
 
 type stubMerchantQuery struct{}
 
-func (s *stubMerchantQuery) FindByID(_ context.Context, id int) (*dto.GetMerchantByIDRow, error) {
-	return &dto.GetMerchantByIDRow{MerchantID: int32(id), Name: "Merchant"}, nil
+func (s *stubMerchantQuery) FindByID(_ context.Context, id int) (*merchantadapter.Merchant, error) {
+	return &merchantadapter.Merchant{MerchantID: int32(id), Name: "Merchant"}, nil
 }
 
 type stubOrderQuery struct{}
 
-func (s *stubOrderQuery) FindByID(_ context.Context, id int) (*dto.GetOrderByIDRow, error) {
-	return &dto.GetOrderByIDRow{OrderID: int32(id)}, nil
+func (s *stubOrderQuery) FindByID(_ context.Context, id int) (*orderadapter.Order, error) {
+	return &orderadapter.Order{OrderID: int32(id)}, nil
+}
+
+func (s *stubOrderQuery) FindAll(_ context.Context, _, _ int) ([]orderadapter.Order, int, error) {
+	return nil, 0, nil
 }
 
 type stubOrderItem struct{}
 
-func (s *stubOrderItem) FindOrderItemByOrder(_ context.Context, orderID int) ([]*dto.GetOrderItemsByOrderRow, error) {
-	return []*dto.GetOrderItemsByOrderRow{
+func (s *stubOrderItem) FindOrderItemByOrder(_ context.Context, orderID int) ([]orderitem.OrderItem, error) {
+	return []orderitem.OrderItem{
 		{OrderItemID: 1, OrderID: int32(orderID), ProductID: 1, Quantity: 2, Price: 10000},
 	}, nil
 }
 
+func (s *stubOrderItem) FindAll(_ context.Context, _, _ int) ([]orderitem.OrderItem, int, error) {
+	return nil, 0, nil
+}
+
 type stubShippingQuery struct{}
 
-func (s *stubShippingQuery) FindByID(_ context.Context, _ int) (*dto.GetShippingAddressByOrderIDRow, error) {
-	return &dto.GetShippingAddressByOrderIDRow{ShippingCost: 5000}, nil
+func (s *stubShippingQuery) FindByID(_ context.Context, _ int) (*shippingaddress.ShippingAddress, error) {
+	return &shippingaddress.ShippingAddress{ShippingCost: 5000}, nil
+}
+
+func (s *stubShippingQuery) FindByOrder(_ context.Context, orderID int) (*shippingaddress.ShippingAddress, error) {
+	return &shippingaddress.ShippingAddress{OrderID: int32(orderID), ShippingCost: 5000}, nil
 }
 
 type stubTxCmdCache struct{}
 
-func (s *stubTxCmdCache) DeleteTransactionCache(_ context.Context, _ int)  {}
-func (s *stubTxCmdCache) InvalidateTransactionCache(_ context.Context)     {}
+func (s *stubTxCmdCache) DeleteTransactionCache(_ context.Context, _ int) {}
+func (s *stubTxCmdCache) InvalidateTransactionCache(_ context.Context)    {}
 
 // --- Tests ---
 

@@ -1,7 +1,7 @@
 package merchantbusinessapimapper
 
 import (
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewMerchantBusinessQueryResponseMapper() MerchantBusinessQueryResponseMappe
 }
 
 func (m *merchantBusinessQueryResponseMapper) ToResponseMerchantBusiness(merchant *pbmerchant_business.MerchantBusinessResponse) *response.MerchantBusinessResponse {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	return &response.MerchantBusinessResponse{
 		ID:                int(merchant.Id),
 		MerchantID:        int(merchant.MerchantId),
@@ -65,7 +67,9 @@ func (m *merchantBusinessQueryResponseMapper) ToApiResponsePaginationMerchantBus
 	var data []*response.MerchantBusinessResponseDeleteAt
 	for _, b := range pbResponse.Data {
 		var deletedAt string
-		if b.DeletedAt != nil { deletedAt = b.DeletedAt.Value }
+		if b.DeletedAt != nil {
+			deletedAt = b.DeletedAt.Value
+		}
 		data = append(data, &response.MerchantBusinessResponseDeleteAt{
 			ID:                int(b.Id),
 			MerchantID:        int(b.MerchantId),

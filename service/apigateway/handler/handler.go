@@ -22,6 +22,7 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/role"
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/shipping_address"
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/slider"
+	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/stats"
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/transaction"
 	"github.com/MamangRust/microservice-ecommerce-grpc-apigateway/handler/user"
 	"github.com/MamangRust/microservice-ecommerce-pkg/auth"
@@ -58,12 +59,12 @@ type ServiceConnections struct {
 	MerchantSocial   *grpc.ClientConn
 	MerchantPolicy   *grpc.ClientConn
 	ReviewDetail     *grpc.ClientConn
+	StatsReader      *grpc.ClientConn
 	Card             *grpc.ClientConn
 	Saldo            *grpc.ClientConn
 	Topup            *grpc.ClientConn
 	Transfer         *grpc.ClientConn
 	Withdraw         *grpc.ClientConn
-	StatsReader      *grpc.ClientConn
 }
 
 type Deps struct {
@@ -104,7 +105,6 @@ func NewHandler(deps *Deps) {
 
 	categoryhandler.RegisterCategoryHandler(&categoryhandler.DepsCategory{
 		Client:      deps.ServiceConnections.Category,
-		StatsClient: deps.ServiceConnections.StatsReader,
 		E:           deps.E,
 		Logger:      deps.Logger,
 		CacheStore:  deps.Cache,
@@ -157,11 +157,10 @@ func NewHandler(deps *Deps) {
 	})
 
 	orderhandler.RegisterOrderHandler(&orderhandler.DepsOrder{
-		Client:      deps.ServiceConnections.Order,
-		StatsClient: deps.ServiceConnections.StatsReader,
-		E:           deps.E,
-		Logger:      deps.Logger,
-		CacheStore:  deps.Cache,
+		Client:     deps.ServiceConnections.Order,
+		E:          deps.E,
+		Logger:     deps.Logger,
+		CacheStore: deps.Cache,
 	})
 
 	orderitemhandler.RegisterOrderItemHandler(&orderitemhandler.DepsOrderItem{
@@ -181,12 +180,11 @@ func NewHandler(deps *Deps) {
 	})
 
 	transactionhandler.RegisterTransactionHandler(&transactionhandler.DepsTransaction{
-		Client:      deps.ServiceConnections.Transaction,
-		StatsClient: deps.ServiceConnections.StatsReader,
-		E:           deps.E,
-		Logger:      deps.Logger,
-		CacheStore:  deps.Cache,
-		ApiHandler:  apiHandler,
+		Client:     deps.ServiceConnections.Transaction,
+		E:          deps.E,
+		Logger:     deps.Logger,
+		CacheStore: deps.Cache,
+		ApiHandler: apiHandler,
 	})
 
 	merchantdetailhandler.RegisterMerchantDetailHandler(&merchantdetailhandler.DepsMerchantDetail{
@@ -244,6 +242,14 @@ func NewHandler(deps *Deps) {
 		E:          deps.E,
 		Logger:     deps.Logger,
 		Cache:      deps.Cache,
+		ApiHandler: apiHandler,
+	})
+
+	statshandler.RegisterStatsHandler(&statshandler.DepsStats{
+		Client:     deps.ServiceConnections.StatsReader,
+		E:          deps.E,
+		Logger:     deps.Logger,
+		CacheStore: deps.Cache,
 		ApiHandler: apiHandler,
 	})
 }

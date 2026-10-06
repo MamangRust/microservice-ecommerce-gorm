@@ -1,7 +1,7 @@
 package merchantbusinessapimapper
 
 import (
-	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_business"
+	pbmerchant_business "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_business"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 
@@ -12,7 +12,9 @@ func NewMerchantBusinessCommandResponseMapper() MerchantBusinessCommandResponseM
 }
 
 func (m *merchantBusinessCommandResponseMapper) ToResponseMerchantBusiness(merchant *pbmerchant_business.MerchantBusinessResponse) *response.MerchantBusinessResponse {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	return &response.MerchantBusinessResponse{
 		ID:                int(merchant.Id),
 		MerchantID:        int(merchant.MerchantId),
@@ -44,7 +46,9 @@ func (m *merchantBusinessCommandResponseMapper) ToApiResponseMerchantBusiness(pb
 }
 
 func (m *merchantBusinessCommandResponseMapper) ToResponseMerchantBusinessDeleteAt(merchant *pbmerchant_business.MerchantBusinessResponseDeleteAt) *response.MerchantBusinessResponseDeleteAt {
-	if merchant == nil { return nil }
+	if merchant == nil {
+		return nil
+	}
 	var deletedAt string
 	if merchant.DeletedAt != nil {
 		deletedAt = merchant.DeletedAt.Value

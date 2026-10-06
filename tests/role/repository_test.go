@@ -27,7 +27,6 @@ func (s *RoleRepositoryTestSuite) SetupSuite() {
 	gormDB, err := s.ts.GormDB()
 	s.Require().NoError(err)
 
-
 	s.repo = repository.NewRepositories(gormDB)
 }
 

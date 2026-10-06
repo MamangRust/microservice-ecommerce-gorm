@@ -1,7 +1,7 @@
 package merchantdocumentsapimapper
 
 import (
-	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_document"
+	pbmerchant_document "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_document"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewMerchantDocumentQueryResponseMapper() MerchantDocumentQueryResponseMappe
 }
 
 func (m *merchantDocumentQueryResponseMapper) MapMerchantDocument(doc *pbmerchant_document.MerchantDocument) *response.MerchantDocumentResponse {
-	if doc == nil { return nil }
+	if doc == nil {
+		return nil
+	}
 	return &response.MerchantDocumentResponse{
 		ID:           int(doc.DocumentId),
 		MerchantID:   int(doc.MerchantId),
@@ -63,7 +65,9 @@ func (m *merchantDocumentQueryResponseMapper) ToApiResponsePaginationMerchantDoc
 	var data []*response.MerchantDocumentResponseDeleteAt
 	for _, doc := range docs.Data {
 		var deletedAt *string
-		if doc.DeletedAt != nil { deletedAt = &doc.DeletedAt.Value }
+		if doc.DeletedAt != nil {
+			deletedAt = &doc.DeletedAt.Value
+		}
 		data = append(data, &response.MerchantDocumentResponseDeleteAt{
 			ID:           int(doc.DocumentId),
 			MerchantID:   int(doc.MerchantId),

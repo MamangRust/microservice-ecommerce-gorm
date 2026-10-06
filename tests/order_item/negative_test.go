@@ -1,12 +1,11 @@
 package order_item_test
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
 	"context"
+	apigatewaymiddlewares "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/middlewares"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
 	"net/http"
 	"net/http/httptest"
-
-	apigatewaymiddlewares "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/middlewares"
 )
 
 // order_item has no single-record lookup: FindOrderItemByOrder returns an empty

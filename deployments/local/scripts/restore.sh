@@ -3,93 +3,114 @@
 # restore.sh — PostgreSQL restore for the local e-commerce stack.
 #
 # Usage:
-#   ./scripts/restore.sh <backup_file>
+#   ./scripts/restore.sh [--yes] <snapshot_dir>
 #
-# The backup file may be a raw .sql dump or a .sql.gz dump produced by
-# backup.sh. Restoring drops and recreates the target database, so this is
-# destructive — a confirmation prompt is shown unless --yes is passed.
+# The snapshot directory is exactly what backup.sh produces: one ec_<ctx>.sql.gz
+# per bounded context. Every context present in the snapshot is restored, so this
+# is destructive — a confirmation prompt is shown unless --yes is passed.
 #
-#   ./scripts/restore.sh --yes backups/ecommerce_20260101_000000.sql.gz
+#   ./scripts/restore.sh --yes backups/ecommerce_20260101_000000
 #
 # Procedure (Fase 6 checklist 11.3):
-#   1. Validate the backup file exists.
+#   1. Validate the snapshot directory and each dump.
 #   2. Confirm intent (destructive).
-#   3. Drop + recreate the database (best-effort, ignores active connections).
-#   4. Restore from the dump.
+#   3. Drop + recreate the public schema in each context database.
+#   4. Restore each dump.
 #   5. Report success/failure.
 
 set -euo pipefail
 
-COMPOSE_FILE="$(cd "$(dirname "$0")/.." && pwd)/docker-compose.yml"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
 DB_USER="${POSTGRES_USER:-DRAGON}"
-DB_NAME="${POSTGRES_DB:-ECOMMERCE}"
 
 AUTO_YES=0
-BACKUP_FILE=""
+SNAPSHOT_DIR=""
 
 for arg in "$@"; do
   case "$arg" in
     --yes) AUTO_YES=1 ;;
-    *)     BACKUP_FILE="$arg" ;;
+    *)     SNAPSHOT_DIR="$arg" ;;
   esac
 done
 
-if [ -z "$BACKUP_FILE" ]; then
-  echo "Usage: $0 [--yes] <backup_file>" >&2
-  echo "  backup_file: path to a .sql or .sql.gz dump" >&2
+if [ -z "$SNAPSHOT_DIR" ]; then
+  echo "Usage: $0 [--yes] <snapshot_dir>" >&2
+  echo "  snapshot_dir: a directory produced by backup.sh (contains ec_<ctx>.sql.gz)" >&2
   exit 1
 fi
 
-if [ ! -f "$BACKUP_FILE" ]; then
-  echo "ERROR: backup file not found: ${BACKUP_FILE}" >&2
+if [ ! -d "$SNAPSHOT_DIR" ]; then
+  echo "ERROR: snapshot directory not found: ${SNAPSHOT_DIR}" >&2
   exit 1
 fi
 
-# Validate the dump BEFORE the destructive drop: a truncated/empty/corrupt file
-# would wipe the database and restore nothing.
-if [ ! -s "$BACKUP_FILE" ] || [ "$(stat -c%s "$BACKUP_FILE")" -lt 1024 ]; then
-  echo "ERROR: backup file is empty or too small (< 1 KB); refusing to restore." >&2
-  exit 1
-fi
-
-if [[ "$BACKUP_FILE" == *.gz ]]; then
-  if ! gzip -t "$BACKUP_FILE" 2>/dev/null; then
-    echo "ERROR: backup file is not a valid gzip archive; refusing to restore." >&2
+# Validate every dump BEFORE the destructive drop: a truncated/empty/corrupt file
+# would wipe a context database and restore nothing.
+DUMPS=()
+for dump in "${SNAPSHOT_DIR}"/ec_*.sql.gz; do
+  [ -e "$dump" ] || continue
+  if [ ! -s "$dump" ] || ! gzip -t "$dump" 2>/dev/null; then
+    echo "ERROR: $(basename "$dump") is empty or not a valid gzip archive; refusing to restore." >&2
     exit 1
   fi
-fi
+  DUMPS+=("$dump")
+done
 
-if ! docker compose -f "${COMPOSE_FILE}" ps postgres >/dev/null 2>&1; then
-  echo "ERROR: postgres container is not present in compose." >&2
+if [ "${#DUMPS[@]}" -eq 0 ]; then
+  echo "ERROR: no ec_<ctx>.sql.gz dumps found in ${SNAPSHOT_DIR}" >&2
   exit 1
 fi
 
+# Every dump's context must have a running Postgres instance to restore into.
+for dump in "${DUMPS[@]}"; do
+  ctx="$(basename "$dump" .sql.gz)"
+  ctx="${ctx#ec_}"
+  PG_ID=$(docker compose -f "${COMPOSE_FILE}" ps -q "postgres_$ctx" 2>/dev/null || true)
+  PG_STATE=$(docker inspect -f '{{.State.Running}}' "$PG_ID" 2>/dev/null || echo false)
+  if [ -z "$PG_ID" ] || [ "$PG_STATE" != "true" ]; then
+    echo "ERROR: postgres_$ctx container is not running. Start the stack first (just up)." >&2
+    exit 1
+  fi
+done
+
 if [ "$AUTO_YES" -ne 1 ]; then
-  read -r -p "Restore will DROP and recreate database '${DB_NAME}'. Continue? [y/N] " answer
+  echo "Snapshot contains ${#DUMPS[@]} context database(s):"
+  for dump in "${DUMPS[@]}"; do echo "  - $(basename "$dump" .sql.gz)"; done
+  read -r -p "Restore will DROP and recreate the public schema in each of them. Continue? [y/N] " answer
   case "$answer" in
     y|Y) ;;
     *) echo "Aborted."; exit 1 ;;
   esac
 fi
 
-echo "Restoring ${BACKUP_FILE} -> ${DB_NAME}"
+echo "Restoring ${#DUMPS[@]} context database(s) from ${SNAPSHOT_DIR}"
 
-# Terminate existing connections and drop the database so the restore is clean.
-docker compose -f "${COMPOSE_FILE}" exec -T postgres \
-  psql -U "${DB_USER}" -d postgres -v ON_ERROR_STOP=1 \
-  -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${DB_NAME}' AND pid <> pg_backend_pid();" \
-  -c "DROP DATABASE IF EXISTS ${DB_NAME};" \
-  -c "CREATE DATABASE ${DB_NAME};"
+for dump in "${DUMPS[@]}"; do
+  db="$(basename "$dump" .sql.gz)"
+  ctx="${db#ec_}"
+  container="postgres_$ctx"
 
-case "$BACKUP_FILE" in
-  *.gz)
-    gunzip -c "$BACKUP_FILE" | docker compose -f "${COMPOSE_FILE}" exec -T postgres \
-      psql -U "${DB_USER}" -d "${DB_NAME}" -v ON_ERROR_STOP=1
-    ;;
-  *)
-    cat "$BACKUP_FILE" | docker compose -f "${COMPOSE_FILE}" exec -T postgres \
-      psql -U "${DB_USER}" -d "${DB_NAME}" -v ON_ERROR_STOP=1
-    ;;
-esac
+  echo "  ${db} ..."
 
-echo "Restore complete: ${DB_NAME} is back in service."
+  # Terminate other backends first: PgBouncer (and any running Go service) holds
+  # sessions that would block DROP SCHEMA. Dropping the schema rather than the
+  # database keeps the pooler's target DB intact.
+  if ! docker compose -f "${COMPOSE_FILE}" exec -T "$container" \
+         psql -U "${DB_USER}" -d "${db}" -v ON_ERROR_STOP=1 \
+         -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();" \
+         -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" >/dev/null; then
+    echo "ERROR: failed to reset schema for ${db}" >&2
+    exit 1
+  fi
+
+  if ! gunzip -c "$dump" | docker compose -f "${COMPOSE_FILE}" exec -T "$container" \
+         psql -U "${DB_USER}" -d "${db}" -v ON_ERROR_STOP=1 >/dev/null; then
+    echo "ERROR: failed to restore ${db} from $(basename "$dump")" >&2
+    exit 1
+  fi
+
+  echo "    restored"
+done
+
+echo "Restore complete: ${#DUMPS[@]} context database(s) back in service."

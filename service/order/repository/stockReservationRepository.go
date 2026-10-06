@@ -41,7 +41,9 @@ func (r *stockReservationRepository) Upsert(ctx context.Context, orderID, produc
 func (r *stockReservationRepository) UpdateQuantity(ctx context.Context, orderID, productID, quantity int) (*models.OrderStockReservation, error) {
 	var reservation models.OrderStockReservation
 	err := r.db.WithContext(ctx).Where("order_id = ? AND product_id = ?", orderID, productID).First(&reservation).Error
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	reservation.Quantity = int32(quantity)
 	err = r.db.WithContext(ctx).Save(&reservation).Error
 	return &reservation, err
@@ -51,8 +53,12 @@ func (r *stockReservationRepository) Release(ctx context.Context, orderID, produ
 	result := r.db.WithContext(ctx).Model(&models.OrderStockReservation{}).
 		Where("order_id = ? AND product_id = ? AND status = ?", orderID, productID, "reserved").
 		Update("status", "released")
-	if result.Error != nil { return nil, result.Error }
-	if result.RowsAffected == 0 { return nil, gorm.ErrRecordNotFound }
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
 	var reservation models.OrderStockReservation
 	err := r.db.WithContext(ctx).Where("order_id = ? AND product_id = ?", orderID, productID).First(&reservation).Error
 	return &reservation, err
@@ -62,8 +68,12 @@ func (r *stockReservationRepository) Reserve(ctx context.Context, orderID, produ
 	result := r.db.WithContext(ctx).Model(&models.OrderStockReservation{}).
 		Where("order_id = ? AND product_id = ? AND status = ?", orderID, productID, "released").
 		Update("status", "reserved")
-	if result.Error != nil { return nil, result.Error }
-	if result.RowsAffected == 0 { return nil, gorm.ErrRecordNotFound }
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
 	var reservation models.OrderStockReservation
 	err := r.db.WithContext(ctx).Where("order_id = ? AND product_id = ?", orderID, productID).First(&reservation).Error
 	return &reservation, err
@@ -101,10 +111,5 @@ func (r *stockReservationRepository) GetReleasedForActiveOrders(ctx context.Cont
 
 func (r *stockReservationRepository) DeleteOldReleasedReservations(ctx context.Context, cutoff time.Time) (int64, error) {
 	result := r.db.WithContext(ctx).Where("status = ? AND updated_at < ? AND order_id IN (SELECT order_id FROM orders WHERE deleted_at IS NOT NULL)", "released", cutoff).Delete(&models.OrderStockReservation{})
-	return result.RowsAffected, result.Error
-}
-
-func (r *stockReservationRepository) DeleteOldProductStockAdjustments(ctx context.Context, cutoff time.Time) (int64, error) {
-	result := r.db.WithContext(ctx).Where("created_at < ?", cutoff).Delete(&models.ProductStockAdjustment{})
 	return result.RowsAffected, result.Error
 }

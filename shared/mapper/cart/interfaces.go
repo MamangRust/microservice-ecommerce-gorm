@@ -1,7 +1,7 @@
 package cartapimapper
 
 import (
-	pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 

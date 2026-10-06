@@ -1,14 +1,14 @@
 package order_test
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc/pb/product"
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
+	pbproduct "github.com/MamangRust/microservice-ecommerce-grpc-pb/product"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"testing"
 
 	order_cache "github.com/MamangRust/microservice-ecommerce-grpc-order/cache"
@@ -51,16 +51,16 @@ func (s *OrderGapiTestSuite) SetupSuite() {
 	// Order dependencies
 	mencache := order_cache.NewMencache(cacheStore)
 	repos := order_repo.NewRepositories(&order_repo.Deps{
-		DB:                 gormDB,
-		MerchantQuery:      pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
-		ProductQuery:       pbproduct.NewProductQueryServiceClient(s.Conns["product"]),
-		ProductCommand:     pbproduct.NewProductCommandServiceClient(s.Conns["product"]),
-		OrderItemQuery:     pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
-		OrderItemCommand:   pborder_item.NewOrderItemCommandServiceClient(s.Conns["order-item"]),
-		UserQuery:          pbuser.NewUserQueryServiceClient(s.Conns["user"]),
-		ShippingCommand:    pbshipping_address.NewShippingCommandServiceClient(s.Conns["shipping-address"]),
-		ShippingQuery:      pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
-		TransactionCommand: pbtransaction.NewTransactionCommandServiceClient(s.Conns["transaction"]),
+		GormDB:                  gormDB,
+		MerchantQueryClient:     pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
+		ProductQueryClient:      pbproduct.NewProductQueryServiceClient(s.Conns["product"]),
+		ProductCommandClient:    pbproduct.NewProductCommandServiceClient(s.Conns["product"]),
+		OrderItemQueryClient:    pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
+		OrderItemCommandClient:  pborder_item.NewOrderItemCommandServiceClient(s.Conns["order-item"]),
+		UserQueryClient:         pbuser.NewUserQueryServiceClient(s.Conns["user"]),
+		ShippingCommandClient:   pbshipping_address.NewShippingCommandServiceClient(s.Conns["shipping-address"]),
+		ShippingQueryClient:     pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
+		TransactionCommandClient: pbtransaction.NewTransactionCommandServiceClient(s.Conns["transaction"]),
 	})
 	svc := order_service.NewService(&order_service.Deps{
 		Cache:         mencache,

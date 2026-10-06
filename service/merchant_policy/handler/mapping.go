@@ -1,15 +1,14 @@
 package handler
 
 import (
-	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_policy"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbmerchant_policy "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_policy"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-merchant_policy/repository"
 	"github.com/MamangRust/microservice-ecommerce-pkg/database/models"
 	"github.com/MamangRust/microservice-ecommerce-shared/convert"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
-
 
 func mapToSingleResponseFromModel(data *models.MerchantPolicy) *pbmerchant_policy.ApiResponseMerchantPolicies {
 	if data == nil {
@@ -19,13 +18,13 @@ func mapToSingleResponseFromModel(data *models.MerchantPolicy) *pbmerchant_polic
 		Status:  "success",
 		Message: "Successfully fetched merchant policy",
 		Data: &pbmerchant_policy.MerchantPoliciesResponse{
-			Id:         data.MerchantPolicyID,
-			MerchantId: data.MerchantID,
-			PolicyType: data.PolicyType,
-			Title:      data.Title,
+			Id:          data.MerchantPolicyID,
+			MerchantId:  data.MerchantID,
+			PolicyType:  data.PolicyType,
+			Title:       data.Title,
 			Description: data.Description,
-			CreatedAt:  convert.FormatTimePtr(data.CreatedAt),
-			UpdatedAt:  convert.FormatTimePtr(data.UpdatedAt),
+			CreatedAt:   convert.FormatTimePtr(data.CreatedAt),
+			UpdatedAt:   convert.FormatTimePtr(data.UpdatedAt),
 		},
 	}
 }
@@ -117,13 +116,13 @@ func mapToMerchantPolicyResponseDeleteAtFromModel(v *models.MerchantPolicy) *pbm
 		return nil
 	}
 	res := &pbmerchant_policy.MerchantPoliciesResponseDeleteAt{
-		Id:         v.MerchantPolicyID,
-		MerchantId: v.MerchantID,
-		PolicyType: v.PolicyType,
-		Title:      v.Title,
+		Id:          v.MerchantPolicyID,
+		MerchantId:  v.MerchantID,
+		PolicyType:  v.PolicyType,
+		Title:       v.Title,
 		Description: v.Description,
-		CreatedAt:  convert.FormatTimePtr(v.CreatedAt),
-		UpdatedAt:  convert.FormatTimePtr(v.UpdatedAt),
+		CreatedAt:   convert.FormatTimePtr(v.CreatedAt),
+		UpdatedAt:   convert.FormatTimePtr(v.UpdatedAt),
 	}
 	if v.DeletedAt != nil {
 		res.DeletedAt = &wrapperspb.StringValue{Value: convert.FormatTimePtr(v.DeletedAt)}

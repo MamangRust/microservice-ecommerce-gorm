@@ -1,7 +1,7 @@
 package orderapimapper
 
 import (
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
@@ -13,7 +13,9 @@ func NewOrderQueryResponseMapper() OrderQueryResponseMapper {
 }
 
 func (o *orderQueryResponseMapper) ToResponseOrder(order *pborder.OrderResponse) *response.OrderResponse {
-	if order == nil { return nil }
+	if order == nil {
+		return nil
+	}
 	return &response.OrderResponse{
 		ID:         int(order.Id),
 		MerchantID: int(order.MerchantId),

@@ -1,7 +1,7 @@
 package apps
 
 import (
-	pbslider "github.com/MamangRust/microservice-ecommerce-grpc/pb/slider"
+	pbslider "github.com/MamangRust/microservice-ecommerce-grpc-pb/slider"
 	"github.com/MamangRust/microservice-ecommerce-grpc-slider/cache"
 	"github.com/MamangRust/microservice-ecommerce-grpc-slider/handler"
 	"github.com/MamangRust/microservice-ecommerce-grpc-slider/repository"

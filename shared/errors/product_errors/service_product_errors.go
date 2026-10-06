@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrFailedCountStock = errors.ErrInternal.WithMessage("Failed to count stock")
 

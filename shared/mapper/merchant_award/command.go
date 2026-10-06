@@ -1,7 +1,7 @@
 package merchantawardapimapper
 
 import (
-	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant_award"
+	pbmerchant_award "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant_award"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
 )
 
@@ -12,7 +12,9 @@ func NewMerchantAwardCommandResponseMapper() MerchantAwardCommandResponseMapper 
 }
 
 func (m *merchantAwardCommandResponseMapper) ToResponseMerchantAward(MerchantAward *pbmerchant_award.MerchantAwardResponse) *response.MerchantAwardResponse {
-	if MerchantAward == nil { return nil }
+	if MerchantAward == nil {
+		return nil
+	}
 	return &response.MerchantAwardResponse{
 		ID:             int(MerchantAward.Id),
 		MerchantID:     int(MerchantAward.MerchantId),
@@ -44,7 +46,9 @@ func (m *merchantAwardCommandResponseMapper) ToApiResponseMerchantAward(pbRespon
 }
 
 func (m *merchantAwardCommandResponseMapper) ToResponseMerchantAwardDeleteAt(MerchantAward *pbmerchant_award.MerchantAwardResponseDeleteAt) *response.MerchantAwardResponseDeleteAt {
-	if MerchantAward == nil { return nil }
+	if MerchantAward == nil {
+		return nil
+	}
 	var deletedAt string
 	if MerchantAward.DeletedAt != nil {
 		deletedAt = MerchantAward.DeletedAt.Value

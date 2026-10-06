@@ -1,30 +1,34 @@
 package transaction_test
 
 import (
-	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc/pb/order_item"
-	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc/pb/shipping_address"
-	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc/pb/merchant"
-	pborder "github.com/MamangRust/microservice-ecommerce-grpc/pb/order"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
 	"context"
 	"errors"
+	pbmerchant "github.com/MamangRust/microservice-ecommerce-grpc-pb/merchant"
+	pborder "github.com/MamangRust/microservice-ecommerce-grpc-pb/order"
+	pborder_item "github.com/MamangRust/microservice-ecommerce-grpc-pb/order_item"
+	pbshipping_address "github.com/MamangRust/microservice-ecommerce-grpc-pb/shipping_address"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"net/http"
 	"testing"
 	"time"
 
 	tran_cache "github.com/MamangRust/microservice-ecommerce-grpc-transaction/cache"
-	dto "github.com/MamangRust/microservice-ecommerce-grpc-transaction/dto"
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/repository"
 	"github.com/MamangRust/microservice-ecommerce-grpc-transaction/service"
+	merchantadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/merchant"
+	orderadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order"
+	orderitemadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/order_item"
+	shippingaddressadapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/shipping_address"
+	useradapter "github.com/MamangRust/microservice-ecommerce-pkg/adapter/user"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/requests"
 	app_errors "github.com/MamangRust/microservice-ecommerce-shared/errors"
 	"github.com/MamangRust/microservice-ecommerce-shared/observability"
 	tests "github.com/MamangRust/microservice-ecommerce-test"
 	"github.com/stretchr/testify/suite"
-	"gorm.io/gorm"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 // ── Fault-injecting repository wrappers ─────────────────────────────────────
@@ -33,63 +37,63 @@ import (
 // payment-gateway failure-injection template.
 
 type faultInjectingUserQuery struct {
-	inner repository.UserQueryRepository
-	fail  bool
+	repository.UserQueryRepository
+	fail bool
 }
 
-func (f *faultInjectingUserQuery) FindByID(ctx context.Context, userID int) (*dto.GetUserByIDRow, error) {
+func (f *faultInjectingUserQuery) FindByID(ctx context.Context, userID int) (*useradapter.User, error) {
 	if f.fail {
 		return nil, status.Error(codes.Unavailable, "user service unavailable (injected)")
 	}
-	return f.inner.FindByID(ctx, userID)
+	return f.UserQueryRepository.FindByID(ctx, userID)
 }
 
 type faultInjectingMerchantQuery struct {
-	inner repository.MerchantQueryRepository
-	fail  bool
+	repository.MerchantQueryRepository
+	fail bool
 }
 
-func (f *faultInjectingMerchantQuery) FindByID(ctx context.Context, merchantID int) (*dto.GetMerchantByIDRow, error) {
+func (f *faultInjectingMerchantQuery) FindByID(ctx context.Context, merchantID int) (*merchantadapter.Merchant, error) {
 	if f.fail {
 		return nil, status.Error(codes.Unavailable, "merchant service unavailable (injected)")
 	}
-	return f.inner.FindByID(ctx, merchantID)
+	return f.MerchantQueryRepository.FindByID(ctx, merchantID)
 }
 
 type faultInjectingOrderQuery struct {
-	inner repository.OrderQueryRepository
-	fail  bool
+	repository.OrderQueryRepository
+	fail bool
 }
 
-func (f *faultInjectingOrderQuery) FindByID(ctx context.Context, orderID int) (*dto.GetOrderByIDRow, error) {
+func (f *faultInjectingOrderQuery) FindByID(ctx context.Context, orderID int) (*orderadapter.Order, error) {
 	if f.fail {
 		return nil, status.Error(codes.Unavailable, "order service unavailable (injected)")
 	}
-	return f.inner.FindByID(ctx, orderID)
+	return f.OrderQueryRepository.FindByID(ctx, orderID)
 }
 
 type faultInjectingOrderItemQuery struct {
-	inner repository.OrderItemRepository
-	fail  bool
+	repository.OrderItemRepository
+	fail bool
 }
 
-func (f *faultInjectingOrderItemQuery) FindOrderItemByOrder(ctx context.Context, orderID int) ([]*dto.GetOrderItemsByOrderRow, error) {
+func (f *faultInjectingOrderItemQuery) FindOrderItemByOrder(ctx context.Context, orderID int) ([]orderitemadapter.OrderItem, error) {
 	if f.fail {
 		return nil, status.Error(codes.Unavailable, "order-item service unavailable (injected)")
 	}
-	return f.inner.FindOrderItemByOrder(ctx, orderID)
+	return f.OrderItemRepository.FindOrderItemByOrder(ctx, orderID)
 }
 
 type faultInjectingShippingQuery struct {
-	inner repository.ShippingAddressQueryRepository
-	fail  bool
+	repository.ShippingAddressQueryRepository
+	fail bool
 }
 
-func (f *faultInjectingShippingQuery) FindByID(ctx context.Context, shippingID int) (*dto.GetShippingAddressByOrderIDRow, error) {
+func (f *faultInjectingShippingQuery) FindByID(ctx context.Context, shippingID int) (*shippingaddressadapter.ShippingAddress, error) {
 	if f.fail {
 		return nil, status.Error(codes.Unavailable, "shipping-address service unavailable (injected)")
 	}
-	return f.inner.FindByID(ctx, shippingID)
+	return f.ShippingAddressQueryRepository.FindByID(ctx, shippingID)
 }
 
 // faultInjectingTransactionCommand can fail the durable insert (CreateInTx /
@@ -191,7 +195,7 @@ func (f *faultInjectingOutbox) DeleteOld(ctx context.Context, cutoff time.Time) 
 type TransactionFailureInjectionTestSuite struct {
 	tests.BaseTestSuite
 	svc            *service.Service
-	gormDB        *gorm.DB
+	gormDB         *gorm.DB
 	userQuery      *faultInjectingUserQuery
 	merchantQuery  *faultInjectingMerchantQuery
 	orderQuery     *faultInjectingOrderQuery
@@ -228,26 +232,26 @@ func (s *TransactionFailureInjectionTestSuite) SetupSuite() {
 
 	// Real repositories, wrapped with fault injection per dependency.
 	real := repository.NewRepositories(&repository.Deps{
-		DB:             s.gormDB,
-		UserQuery:      pbuser.NewUserQueryServiceClient(s.Conns["user"]),
-		MerchantQuery:  pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
-		OrderQuery:     pborder.NewOrderQueryServiceClient(s.Conns["order"]),
-		OrderItemQuery: pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
-		ShippingQuery:  pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
+		GormDB:               s.gormDB,
+		UserQueryClient:      pbuser.NewUserQueryServiceClient(s.Conns["user"]),
+		MerchantQueryClient:  pbmerchant.NewMerchantQueryServiceClient(s.Conns["merchant"]),
+		OrderQueryClient:     pborder.NewOrderQueryServiceClient(s.Conns["order"]),
+		OrderItemQueryClient: pborder_item.NewOrderItemQueryServiceClient(s.Conns["order-item"]),
+		ShippingQueryClient:  pbshipping_address.NewShippingQueryServiceClient(s.Conns["shipping-address"]),
 	})
 
-	s.userQuery = &faultInjectingUserQuery{inner: real.UserQuery}
-	s.merchantQuery = &faultInjectingMerchantQuery{inner: real.MerchantQuery}
-	s.orderQuery = &faultInjectingOrderQuery{inner: real.OrderQuery}
-	s.orderItemQuery = &faultInjectingOrderItemQuery{inner: real.OrderItem}
-	s.shippingQuery = &faultInjectingShippingQuery{inner: real.ShippingAddress}
+	s.userQuery = &faultInjectingUserQuery{UserQueryRepository: real.UserQuery}
+	s.merchantQuery = &faultInjectingMerchantQuery{MerchantQueryRepository: real.MerchantQuery}
+	s.orderQuery = &faultInjectingOrderQuery{OrderQueryRepository: real.OrderQuery}
+	s.orderItemQuery = &faultInjectingOrderItemQuery{OrderItemRepository: real.OrderItem}
+	s.shippingQuery = &faultInjectingShippingQuery{ShippingAddressQueryRepository: real.ShippingAddress}
 	s.txCommand = &faultInjectingTransactionCommand{inner: real.TransactionCommand}
 	s.outbox = &faultInjectingOutbox{inner: real.Outbox}
 
 	mencache := tran_cache.NewMencache(cacheStore)
 	s.svc = service.NewService(&service.Deps{
 		Kafka: nil,
-		DB: gormDB, // transactional outbox path (single commit)
+		DB:    gormDB, // transactional outbox path (single commit)
 		Cache: mencache,
 		Repositories: &repository.Repositories{
 			TransactionCommand: s.txCommand,

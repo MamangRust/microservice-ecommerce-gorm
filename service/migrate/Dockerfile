@@ -8,9 +8,10 @@ COPY pkg/go.mod pkg/go.sum* ./pkg/
 COPY shared/go.mod shared/go.sum* ./shared/
 COPY tests/go.mod tests/go.sum* ./tests/
 
-# Copy all service go.mod files
+# Copy all service go.mod files, keeping each service's goose migrations so the
+# context-aware binary can ship them into the runtime image (SUMMARY_MONGODB.md §4.1).
 COPY service/ ./service/
-RUN find service -type f ! -name "go.mod" ! -name "go.sum" -delete
+RUN find service -type f ! -name "go.mod" ! -name "go.sum" ! -path "*/database/migration/*" -delete
 
 WORKDIR /app/service/migrate
 
@@ -31,6 +32,12 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/migrate_bin ./cmd/main.go
 
+WORKDIR /app
+
+# Trim the tree down to just the per-service goose migrations. The runtime
+# image resolves them as service/<svc>/database/migration from /app.
+RUN find service -type f ! -path "*/database/migration/*" -delete
+
 
 FROM alpine:latest
 
@@ -44,8 +51,9 @@ WORKDIR /app
 RUN mkdir -p /var/log/app && chown -R 1000:1000 /var/log/app
 
 COPY --from=builder /app/migrate_bin ./migrate
+COPY --from=builder /app/service/ ./service/
 
-RUN chown -R 1000:1000 ./migrate
+RUN chown -R 1000:1000 ./migrate ./service
 
 USER appuser
 

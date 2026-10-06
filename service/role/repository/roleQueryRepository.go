@@ -33,7 +33,7 @@ func (r *roleQueryRepository) FindAll(ctx context.Context, req *requests.FindAll
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, role_errors.ErrFindAllRoles.WithInternal(err)
 	}
@@ -91,7 +91,7 @@ func (r *roleQueryRepository) FindActive(ctx context.Context, req *requests.Find
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, role_errors.ErrFindActiveRoles.WithInternal(err)
 	}
@@ -113,7 +113,7 @@ func (r *roleQueryRepository) FindTrashed(ctx context.Context, req *requests.Fin
 		LIMIT ? OFFSET ?
 	`
 
-	err := r.db.WithContext(ctx).Raw(query, req.Search, "%" + req.Search + "%", req.PageSize, offset).Scan(&results).Error
+	err := r.db.WithContext(ctx).Raw(query, req.Search, "%"+req.Search+"%", req.PageSize, offset).Scan(&results).Error
 	if err != nil {
 		return nil, role_errors.ErrFindTrashedRoles.WithInternal(err)
 	}

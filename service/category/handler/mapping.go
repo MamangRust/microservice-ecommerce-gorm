@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc/pb/category"
 	"encoding/json"
+	pbcategory "github.com/MamangRust/microservice-ecommerce-grpc-pb/category"
 	"time"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-category/repository"
@@ -18,7 +18,9 @@ func formatTimePtr(t *time.Time) string {
 }
 
 func (h *Handler) mapToCategoryResponseFromModel(v *models.Category) *pbcategory.CategoryResponse {
-	if v == nil { return nil }
+	if v == nil {
+		return nil
+	}
 	return &pbcategory.CategoryResponse{
 		Id:            v.CategoryID,
 		Name:          v.Name,
@@ -31,7 +33,9 @@ func (h *Handler) mapToCategoryResponseFromModel(v *models.Category) *pbcategory
 }
 
 func (h *Handler) mapToCategoryResponseFromResult(v *repository.CategoryResult) *pbcategory.CategoryResponse {
-	if v == nil { return nil }
+	if v == nil {
+		return nil
+	}
 	return &pbcategory.CategoryResponse{
 		Id:            v.CategoryID,
 		Name:          v.Name,
@@ -44,7 +48,9 @@ func (h *Handler) mapToCategoryResponseFromResult(v *repository.CategoryResult) 
 }
 
 func (h *Handler) mapToDeleteAtResponseFromModel(v *models.Category) *pbcategory.CategoryResponseDeleteAt {
-	if v == nil { return nil }
+	if v == nil {
+		return nil
+	}
 	res := &pbcategory.CategoryResponseDeleteAt{
 		Id:            v.CategoryID,
 		Name:          v.Name,
@@ -61,7 +67,9 @@ func (h *Handler) mapToDeleteAtResponseFromModel(v *models.Category) *pbcategory
 }
 
 func (h *Handler) mapToDeleteAtResponseFromResult(v *repository.CategoryResult) *pbcategory.CategoryResponseDeleteAt {
-	if v == nil { return nil }
+	if v == nil {
+		return nil
+	}
 	res := &pbcategory.CategoryResponseDeleteAt{
 		Id:            v.CategoryID,
 		Name:          v.Name,
@@ -79,11 +87,15 @@ func (h *Handler) mapToDeleteAtResponseFromResult(v *repository.CategoryResult) 
 
 func (h *Handler) mapToPayload(data interface{}) string {
 	jsonData, err := json.Marshal(data)
-	if err != nil { return "" }
+	if err != nil {
+		return ""
+	}
 	return string(jsonData)
 }
 
 func ptrStr(s *string) string {
-	if s != nil { return *s }
+	if s != nil {
+		return *s
+	}
 	return ""
 }

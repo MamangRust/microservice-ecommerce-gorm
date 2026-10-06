@@ -1,9 +1,9 @@
 package transactionapimapper
 
 import (
-	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc/pb/transaction"
+	pbtransaction "github.com/MamangRust/microservice-ecommerce-grpc-pb/transaction"
 	"github.com/MamangRust/microservice-ecommerce-shared/domain/response"
-    paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
+	paginationapimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/pagination"
 )
 
 type transactionCommandResponseMapper struct{}
@@ -13,7 +13,9 @@ func NewTransactionCommandResponseMapper() TransactionCommandResponseMapper {
 }
 
 func (t *transactionCommandResponseMapper) ToResponseTransaction(transaction *pbtransaction.TransactionResponse) *response.TransactionResponse {
-    if transaction == nil { return nil }
+	if transaction == nil {
+		return nil
+	}
 	return &response.TransactionResponse{
 		ID:            int(transaction.Id),
 		OrderID:       int(transaction.OrderId),
@@ -43,8 +45,10 @@ func (t *transactionCommandResponseMapper) ToApiResponseTransaction(pbResponse *
 }
 
 func (t *transactionCommandResponseMapper) ToResponseTransactionDeleteAt(transaction *pbtransaction.TransactionResponseDeleteAt) *response.TransactionResponseDeleteAt {
-	if transaction == nil { return nil }
-    var deletedAt string
+	if transaction == nil {
+		return nil
+	}
+	var deletedAt string
 	if transaction.DeletedAt != nil {
 		deletedAt = transaction.DeletedAt.Value
 	}

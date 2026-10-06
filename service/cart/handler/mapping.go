@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
+	pbcart "github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-cart/repository"

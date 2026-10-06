@@ -2,11 +2,13 @@ package tests
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/testcontainers/testcontainers-go"
+	tcclickhouse "github.com/testcontainers/testcontainers-go/modules/clickhouse"
 
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
@@ -14,20 +16,21 @@ import (
 	tcpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/modules/redis"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"google.golang.org/grpc"
 	gormpostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"google.golang.org/grpc"
 	"net"
 	"os"
 	"path/filepath"
 )
 
 type TestSuite struct {
-	PGContainer    *tcpostgres.PostgresContainer
-	RedisContainer *redis.RedisContainer
-	DBURL          string
-	RedisURL       string
-	Ctx            context.Context
+	PGContainer        *tcpostgres.PostgresContainer
+	RedisContainer     *redis.RedisContainer
+	ClickHouseContainer *tcclickhouse.ClickHouseContainer
+	DBURL              string
+	RedisURL           string
+	Ctx                context.Context
 }
 
 func SetupTestSuite() (*TestSuite, error) {
@@ -35,9 +38,9 @@ func SetupTestSuite() (*TestSuite, error) {
 
 	// Setup PostgreSQL
 	pgContainer, err := tcpostgres.Run(ctx,
-		"postgres:16-alpine",			tcpostgres.WithDatabase("testdb"),
-			tcpostgres.WithUsername("testuser"),
-			tcpostgres.WithPassword("testpass"),
+		"postgres:16-alpine", tcpostgres.WithDatabase("testdb"),
+		tcpostgres.WithUsername("testuser"),
+		tcpostgres.WithPassword("testpass"),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
 				WithOccurrence(2).
@@ -155,6 +158,10 @@ func (ts *TestSuite) GormDB() (*gorm.DB, error) {
 	return gorm.Open(gormpostgres.Open(ts.DBURL), &gorm.Config{})
 }
 
+func (ts *TestSuite) RawDB() (*sql.DB, error) {
+	return sql.Open("postgres", ts.DBURL)
+}
+
 func (ts *TestSuite) RedisClient() *goredis.Client {
 	opts, _ := goredis.ParseURL(ts.RedisURL)
 	return goredis.NewClient(opts)
@@ -169,6 +176,11 @@ func (ts *TestSuite) Teardown() {
 	if ts.RedisContainer != nil {
 		if err := ts.RedisContainer.Terminate(ts.Ctx); err != nil {
 			log.Printf("failed to terminate redis container: %v", err)
+		}
+	}
+	if ts.ClickHouseContainer != nil {
+		if err := ts.ClickHouseContainer.Terminate(ts.Ctx); err != nil {
+			log.Printf("failed to terminate clickhouse container: %v", err)
 		}
 	}
 }

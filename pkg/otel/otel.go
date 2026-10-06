@@ -30,7 +30,6 @@ type Config struct {
 	SamplingFraction       float64
 }
 
-
 type Telemetry struct {
 	config         Config
 	tracerProvider *sdktrace.TracerProvider
@@ -93,7 +92,6 @@ func (t *Telemetry) InitTracer(ctx context.Context) error {
 		sdktrace.WithResource(res),
 		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(samplingFraction))),
 	)
-
 
 	t.tracerProvider = tp
 	otel.SetTracerProvider(tp)

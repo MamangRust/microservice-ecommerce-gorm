@@ -2,10 +2,10 @@ package carthandler
 
 import (
 	cart_cache "github.com/MamangRust/microservice-ecommerce-grpc-apigateway/cache/cart"
+	"github.com/MamangRust/microservice-ecommerce-grpc-pb/cart"
 	"github.com/MamangRust/microservice-ecommerce-pkg/logger"
 	"github.com/MamangRust/microservice-ecommerce-shared/cache"
 	apimapper "github.com/MamangRust/microservice-ecommerce-shared/mapper/cart"
-		pbcart "github.com/MamangRust/microservice-ecommerce-grpc/pb/cart"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
 )
@@ -22,7 +22,7 @@ func RegisterCartHandler(deps *DepsCart) {
 	cache := cart_cache.NewCartMencache(deps.CacheStore)
 
 	NewCartQueryHandleApi(&cartQueryHandleDeps{
-		client: pbcart.NewCartQueryServiceClient(deps.Client),
+		client: pb_cart.NewCartQueryServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.QueryMapper(),
@@ -30,7 +30,7 @@ func RegisterCartHandler(deps *DepsCart) {
 	})
 
 	NewCartCommandHandleApi(&cartCommandHandleDeps{
-		client: pbcart.NewCartCommandServiceClient(deps.Client),
+		client: pb_cart.NewCartCommandServiceClient(deps.Client),
 		router: deps.E,
 		logger: deps.Logger,
 		mapper: mapper.CommandMapper(),

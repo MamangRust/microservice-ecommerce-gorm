@@ -1,8 +1,8 @@
 package review_detail_test
 
 import (
-	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc/pb/review_detail"
 	"context"
+	pbreview_detail "github.com/MamangRust/microservice-ecommerce-grpc-pb/review_detail"
 	"net/http"
 	"net/http/httptest"
 

@@ -1,8 +1,8 @@
 package handler
 
 import (
-	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc/pb/common"
-	pbuser "github.com/MamangRust/microservice-ecommerce-grpc/pb/user"
+	pbcommon "github.com/MamangRust/microservice-ecommerce-grpc-pb/common"
+	pbuser "github.com/MamangRust/microservice-ecommerce-grpc-pb/user"
 	"math"
 
 	"github.com/MamangRust/microservice-ecommerce-grpc-user/repository"
@@ -30,7 +30,6 @@ func createPaginationMeta(page, pageSize, totalRecords int) *pbcommon.Pagination
 		TotalRecords: int32(totalRecords),
 	}
 }
-
 
 // mapToProtoUserResponse maps a *models.User to UserResponse
 func mapToProtoUserResponse(m *models.User) *pbuser.UserResponse {

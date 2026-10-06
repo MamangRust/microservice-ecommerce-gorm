@@ -4,7 +4,6 @@ import (
 	"github.com/MamangRust/microservice-ecommerce-shared/errors"
 )
 
-
 var (
 	ErrBannerNotFoundRes = errors.ErrNotFound.WithMessage("Banner not found")
 	ErrBannerInvalidData = errors.ErrBadRequest.WithMessage("Invalid banner data")
@@ -23,4 +22,3 @@ var (
 	ErrFailedRestoreAllBanners = errors.ErrInternal.WithMessage("Failed to restore all banners")
 	ErrFailedDeleteAllBanners  = errors.ErrInternal.WithMessage("Failed to permanently delete all banners")
 )
-
